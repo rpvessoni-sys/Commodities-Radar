@@ -1,0 +1,33 @@
+name: Guarda da camada de leitura
+
+# Cinto de seguranca da Fase 2 (Claude autonomo na nuvem): se um PR vier de uma
+# branch claude/** (aberto pela Routine de Claude), ele SO pode tocar insights/.
+# Qualquer arquivo fora de insights/ reprova o check — o Claude autonomo nunca
+# contamina calibracao, codigo, DB ou config, mesmo por erro. Dormente ate existir
+# um PR claude/ (nao afeta PRs normais nem pushes diretos).
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  guard:
+    if: startsWith(github.head_ref, 'claude/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: PR claude/ so pode mexer em insights/
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          arquivos=$(git diff --name-only "$base" "$head")
+          echo "Arquivos alterados no PR:"; echo "$arquivos"
+          fora=$(echo "$arquivos" | grep -vE '^insights/' || true)
+          if [ -n "$fora" ]; then
+            echo "::error::PR da branch claude/ tocou arquivos FORA de insights/ — reprovado:"
+            echo "$fora"
+            exit 1
+          fi
+          echo "OK: só insights/. A leitura não contamina FATO/calibração."

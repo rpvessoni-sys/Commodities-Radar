@@ -242,6 +242,12 @@ BEGIN
      OLD.valor_brl_sc, OLD.valor_usd_sc, OLD.unidade_medida, OLD.observacao, 'DELETE');
 END;
 
+-- Dedup do "alerta na hora" (alerts_push): cada sinal da fila avisa 1x no Telegram.
+CREATE TABLE IF NOT EXISTS alertas_enviados (
+  fingerprint TEXT PRIMARY KEY,        -- id estavel do item da fila (queue_emit)
+  enviado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE INDEX IF NOT EXISTS idx_rel_data ON relatorios_stonex(data_publicacao);
 CREATE INDEX IF NOT EXISTS idx_pub_data ON dados_publicos(fonte, data_referencia);
 CREATE INDEX IF NOT EXISTS idx_pub_commodity ON dados_publicos(commodity, metrica);

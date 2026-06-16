@@ -49,11 +49,35 @@ read-only no dash. O "já tratei" mora no próprio insight (cita o `id` da fila 
   mitigada pelo badge + Telegram). Se incomodar → gatilho pra Fase 2.
 - **Calibração das regras**: começamos conservadores (só alta/média). Afrouxar com o uso, igual ao alerts_config.
 
-## Fase 2 (opcional, depois de 2-4 semanas de uso) — Claude autônomo na nuvem
-**Claude Code Routine**: agente agendado na assinatura Max (sem API), roda 1×/dia após o robô, lê os
-dados do repo, escreve `insights/*.md` e abre um **Pull Request** numa branch `claude/` que você aprova
-do celular (humano-no-loop preservado). Requer: Claude GitHub App no repo + Claude Code web + um CI check
-que rejeita PR `claude/` que toque algo fora de `insights/`. Cap ~15 runs/dia compartilhado com seu uso.
+## Automação ativa (2026-06-16)
+- **Alerta na hora** (`alerts_push.py`): o intraday (a cada 30 min no pregão) pinga o Telegram quando
+  surge um sinal 🔴 NOVO na fila (dedup por id → avisa 1×, não a cada run). No-op sem Telegram.
+- **Auto-fallback de coleta** (`cme_cbot._fetch_chart`): se o Yahoo bloquear o IP da nuvem, tenta a
+  mesma URL via ScraperAPI sozinho; só registra erro se os dois falharem.
+
+## Fase 2 (PRONTA p/ ativar — Claude autônomo na nuvem)
+**Claude Code Routine**: agente agendado na assinatura Max (sem API), 1×/dia após o robô, lê o briefing,
+escreve `insights/*.md` e abre **PR numa branch `claude/`** que você aprova do celular (humano-no-loop).
+Cap ~15 runs/dia compartilhado com seu uso interativo. Já no repo: `prompts/routine_julgamento.txt` (o
+prompt) e `.github/workflows/guard-leitura.yml` (CI que reprova PR `claude/` que toque algo fora de
+`insights/` — cinto de segurança). **Checklist de ativação (quando quiser):**
+1. Instalar o **Claude GitHub App** no repo `rpvessoni-sys/Commodities-Radar` + habilitar Claude Code web.
+2. Criar a Routine apontando pro repo, prompt = `system/prompts/routine_julgamento.txt`, schedule 1×/dia
+   ~1h após o cron daily do robô.
+3. Ligar o **briefing-publish** (a Routine roda em clone fresco SEM o DB, então precisa do briefing em git):
+   no `radar.yml`, no job `radar`, adicionar `permissions: contents: write` e, no modo daily, escrever
+   `briefing/latest.md` (= o `last_dump.md`) e commitar:
+   ```yaml
+   - name: Publicar briefing (daily)
+     if: steps.mode.outputs.mode == 'daily'
+     working-directory: ${{ github.workspace }}
+     run: |
+       cp data/last_dump.md briefing/latest.md 2>/dev/null || mkdir -p briefing && cp data/last_dump.md briefing/latest.md
+       git config user.name radar-bot && git config user.email radar-bot@users.noreply.github.com
+       git add briefing/latest.md
+       git diff --cached --quiet || (git commit -m "briefing $(date -u +%F)" && git push) || true
+   ```
+4. Manter o PR revisável (default) — você aprova; auto-merge só se confiar.
 Só ligar depois da Fase 1 provar valor.
 
 ## Limpeza do dump (feito 2026-06-16)

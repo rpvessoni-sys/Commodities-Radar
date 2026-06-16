@@ -126,6 +126,15 @@ def _pos_coleta(gerar_forecast: bool, gerar_dump: bool):
         except Exception as e:
             _log(f"  dump ERRO: {e}")
 
+    # Alerta na hora: pinga o Telegram se surgiu sinal novo de severidade alta
+    _log("alerta na hora (fila)...")
+    try:
+        import alerts_push
+        n = alerts_push.enviar_novos()
+        _log(f"  {n} alerta(s) novo(s) push" if n else "  nada novo (ou Telegram off)")
+    except Exception as e:
+        _log(f"  alerta push ERRO (nao critico): {e}")
+
 
 def run_intraday():
     paid_min = float(os.getenv("PAID_MIN_HORAS", "4"))

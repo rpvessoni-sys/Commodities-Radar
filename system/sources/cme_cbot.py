@@ -49,6 +49,26 @@ PREFIXO_TICKER = {
 }
 
 
+def _fetch_chart(url: str, headers: dict, timeout: int = 15) -> dict:
+    """Busca o chart do Yahoo. Se o IP direto for bloqueado (comum em datacenter
+    como o GitHub Actions), tenta de novo via ScraperAPI (IP residencial). Levanta
+    excecao so se AMBOS falharem — o caller registra o erro normalmente."""
+    import requests
+    try:
+        r = requests.get(url, headers=headers, timeout=timeout)
+        r.raise_for_status()
+        return r.json()
+    except Exception:
+        # Fallback: mesma URL via ScraperAPI (so se a chave estiver configurada)
+        from .scraper import fetch_via_scraper, is_configured
+        if not is_configured():
+            raise
+        r = fetch_via_scraper(url, render=False, timeout=90)
+        if r.status_code != 200:
+            raise RuntimeError(f"scraper HTTP {r.status_code}")
+        return r.json()
+
+
 def _proximos_vencimentos(commodity: str, n: int = 6, ref: date | None = None) -> list[tuple[str, str, str]]:
     """Retorna lista de (ticker, codigo_contrato, label) para próximos N vencimentos.
 
@@ -107,9 +127,7 @@ class CMECollector(BaseCollector):
                 f"?period1={start_ts}&period2={end_ts}&interval=1d"
             )
             try:
-                r = requests.get(url, headers=headers, timeout=15)
-                r.raise_for_status()
-                data = r.json()
+                data = _fetch_chart(url, headers)
             except Exception as e:
                 results.append({
                     "data_referencia": date.today().isoformat(),
@@ -117,7 +135,7 @@ class CMECollector(BaseCollector):
                     "commodity": commodity,
                     "metrica": "fetch_error",
                     "valor": None,
-                    "contexto": f"{type(e).__name__}: {e}",
+                    "contexto": f"{type(e).__name__}: {e} (Yahoo+ScraperAPI falharam)",
                 })
                 continue
 
@@ -181,10 +199,8 @@ class CMECollector(BaseCollector):
                     f"?period1={start_ts}&period2={end_ts}&interval=1d"
                 )
                 try:
-                    r = requests.get(url, headers=headers, timeout=15)
-                    r.raise_for_status()
-                    data = r.json()
-                except Exception as e:
+                    data = _fetch_chart(url, headers)
+                except Exception:
                     # Vencimento pode não ter mercado ativo no Yahoo, ignora silencioso
                     continue
 
