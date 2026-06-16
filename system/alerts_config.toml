@@ -1,0 +1,51 @@
+# Configuracao de niveis tecnicos para alertas.
+#
+# Cada entrada [[niveis]] define:
+#   commodity: identificador no dados_publicos
+#   metrica:   campo do preco (default fechamento)
+#   suporte:   nivel de suporte (alerta se preco < suporte)
+#   resistencia: nivel de resistencia (alerta se preco > resistencia)
+#   variacao_dia_pct_alert: gatilha alerta de movimento forte (default 3.0)
+#
+# RECALIBRADO 2026-06-11 (melhoria continua): niveis antigos eram pre-crash
+# de 04/jun e o crush ficava acima da resistencia TODO dia (alerta = ruido).
+# Regra: nivel de alerta = preco que MUDA A TESE, nao decoracao de grafico.
+
+[[niveis]]
+commodity = "soja_cbot"
+metrica = "fechamento"
+suporte = 1100.0          # cents/bu — rompeu = nova perna baixista (China travada + clima US bom)
+resistencia = 1180.0      # piso da prateleira pre-crash (1170-1196) — acima = recuperacao do complexo
+variacao_dia_pct_alert = 2.5
+
+[[niveis]]
+commodity = "oleo_cbot"
+metrica = "fechamento"
+suporte = 72.0            # cts/lb — abaixo racha a tese "oleo forte" (RFS/45Z)
+resistencia = 80.0        # zona da maxima 52sem — acima = oleo puxando crush ainda mais
+variacao_dia_pct_alert = 2.5
+
+[[niveis]]
+commodity = "farelo_cbot"
+metrica = "fechamento"
+suporte = 290.0           # USD/sht — piso psicologico; NOTA (backfill 11/jun): minima 52sem do
+                          # CONTRATO atual ~293, mas a serie front-month CONTINUA fez 260,70 em
+                          # 2025 — 303 esta no p57 do ano, nao "perto da minima" da serie longa
+resistencia = 325.0       # prateleira pre-crash — acima = queda do farelo invalidada, rever compras
+variacao_dia_pct_alert = 3.0
+
+# milho_cbot removido em 2026-05-26 (escopo restrito ao complexo soja)
+
+[[niveis]]
+commodity = "usd_brl_ptax"
+metrica = "valor"
+suporte = 4.90            # real muito firme — melhora paridade de importacao
+resistencia = 5.30        # rompeu = paridades BRL (farelo/oleo) saltam mesmo com CBOT parado
+variacao_dia_pct_alert = 1.5
+
+[[niveis]]
+commodity = "complexo_soja"
+metrica = "crush_margin_usd_bu"
+suporte = 2.50            # crush normalizou = esmagadora tira o pe = menos farelo despejado (tese muda)
+resistencia = 4.25        # nova expansao alem do recorde atual (~3.8)
+variacao_dia_pct_alert = 15.0

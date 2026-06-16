@@ -1,0 +1,68 @@
+# Geração de insights automáticos (Claude Code) — convenção 2026-06-11
+
+## Quando rodar
+Sempre que uma VARREDURA for feita em sessão (web sweep + coleta sistema), ou
+quando o usuário pedir "gera insights da varredura" / "le o dump e gera insights".
+Também vale após evento relevante (WASDE, crash, decisão regulatória).
+
+## Insumos (ler nesta ordem)
+1. `data/last_dump.md` — dump consolidado do sistema (gerado por `main.py dump`)
+2. `insights/*.md` existentes — pra NÃO duplicar e pra cruzar referências
+3. Resultado da varredura web da sessão (se houver)
+
+## Regras de qualidade (o que separa insight de notícia)
+- MÁXIMO 1-3 insights por varredura. Se nada mudou de relevante, NÃO criar nada.
+- Insight = leitura interpretativa com consequência pra decisão do comprador de
+  farelo — não resumo de notícia. Teste: "o que eu faria diferente sabendo disso?"
+- Não duplicar insight ativo: se o fato atualiza tese existente, EDITAR o arquivo
+  antigo (bloco "Atualização YYYY-MM-DD" no topo + status: revisada) em vez de
+  criar novo.
+- Cruzar sempre com insights anteriores via [[slug]] no corpo.
+- Números SEMPRE com data e fonte. Siglas traduzidas na primeira menção.
+- Aplicar a lente tributária BR antes de concluir qualquer tese de preço
+  (ver memória feedback_lente_tributaria_br).
+
+## Formato do arquivo (`insights/YYYY-MM-DD_slug.md`)
+```
+---
+data: YYYY-MM-DD
+titulo: <frase com a tese, não o tema — ex "Ratio 81% abre janela de tranches">
+tags: [<tema1>, <tema2>, auto-claude]
+fontes:
+  - <fonte 1 com data>
+  - <fonte 2>
+status: ativa
+vies: [<direcao-produto>, ...]
+---
+
+## Resumo executivo
+- 3-5 bullets, cada um com número + leitura
+- último bullet = ação/consequência pro comprador
+
+## Contexto / dados
+(números da varredura que sustentam, com datas)
+
+## Pergunta-tese
+O que precisa ser verdadeiro pra essa tese se confirmar:
+- ...
+
+## Gatilhos que invalidam
+- ...
+
+## Revisão programada
+- **D+90**: YYYY-MM-DD
+- **D+180**: YYYY-MM-DD
+```
+
+## Convenções obrigatórias
+- tag `auto-claude` SEMPRE presente (distingue de insight manual do usuário)
+- `vies:` tokens `direcao-produto` onde direcao ∈ {bull, bear} (perspectiva de
+  PREÇO, neutra de mercado) e produto ∈ {soja, farelo, oleo_soja}.
+  Ex: `vies: [bear-farelo, bull-oleo_soja]`. Esses tokens alimentam
+  automaticamente o card "Drivers ativos por commodity" do HTML.
+- Depois de criar/editar: rodar `main.py synth` pra o insight aparecer no HTML.
+
+## O que NUNCA fazer
+- Recriar qualquer mecanismo de extração StoneX (proibido desde 2026-06-05)
+- Criar insight sem vies quando a tese é direcional (drivers ficam cegos)
+- Inflar a aba com micro-observações — ela é o destilado, não o feed

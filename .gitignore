@@ -1,0 +1,24 @@
+# dados de runtime (DB, caches, logs, PDFs corporativos)
+data/
+reports/
+inbox/
+shared/
+backups/
+*.db
+
+# python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# segredos e locais
+.env
+*.lnk
+.DS_Store
+system/_diag.py
+
+.commitmsg.txt
+system/_probe_nag.py
+system/_tmp_*.py

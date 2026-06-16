@@ -1,0 +1,183 @@
+# =============================================================================
+# Monitor Tributário / Regulatório — catálogo curado de vetores que afetam
+# o complexo soja (soja / farelo / óleo de soja), direta ou indiretamente.
+#
+# Fonte da verdade: este arquivo. `main.py tributario sync` joga pro DB.
+# Editável à mão. Cada bloco [[evento]] vira uma linha em `eventos_tributarios`.
+#
+# Campos:
+#   id            identificador estável (não mudar depois de criado)
+#   titulo        nome curto
+#   tipo          MP | lei | decisao_judicial | regulatorio | programa
+#   jurisdicao    BR | EUA | Indonesia | Argentina | global
+#   status        vigente | tramitacao | adiado | monitorando | encerrado
+#   impacto       direto | indireto
+#   direcao       alta | baixa | neutro | misto   (efeito líquido sobre o complexo BR)
+#   produtos      lista: soja, farelo, oleo_soja
+#   mecanismo     1-2 frases: COMO afeta o preço
+#   vigencia_ate  "YYYY-MM-DD" ou "" (data em que expira / precisa renovar)
+#   proximo_marco texto do próximo evento a vigiar
+#   proximo_data  "YYYY-MM-DD" ou ""
+#   fonte_url     link de referência
+#   atualizado_em "YYYY-MM-DD"
+# =============================================================================
+
+[[evento]]
+id = "MP-1363-2026"
+titulo = "MP 1.363/2026 — subvenção diesel fóssil R$ 1,12/L"
+tipo = "MP"
+jurisdicao = "BR"
+status = "vigente"
+impacto = "indireto"
+direcao = "baixa"
+produtos = ["oleo_soja", "farelo"]
+mecanismo = "Subvenção unificada ao diesel (R$ 1,12/L) barateia o fóssil no mix B15, reduz competitividade do biodiesel e a demanda por óleo de soja interno. Substituiu MP 1.340 + 1.349 em 30/mai."
+vigencia_ate = "2026-12-31"
+proximo_marco = "Conversão em lei pelo Congresso ou caducidade"
+proximo_data = ""
+fonte_url = "https://www.poder360.com.br/poder-governo/governo-cria-subvencao-de-r-112-por-litro-do-diesel-ate-dezembro/"
+atualizado_em = "2026-06-05"
+
+[[evento]]
+id = "MP-1358-2026"
+titulo = "MP 1.358/2026 — subvenção gasolina R$ 0,89/L"
+tipo = "MP"
+jurisdicao = "BR"
+status = "tramitacao"
+impacto = "indireto"
+direcao = "baixa"
+produtos = ["oleo_soja"]
+mecanismo = "Ressarce PIS/Cofins/Cide da gasolina (R$ 0,89/L) + diesel (R$ 0,35/L). Pacote pró-fóssil sinaliza prioridade política ao combustível mineral, headwind para biocombustível."
+vigencia_ate = "2026-07-11"
+proximo_marco = "Deliberação comissão mista (urgência trava pauta a partir de 27/jun)"
+proximo_data = "2026-07-11"
+fonte_url = "https://www.congressonacional.leg.br/materias/medidas-provisorias/-/mpv/174149"
+atualizado_em = "2026-06-05"
+
+[[evento]]
+id = "B16-CNPE-2026"
+titulo = "B16 — elevação da mistura de biodiesel para 16%"
+tipo = "regulatorio"
+jurisdicao = "BR"
+status = "adiado"
+impacto = "direto"
+direcao = "alta"
+produtos = ["oleo_soja", "farelo"]
+mecanismo = "Cada +1pp de mistura puxa óleo de soja pra demanda interna (~+436k ton no B16). ADIADO: CNPE de 11/mai cancelado; testes técnicos de 6 meses → resultado ~nov/26. Realista só fim 2026/início 2027."
+vigencia_ate = ""
+proximo_marco = "Nova convocação do CNPE (sem data) + conclusão dos testes FNDCT"
+proximo_data = ""
+fonte_url = "https://www.udop.com.br/noticia/2026/5/8/apos-anuncio-de-avancos-na-mistura-do-biodiesel-para-16-cnpe-e-cancelado"
+atualizado_em = "2026-06-05"
+
+[[evento]]
+id = "PISCOFINS-BIODIESEL-ISENCAO"
+titulo = "Isenção PIS/Cofins do biodiesel na mistura"
+tipo = "regulatorio"
+jurisdicao = "BR"
+status = "vigente"
+impacto = "direto"
+direcao = "neutro"
+produtos = ["oleo_soja"]
+mecanismo = "Isenção na saída do biodiesel PRORROGADA até 31/jul/26 (decreto 29/mai). Mantida, mas temporária — renovações sucessivas geram incerteza de planejamento e custo do crédito de entrada."
+vigencia_ate = "2026-07-31"
+proximo_marco = "Nova prorrogação ou expiração em 31/jul"
+proximo_data = "2026-07-31"
+fonte_url = "https://agenciagov.ebc.com.br/noticias/202605/governo-do-brasil-renova-acoes-para-conter-impactos-da-crise-internacional-nos-combustiveis"
+atualizado_em = "2026-06-05"
+
+[[evento]]
+id = "STJ-RESP-2165276"
+titulo = "STJ — crédito PIS/Cofins sobre soja em biodiesel"
+tipo = "decisao_judicial"
+jurisdicao = "BR"
+status = "vigente"
+impacto = "direto"
+direcao = "alta"
+produtos = ["soja", "oleo_soja"]
+mecanismo = "REsp 2.165.276 (2ª Turma, unânime, 21/mai): indústria de biodiesel pode creditar PIS/Cofins sobre soja adquirida com suspensão. Alívio de custo. NÃO vinculante (não é repetitivo)."
+vigencia_ate = ""
+proximo_marco = "Eventual afetação como repetitivo / posição da 1ª Seção"
+proximo_data = ""
+fonte_url = "https://www.jota.info/tributos/stj-permite-credito-de-pis-cofins-sobre-soja-usada-em-biodiesel"
+atualizado_em = "2026-06-05"
+
+[[evento]]
+id = "EPA-RFS-2026-2027"
+titulo = "EPA Final RFS 2026/2027 (mandato de biocombustível US)"
+tipo = "regulatorio"
+jurisdicao = "EUA"
+status = "vigente"
+impacto = "indireto"
+direcao = "alta"
+produtos = ["oleo_soja"]
+mecanismo = "Volumes recordes: BBD 8,86→9,07 bi RINs com realocação de 70% das SRE (+1 bi gal). Salto +61% a/a. Sustenta RIN D4 e o óleo de soja CBOT. Vigência 15/jun/26."
+vigencia_ate = ""
+proximo_marco = "Entrada em vigor 15/jun + repasse no RIN D4"
+proximo_data = "2026-06-15"
+fonte_url = "https://www.epa.gov/renewable-fuel-standard/final-renewable-fuel-standards-2026-and-2027"
+atualizado_em = "2026-06-05"
+
+[[evento]]
+id = "45Z-CLEAN-FUEL"
+titulo = "Crédito 45Z (Clean Fuel Production) — insumo importado fora"
+tipo = "regulatorio"
+jurisdicao = "EUA"
+status = "tramitacao"
+impacto = "indireto"
+direcao = "misto"
+produtos = ["oleo_soja"]
+mecanismo = "Regra proposta (fev/26, audiência 28/mai): insumo importado perde elegibilidade; óleo soja doméstico US ~US$ 0,50/gal (dobra). Protege óleo US e empurra sebo BR de volta ao mercado interno (alivia insumo do biodiesel BR no 2S/26)."
+vigencia_ate = ""
+proximo_marco = "Publicação da regra final do Treasury/IRS"
+proximo_data = ""
+fonte_url = "https://www.federalregister.gov/documents/2026/02/04/2026-02246/section-45z-clean-fuel-production-credit"
+atualizado_em = "2026-06-05"
+
+[[evento]]
+id = "DANANTARA-INDONESIA"
+titulo = "Indonésia — fundo soberano Danantara centraliza exportação de palma"
+tipo = "regulatorio"
+jurisdicao = "Indonesia"
+status = "vigente"
+impacto = "indireto"
+direcao = "alta"
+produtos = ["oleo_soja"]
+mecanismo = "Desde 1/jun, exportação de óleo de palma passa por entidade estatal; assume cadeia toda até set/26-jan/27. Risco de menor saldo exportável de palma → suporte ao óleo de soja por substituição."
+vigencia_ate = ""
+proximo_marco = "Assunção plena da cadeia (alvo 1/set/26)"
+proximo_data = "2026-09-01"
+fonte_url = "https://www.palmoilmagazine.com/cpo-export/2026/05/25/indonesia-to-launch-new-cpo-export-reporting-system-through-danantara-on-june-1/"
+atualizado_em = "2026-06-05"
+
+[[evento]]
+id = "INDONESIA-B50"
+titulo = "Indonésia B50 (biodiesel 50%) — execução incerta"
+tipo = "programa"
+jurisdicao = "Indonesia"
+status = "monitorando"
+impacto = "indireto"
+direcao = "alta"
+produtos = ["oleo_soja"]
+mecanismo = "Retórica oficial agressiva (alvo jul/26) mas quota flat e capacidade insuficiente → provável B45 em 2026, B50 pleno só 2027-28. B50 absorveria ~17-21 mi ton CPO (metade da produção) — apertaria saldo exportável global."
+vigencia_ate = ""
+proximo_marco = "Confirmação de blend efetivo 2026 (B45 vs B50)"
+proximo_data = ""
+fonte_url = "https://www.spglobal.com/energy/en/news-research/latest-news/agriculture/122325-indonesia-keeps-2026-biodiesel-quota-flat-raising-doubts-over-b50-target"
+atualizado_em = "2026-06-05"
+
+[[evento]]
+id = "INDONESIA-LEVY-PMK9"
+titulo = "Indonésia — levy de exportação de palma até 12,5% (PMK 9/2026)"
+tipo = "regulatorio"
+jurisdicao = "Indonesia"
+status = "vigente"
+impacto = "indireto"
+direcao = "alta"
+produtos = ["oleo_soja"]
+mecanismo = "Imposto de exportação de CPO até 12,5% do preço de referência (desde 1/mar). Encarece palma no mercado internacional → favorece óleo de soja por substituição na alimentação."
+vigencia_ate = ""
+proximo_marco = "Revisão da tabela de levy conforme preço de referência"
+proximo_data = ""
+fonte_url = "https://www.palmoilmagazine.com/cpo-export/2026/03/07/indonesia-adjusts-palm-oil-export-levy-to-strengthen-sustainable-plantations-and-energy-self-sufficiency/"
+atualizado_em = "2026-06-05"

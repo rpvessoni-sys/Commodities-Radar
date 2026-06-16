@@ -1,0 +1,113 @@
+name: Commodities Radar (nuvem)
+
+# Substitui o Task Scheduler local — roda sem o PC do usuario ligado.
+# Dois ritmos:
+#   intraday (a cada 30 min, pregao seg-sex ~9h-18h30 BRT): CBOT+cambio gratis,
+#            CEPEA/NAG so quando ha fechamento novo (trava no cloud_run.py).
+#   daily    (1x/dia ~19h BRT): varredura completa + forecast + resumo no Telegram.
+# Horarios em UTC (BRT = UTC-3).
+
+on:
+  schedule:
+    - cron: "*/30 12-21 * * 1-5"   # intraday: 09:00-18:30 BRT, dias uteis
+    - cron: "0 22 * * *"           # daily: ~19:00 BRT, todo dia
+  workflow_dispatch:               # botao "Run workflow" (manual)
+    inputs:
+      mode:
+        description: "modo"
+        type: choice
+        options: [intraday, daily]
+        default: daily
+
+concurrency:
+  group: radar-pipeline
+  cancel-in-progress: false        # runs enfileiram (nunca corta no meio de gravar o DB)
+
+defaults:
+  run:
+    working-directory: system
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      mode: ${{ steps.mode.outputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: system/requirements.txt
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      # Estado entre execucoes: o radar.db viaja por cache (key rola por run_id,
+      # restore-keys pega o mais recente). Backup duravel = artifact no modo daily.
+      - name: Restaurar banco (cache)
+        uses: actions/cache@v4
+        with:
+          path: data/radar.db
+          key: radar-db-${{ github.run_id }}
+          restore-keys: |
+            radar-db-
+
+      - name: Decidir modo
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ github.event.inputs.mode }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "0 22 * * *" ]; then
+            echo "mode=daily" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=intraday" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Rodar pipeline (${{ steps.mode.outputs.mode }})
+        env:
+          PYTHONIOENCODING: utf-8
+          SCRAPER_API_KEY: ${{ secrets.SCRAPER_API_KEY }}
+          SCRAPER_PROVIDER: scraperapi
+          NASS_API_KEY: ${{ secrets.NASS_API_KEY }}
+          PAID_MIN_HORAS: ${{ vars.PAID_MIN_HORAS || '4' }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python cloud_run.py --mode ${{ steps.mode.outputs.mode }}
+
+      - name: Montar site (HTML do relatorio)
+        run: |
+          mkdir -p ../_site
+          cp ../reports/latest.html ../_site/index.html
+
+      - name: Upload do site (Pages)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Backup do banco (artifact, so no daily)
+        if: steps.mode.outputs.mode == 'daily'
+        uses: actions/upload-artifact@v4
+        with:
+          name: radar-db-backup
+          path: data/radar.db
+          retention-days: 90
+
+  deploy:
+    needs: radar
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - name: Publicar no GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
