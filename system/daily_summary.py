@@ -115,6 +115,16 @@ def build_resumo(target: date | None = None) -> str:
     except Exception:
         pass
 
+    # Fila de julgamento — sinais que pedem leitura do Claude
+    try:
+        import queue_emit
+        n_fila = queue_emit.count_pendentes(target)
+        if n_fila:
+            L.append("")
+            L.append(f"🔔 *{n_fila} leitura(s) pendente(s)* — abra o Claude: \"lê a fila e trata\"")
+    except Exception:
+        pass
+
     L.append("")
     L.append("_Abra o link do relatório pro detalhe; cole este resumo no Claude pra interpretar._")
     return "\n".join(L)

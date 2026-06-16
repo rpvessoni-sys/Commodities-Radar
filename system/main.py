@@ -150,6 +150,12 @@ def cmd_status(args):
     print()
 
 
+def cmd_queue(args):
+    """Fila de julgamento: o que mudou e pede LEITURA do Claude (sem LLM aqui)."""
+    import queue_emit
+    print(queue_emit.render_markdown(queue_emit.build_queue()))
+
+
 def cmd_public(args):
     """Coleta dados de fontes publicas (USDA, NOPA, Conab, CEPEA, CME, etc)."""
     if args.list:
@@ -496,6 +502,9 @@ def main():
     # === status: saude rapida no terminal ===
     sub.add_parser("status", help="saude do sistema: fontes, inputs, forecasts, marcos tributarios")
 
+    # === queue: fila de julgamento (o que pede leitura do Claude) ===
+    sub.add_parser("queue", help="lista os sinais que pedem interpretacao (fila de julgamento)")
+
     # === inputs: aplica a camada manual versionada (inputs_manuais.toml) ===
     p_in = sub.add_parser("inputs", help="aplica/mostra a camada manual do inputs_manuais.toml")
     in_sub = p_in.add_subparsers(dest="inputs_action", required=True)
@@ -537,6 +546,7 @@ def main():
         "insight": cmd_insight,
         "curva": cmd_curva,
         "status": cmd_status,
+        "queue": cmd_queue,
         "inputs": lambda a: __import__("inputs_manuais").cli(a),
         "premios": cmd_premios,
         "tributario": cmd_tributario,

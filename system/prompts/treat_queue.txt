@@ -1,0 +1,45 @@
+# Tratar a fila de julgamento (rotina de sessão do Claude) — 2026-06-16
+
+Frase-gatilho do dono: **"lê a fila de julgamento e trata"**
+
+Esta é a camada de LEITURA (julgamento). O robô (GitHub Actions) já cuida do FATO
+(números, indicadores, gráficos). Aqui o Claude interpreta os SINAIS que pedem opinião
+e escreve a leitura em `insights/*.md` — que o dash já consome. NUNCA tocar em número,
+indicador, DB ou calibração.
+
+## Ordem de leitura
+1. Rode `python main.py queue` (no diretório system/, com PYTHONIOENCODING=utf-8) → lê a fila.
+2. Leia `data/last_dump.md` (briefing do dia — IGNORE a parte StoneX, descontinuada 2026-06-05).
+3. Leia `insights/*.md` existentes (pra cruzar com `[[slug]]` e NÃO duplicar).
+
+## Critério "merece leitura"
+- Trate só itens 🔴 alta e 🟡 média. Ignore ⚪ baixa e itens `[erro ...]`.
+- Teste de cada item: **"o que eu faria diferente como comprador de farelo sabendo disso?"**
+  Se a resposta é "nada", não vira insight.
+- Máximo **1-3 insights por sessão**. Menos é mais — a aba não é feed.
+
+## Contrato de saída (e SÓ isto)
+- Escreva em `insights/AAAA-MM-DD_slug.md` no formato EXATO de `prompts/generate_insights.txt`:
+  frontmatter `data, titulo, tags:[..., auto-claude], fontes (com data), status: ativa,
+  vies: [bull/bear-produto]`.
+- **Se atualiza uma tese existente, EDITE o arquivo antigo** (bloco "Atualização AAAA-MM-DD"
+  no topo + `status: revisada`) — não crie duplicata.
+- Ao tratar um item da fila, **cite o `id` da fila no corpo** do insight
+  (ex: "trata fila `ratio-zona-2026-06-18`") — é assim que registramos "já tratado",
+  já que a fila é efêmera (não versionada).
+- `vies` é DIREÇÃO (bull/bear-produto), nunca preço. Números sempre com fonte + data.
+- Aplicar a lente tributária BR antes de concluir tese de preço.
+
+## Proibido
+- Editar qualquer `.py`, `radar.db`, `alerts_config.toml`, `indicators.py`, `inputs_manuais.toml`
+  ou qualquer coisa fora de `insights/`.
+- Recriar mecanismo de extração StoneX.
+- Inventar número que não está na evidência da fila ou no dump.
+
+## Fim da sessão
+Entregue o comando de commit pronto (uma linha) pro dono:
+`cd ...\commodities-radar && git add insights/ && git commit -m "leitura AAAA-MM-DD" && git push`
+O push dispara o GitHub Actions → regenera o HTML (Drivers + aba Insights) → Pages publica.
+Em 1-2 min o link no celular reflete a leitura.
+
+Se a fila estiver vazia: responda "nada pede leitura hoje" e NÃO crie nada.

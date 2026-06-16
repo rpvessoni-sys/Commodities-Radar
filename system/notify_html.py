@@ -85,6 +85,7 @@ def _coletar_dados(target: date) -> dict:
         "cot": _get_cot_posicionamento(),
         "revisoes_pendentes": _get_revisoes_pendentes(target),
         "graficos": _get_series_graficos(target),
+        "fila_pendentes": _get_fila_pendentes(target),
     }
     # Geracao narrativa heuristica (baseada em regras sobre os dados)
     base["resumo_executivo"] = _gerar_resumo_executivo(base)
@@ -697,6 +698,15 @@ def _get_far_soj_ratio(target: date) -> dict:
         "dist_77": atual - 77.0,
         "historico": rows[:14],
     }
+
+
+def _get_fila_pendentes(target: date) -> int:
+    """Quantos sinais pedem leitura do Claude (camada de julgamento). 0 se nada/erro."""
+    try:
+        import queue_emit
+        return queue_emit.count_pendentes(target)
+    except Exception:
+        return 0
 
 
 def _get_series_graficos(target: date) -> dict:
@@ -1546,6 +1556,7 @@ def _renderizar(d: dict) -> str:
 
   <!-- =============== ABA 1: DASHBOARD =============== -->
   <section class="tab-pane active" id="tab-dashboard">
+    {_render_fila_banner(d.get("fila_pendentes", 0))}
     <h2>Snapshot atual <span class="tag">último fechamento CBOT</span></h2>
     <div class="kpis">{kpis_html}</div>
 
@@ -1798,6 +1809,20 @@ def _kpi_change_line(info: dict, fmt_delta, lente_comprador: bool = False) -> st
             f'· p{info["pct52"]:.0f}'
         )
     return " · ".join(partes) if partes else f'fechamento {info.get("data", "")}'
+
+
+def _render_fila_banner(n: int) -> str:
+    """Gatilho da camada de julgamento: avisa que há sinais pedindo leitura do Claude."""
+    if not n:
+        return ""
+    plural = "leitura pendente" if n == 1 else "leituras pendentes"
+    return f"""
+    <div class="card" style="border-left:3px solid var(--accent);background:rgba(59,130,246,0.10);margin-bottom:16px">
+      <strong>🔔 {n} {plural}</strong> — sinais que pedem interpretação.
+      <span class="muted-small">Abra o Claude no projeto e diga
+      <em>"lê a fila de julgamento e trata"</em> (ou rode <code>main.py queue</code> pra ver).
+      A leitura vira insight e atualiza os Drivers.</span>
+    </div>"""
 
 
 def _render_kpis(s: dict, far_soj: dict | None = None, sparks: dict | None = None) -> str:
