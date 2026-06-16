@@ -173,6 +173,14 @@ def main():
     config.ensure_dirs()
     db.init_db()  # idempotente (CREATE TABLE IF NOT EXISTS) — cobre runner novo
 
+    # Camada manual (preco fisico, curva do consultor, params) vinda do TOML
+    # versionado — antes dos indicadores, pois fisico/params alimentam calculos.
+    try:
+        import inputs_manuais
+        inputs_manuais.sync()
+    except Exception as e:
+        _log(f"inputs_manuais falhou (nao critico): {e}")
+
     if args.mode == "daily":
         run_daily()
     else:

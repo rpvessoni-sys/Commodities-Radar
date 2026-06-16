@@ -1,0 +1,87 @@
+# =============================================================================
+# inputs_manuais.toml — a CAMADA MANUAL do radar
+#
+# O que você digita e NÃO vem de coletor automático: seus preços físicos, a curva
+# que o consultor (Fabio/StoneX) fala na call, e parâmetros como o RIN D4.
+#
+# Como usar: edite este arquivo, salve, e faça:
+#     git add inputs_manuais.toml && git commit -m "atualiza inputs" && git push
+# No próximo run, a nuvem aplica tudo (idempotente — pode rodar quantas vezes
+# quiser). Local: python main.py inputs sync
+#
+# Datas: AAAA-MM-DD.  Números: ponto decimal (1850.0).
+# =============================================================================
+
+# ----------------------- PREÇOS FÍSICOS (suas compras) -----------------------
+# produto: soja | farelo | oleo_soja
+# praca:   paranagua_pr | rancharia_sp  (ou qualquer slug novo, ex: ponta_grossa_pr)
+# valor na UNIDADE CANÔNICA: soja = R$/saca 60kg · farelo/oleo_soja = R$/tonelada
+# valor_usd (opcional): mesmo valor em US$ (só soja usa, p/ basis); pode omitir.
+
+[[fisico]]
+data = "2026-05-25"
+produto = "soja"
+praca = "paranagua_pr"
+valor = 129.00
+obs = "seed — atualize com seu preço real"
+
+[[fisico]]
+data = "2026-05-25"
+produto = "soja"
+praca = "rancharia_sp"
+valor = 122.00
+obs = "seed"
+
+[[fisico]]
+data = "2026-05-25"
+produto = "farelo"
+praca = "paranagua_pr"
+valor = 1800.0
+obs = "seed"
+
+[[fisico]]
+data = "2026-05-25"
+produto = "farelo"
+praca = "rancharia_sp"
+valor = 1600.0
+obs = "seed"
+
+[[fisico]]
+data = "2026-05-25"
+produto = "oleo_soja"
+praca = "paranagua_pr"
+valor = 5800.0
+obs = "seed"
+
+[[fisico]]
+data = "2026-05-25"
+produto = "oleo_soja"
+praca = "rancharia_sp"
+valor = 5700.0
+obs = "seed"
+
+# ------------------- CURVA DO CONSULTOR (StoneX / call Fabio) -----------------
+# Os níveis que o Fabio fala na ligação. produto: soja | farelo | oleo
+# venc (CME): N26=jul Q26=ago U26=set V26=out X26=nov Z26=dez F27=jan H27=mar
+# Descomente e preencha após a call:
+#
+# [[curva]]
+# produto = "oleo"
+# venc = "N26"
+# valor = 75.5
+# detalhe = "Fabio call 15/jun"
+#
+# [[curva]]
+# produto = "farelo"
+# venc = "N26"
+# valor = 300.0
+# detalhe = "Fabio call 15/jun"
+
+# --------------------------- PARÂMETROS (premissas) --------------------------
+# chaves conhecidas: rin_d4, custo_industrial_biodiesel_us,
+#                    yield_oleo_lb_per_galao, yield_rin_per_galao
+[[param]]
+chave = "rin_d4"
+valor = 2.11
+unidade = "USD/galão"
+fonte = "seed (StoneX 25mai) — atualize quando tiver número novo"

@@ -253,6 +253,9 @@ def cmd_run(args):
     relatórios StoneX não é mais permitida. Fontes 100% públicas + inputs
     manuais (fisico add, curva set, param set).
     """
+    import inputs_manuais    # 0. Aplica camada manual versionada (fisico/curva/params do TOML)
+    inputs_manuais.sync()
+    print()
     cmd_public(args)        # 1. Coleta dados públicos (CBOT, BCB, CEPEA, etc)
     print()
     cmd_indicators(args)    # 2. Calcula indicadores derivados (crush, oil share, biodiesel margin)
@@ -493,6 +496,12 @@ def main():
     # === status: saude rapida no terminal ===
     sub.add_parser("status", help="saude do sistema: fontes, inputs, forecasts, marcos tributarios")
 
+    # === inputs: aplica a camada manual versionada (inputs_manuais.toml) ===
+    p_in = sub.add_parser("inputs", help="aplica/mostra a camada manual do inputs_manuais.toml")
+    in_sub = p_in.add_subparsers(dest="inputs_action", required=True)
+    in_sub.add_parser("sync", help="aplica o TOML no DB (idempotente)")
+    in_sub.add_parser("show", help="mostra o que o TOML contem")
+
     # === premios: consulta historico de premios StoneX (import descontinuado 2026-06-05) ===
     p_pr = sub.add_parser("premios", help="consulta historico de premios por contrato/praca (so leitura)")
     pr_sub = p_pr.add_subparsers(dest="premios_action", required=True)
@@ -528,6 +537,7 @@ def main():
         "insight": cmd_insight,
         "curva": cmd_curva,
         "status": cmd_status,
+        "inputs": lambda a: __import__("inputs_manuais").cli(a),
         "premios": cmd_premios,
         "tributario": cmd_tributario,
     }[args.cmd](args)
