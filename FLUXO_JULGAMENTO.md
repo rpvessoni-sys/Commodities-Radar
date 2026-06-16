@@ -56,7 +56,10 @@ do celular (humano-no-loop preservado). Requer: Claude GitHub App no repo + Clau
 que rejeita PR `claude/` que toque algo fora de `insights/`. Cap ~15 runs/dia compartilhado com seu uso.
 Só ligar depois da Fase 1 provar valor.
 
-## Pendência técnica relacionada
-`synth_daily.generate_full_dump()` ainda é "StoneX-shaped" (instruções pedem ler relatórios StoneX /
-tese_journal) — parcialmente obsoleto pós-proibição 2026-06-05. Vale uma limpeza pra o dump que o Claude
-lê na sessão refletir só a base pública atual.
+## Limpeza do dump (feito 2026-06-16)
+`synth_daily.generate_full_dump()` e `prompts/synthesize_daily.txt` foram limpos: o briefing que o Claude
+lê na sessão agora reflete só a base pública (CBOT/BCB/CEPEA/NAG/USDA/COT/clima + notas manuais do
+consultor) e aponta pro fluxo atual (fila + treat_queue.txt). Saíram: leitura de relatórios StoneX,
+"marcar consultor vs StoneX", pergunta de WhatsApp e comparação com tese_journal (abandonado). Menções
+residuais a "StoneX" no dump são só conteúdo factual (nota de contexto do NOPA + as suas notas de call),
+não instrução.

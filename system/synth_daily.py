@@ -248,79 +248,39 @@ def _alertas_do_dia(target: date) -> list[dict]:
 
 
 def generate_full_dump(target_date: date | None = None) -> str:
-    """Dump completo: relatorios StoneX + insights do consultor + notas de call.
+    """Briefing consolidado da BASE PUBLICA pra leitura do Claude em sessao.
 
-    Saida: arquivo unico com material consolidado + instrucoes para Claude Code.
+    Reune dados publicos (14d) + forecasts ativos + notas manuais do consultor
+    (shared/from_consultor), com ponteiro pro que fazer. A serie de relatorios
+    StoneX foi ENCERRADA em 2026-06-05 e nao entra mais aqui.
     """
     target = target_date or date.today()
-
-    with db.connect() as conn:
-        cur = conn.execute(
-            """
-            SELECT id, tipo, data_publicacao, raw_html_path, texto_extraido
-            FROM relatorios_stonex
-            WHERE date(data_publicacao) >= date(?, '-14 days')
-            ORDER BY data_publicacao DESC, tipo
-            """,
-            (target.isoformat(),),
-        )
-        rows = cur.fetchall()
 
     insights_consultor = _read_consultor_files(config.SHARED_FROM_INSIGHTS)
     notas_call = _read_consultor_files(config.SHARED_FROM_NOTAS)
 
     lines = []
-    lines.append(f"# Dump consolidado — gerado em {target.isoformat()}")
+    lines.append(f"# Briefing consolidado — {target.isoformat()}")
     lines.append("")
-    lines.append(f"Material disponivel:")
-    lines.append(f"- {len(rows)} relatorio(s) StoneX (ultimos 14 dias)")
-    lines.append(f"- {len(insights_consultor)} insight(s) do consultor")
-    lines.append(f"- {len(notas_call)} nota(s) de call")
+    lines.append("_Base 100% publica (CBOT/BCB/CEPEA/NAG/USDA/COT/clima) + notas manuais do consultor._")
     lines.append("")
-    lines.append("## Instrucoes para Claude Code")
+    lines.append("## O que fazer com este briefing")
     lines.append("")
-    lines.append("1. Le este arquivo INTEIRO")
-    lines.append("2. Le tambem `system/prompts/synthesize_daily.txt` (template da sintese)")
-    lines.append("3. Gera sintese diaria seguindo a estrutura do template")
-    lines.append("4. **Marca explicitamente** quando insight veio do CONSULTOR vs do StoneX")
-    lines.append("5. Cita numeros especificos dos relatorios")
-    lines.append("6. Cruza informacoes entre os relatorios quando relevante")
-    lines.append("7. Compara com tese ativa em `tese_journal/` — sinaliza divergencias")
-    lines.append("8. **PROJETA bandas 7d e 30d** para soja CBOT, farelo, oleo e paridade BR (a partir das bandas estatisticas + drivers fundamentais)")
-    lines.append("9. **PROJETA notícias e eventos relevantes** que podem influenciar farelo, oleo degomado e soja nos proximos 7d e 30d")
-    lines.append("10. Salva resultado em `shared/to_consultor/snapshots_diarios/YYYY-MM-DD_daily.md`")
-    lines.append("    (pasta compartilhada com o consultor — atencao: nada confidencial)")
+    lines.append("- **Tratar a fila de julgamento** (camada de LEITURA): rode `python main.py queue`, "
+                 "siga `system/prompts/treat_queue.txt` e escreva so `insights/*.md` (com `vies:`).")
+    lines.append("- **Sintese narrativa do dia** (opcional): siga `system/prompts/synthesize_daily.txt`.")
+    lines.append("- Numeros SEMPRE com fonte + data. Aplicar a lente tributaria BR antes de concluir tese de preco.")
+    lines.append("- NUNCA escrever em numero/indicador/DB/alerts_config — opiniao so vai pra `insights/*.md`.")
     lines.append("")
-    lines.append("## PERGUNTAS FIXAS (responda no fim da sintese)")
-    lines.append("")
-    lines.append("- **O que a StoneX esta dizendo no WhatsApp hoje?** (usuario verifica na comunidade oficial — se ele nao tiver atualizado em insights, sinalize que precisa olhar)")
-    lines.append("- **Algo novo do consultor pela call ou WhatsApp?** (procurar em shared/from_consultor/)")
-    lines.append("- **Algum forecast vencendo essa semana?** (consultar tabela forecasts)")
+    lines.append(f"Notas manuais disponiveis: {len(insights_consultor)} do consultor · {len(notas_call)} de call.")
     lines.append("")
     lines.append("---")
     lines.append("")
 
-    if rows:
-        lines.append("# RELATORIOS STONEX")
-        lines.append("")
-        for row in rows:
-            lines.append(f"## Relatorio: {row['tipo']}")
-            lines.append("")
-            lines.append(f"- Data publicacao: {row['data_publicacao']}")
-            lines.append(f"- Arquivo HTML: {row['raw_html_path']}")
-            lines.append(f"- ID DB: {row['id']}")
-            lines.append("")
-            lines.append("### Texto extraido")
-            lines.append("")
-            lines.append(row["texto_extraido"] or "_(vazio)_")
-            lines.append("")
-            lines.append("---")
-            lines.append("")
-
-    # Dados publicos (fontes da Fase 2)
+    # Dados publicos
     publicos = _read_dados_publicos(target)
     if publicos:
-        lines.append("# DADOS PUBLICOS (fontes da Fase 2)")
+        lines.append("# DADOS PUBLICOS (ultimos 14 dias)")
         lines.append("")
         for fonte, registros in publicos.items():
             lines.append(f"## {fonte}")
