@@ -141,6 +141,16 @@ def run_intraday():
         _coletar(f)
     _pos_coleta(gerar_forecast=False, gerar_dump=False)
 
+    # Pulso CBOT: linha compacta de precos (farelo/soja/oleo + ratio) a cada run
+    # de 15 min DENTRO do pregao de graos (dia util, ~10h30-16h20 BRT). Fora: no-op.
+    try:
+        import daily_summary
+        r = daily_summary.pulso_intraday()
+        if r.get("enviado"):
+            _log("  pulso CBOT enviado")
+    except Exception as e:
+        _log(f"  pulso CBOT ERRO (nao critico): {e}")
+
     # Cobertura do resumo: se ja passou ~19h BRT (22 UTC) e o resumo ainda nao saiu
     # hoje, o intraday garante o envio (1x/dia, deduplicado) — assim o resumo NAO
     # depende do job 'daily' do pinger disparar; os runs intraday (15 min) cobrem.

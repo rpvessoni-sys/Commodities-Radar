@@ -189,6 +189,70 @@ def enviar(target: date | None = None) -> dict:
         return {"enviado": False, "erro": str(e)}
 
 
+def build_pulso_cbot(target: date | None = None) -> str | None:
+    """Linha compacta de pulso CBOT (1 linha) pro Telegram intraday.
+    Ex: '📈 CBOT 14:30 BRT — Farelo 305.50 ↑ · Soja 11.32 ↑ · Óleo 71.60 ↓ · Far/Soj 79.7%'
+    Setas = direção vs fechamento anterior (D-1). None se não houver preço."""
+    from datetime import timezone, timedelta
+    target = target or date.today()
+    soja, soja_a, _ = _ultimo_e_anterior("cme_cbot", "soja_cbot", "fechamento")
+    far, far_a, _ = _ultimo_e_anterior("cme_cbot", "farelo_cbot", "fechamento")
+    oleo, oleo_a, _ = _ultimo_e_anterior("cme_cbot", "oleo_cbot", "fechamento")
+    if far is None and soja is None and oleo is None:
+        return None
+    partes = []
+    if far is not None:
+        partes.append(f"Farelo {far:.2f} {_seta(far, far_a)}")
+    if soja is not None:
+        partes.append(f"Soja {soja / 100:.2f} {_seta(soja, soja_a)}")
+    if oleo is not None:
+        partes.append(f"Óleo {oleo:.2f} {_seta(oleo, oleo_a)}")
+    ratio = _ind("far_soj_ratio_pct")
+    if ratio is not None:
+        partes.append(f"Far/Soj {ratio:.1f}%")
+    hhmm = (datetime.now(timezone.utc) - timedelta(hours=3)).strftime("%H:%M")
+    return f"📈 CBOT {hhmm} BRT — " + " · ".join(partes)
+
+
+def _em_pregao_cbot() -> bool:
+    """True se for dia útil E dentro da janela do day session da CBOT (grãos).
+    Janela 13:30–19:20 UTC (~10:30–16:20 BRT) cobre o pregão diurno em CDT/CST.
+    Fora disso (overnight/fechado/fim de semana) não manda pulso."""
+    from datetime import timezone
+    now = datetime.now(timezone.utc)
+    if now.weekday() >= 5:                      # 5=sáb, 6=dom — CBOT fechada
+        return False
+    m = now.hour * 60 + now.minute
+    return (13 * 60 + 30) <= m <= (19 * 60 + 20)
+
+
+def enviar_pulso_cbot(target: date | None = None) -> dict:
+    """Envia o pulso CBOT no Telegram (texto puro). No-op se Telegram off ou sem dado."""
+    texto = build_pulso_cbot(target)
+    if not texto:
+        return {"enviado": False, "motivo": "sem_dado"}
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+    chat = os.getenv("TELEGRAM_CHAT_ID", "").strip()
+    if not token or not chat:
+        return {"enviado": False, "motivo": "sem_telegram"}
+    try:
+        import requests
+        r = requests.post(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            json={"chat_id": chat, "text": texto}, timeout=30,
+        )
+        return {"enviado": r.status_code == 200, "http": r.status_code}
+    except Exception as e:
+        return {"enviado": False, "erro": str(e)}
+
+
+def pulso_intraday(target: date | None = None) -> dict:
+    """Pulso CBOT a cada run intraday DENTRO do pregão. Fora da janela: no-op."""
+    if not _em_pregao_cbot():
+        return {"enviado": False, "motivo": "fora_pregao"}
+    return enviar_pulso_cbot(target)
+
+
 def _resumo_ja_enviado(target: date) -> bool:
     chave = f"resumo_enviado_{target.isoformat()}"
     try:
