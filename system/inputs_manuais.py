@@ -11,8 +11,9 @@ funcoes que ja existem (precos_fisicos.add_preco, curvas.set_curva,
 params_user.set_param). Roda cedo no pipeline (antes dos indicadores), porque
 fisico/params alimentam calculos.
 
-Nao toca em dado AUTOMATICO: fisico manual entra como tipo_posicao='compra'
-(separado do indicador CEPEA via UNIQUE), curva entra como fonte='stonex'.
+Nao toca em dado AUTOMATICO: fisico manual entra como tipo_posicao do bloco
+(default 'compra', aceita 'venda' p/ o trader que opera os dois lados — separado
+do indicador CEPEA via UNIQUE), curva entra como fonte='stonex'.
 
 CLI:
     python main.py inputs sync     # aplica o TOML no DB
@@ -48,10 +49,14 @@ def _parse(texto: str) -> dict:
             prod = str(b["produto"]).strip()
             if prod not in PRODUTOS_FISICO:
                 raise ValueError(f"produto '{prod}' invalido")
+            tipo = str(b.get("tipo", "compra")).strip().lower()
+            if tipo not in ("compra", "venda"):
+                raise ValueError(f"tipo '{tipo}' invalido (use 'compra' ou 'venda')")
             out["fisico"].append({
                 "data": str(b["data"]),
                 "produto": prod,
                 "praca": str(b["praca"]).strip(),
+                "tipo": tipo,
                 "valor": float(b["valor"]),
                 "valor_usd": float(b["valor_usd"]) if b.get("valor_usd") is not None else None,
                 "obs": b.get("obs"),
@@ -105,7 +110,7 @@ def sync(verbose: bool = True) -> dict:
         try:
             pf.add_preco(
                 date.fromisoformat(f["data"]), f["praca"], f["valor"],
-                produto=f["produto"], tipo_posicao="compra",
+                produto=f["produto"], tipo_posicao=f.get("tipo", "compra"),
                 valor_usd_sc=f["valor_usd"], observacao=f.get("obs"),
             )
             n_fis += 1
@@ -151,7 +156,7 @@ def cli(args):
         print(f"  {len(parsed['fisico'])} fisico, {len(parsed['curva'])} curva, "
               f"{len(parsed['param'])} param")
         for f in parsed["fisico"]:
-            print(f"  fisico  {f['data']} {f['produto']:<10} {f['praca']:<14} {f['valor']}")
+            print(f"  fisico  {f['data']} {f['produto']:<10} {f['praca']:<14} {f['tipo']:<7} {f['valor']}")
         for c in parsed["curva"]:
             print(f"  curva   stonex {c['produto']:<10} {c['venc']:<5} {c['valor']}")
         for p in parsed["param"]:

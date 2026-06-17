@@ -1498,6 +1498,8 @@ def _renderizar(d: dict) -> str:
     # === O que mudou desde ontem + sinais contraditórios (camada decisória) ===
     mudou_html = _render_o_que_mudou(d["target"])
     contradicoes_html = _render_contradicoes(_gerar_contradicoes(d))
+    # === Índices sintéticos (Onda 2): sobra de farelo + suporte do óleo ===
+    indices_html = _render_indices_sinteticos(d["target"])
     # === Forecasts table (fail-closed: sem viés direcional se calibração ruim) ===
     _calib = [c for c in (d.get("forecast_calib") or []) if c.get("n")]
     _dir_confiavel = (min(c["dir_pct"] for c in _calib) >= 55) if _calib else True
@@ -1613,6 +1615,8 @@ def _renderizar(d: dict) -> str:
 
   <!-- =============== ABA 3: ANÁLISE QUANTITATIVA =============== -->
   <section class="tab-pane" id="tab-analise">
+    {f'<h2>Índices sintéticos <span class="tag">sobra de farelo · suporte do óleo · contagem de condições</span></h2>{indices_html}' if indices_html else ''}
+
     <h2>Ratio Farelo/Soja <span class="tag">spread farelo÷soja · mean-reversion</span></h2>
     {far_soj_html}
 
@@ -3520,6 +3524,61 @@ def _render_contradicoes(contras: list[dict]) -> str:
       <p class="muted-small" style="margin:2px 0 0">Tensões entre sinais — onde a leitura
       não é unânime. Pensar como mesa, não seguir um indicador só.</p>
     </div>"""
+
+
+_VIES_CSS = {"bull": "var(--bull)", "bear": "var(--bear)", "warn": "var(--warn)", "neutral": "var(--muted)"}
+
+
+def _render_indices_sinteticos(target: date) -> str:
+    """Índice de Sobra de Farelo + Suporte do Óleo (0-100, contagem de condições).
+    Mostra o número, a banda e a LISTA de condições ON/OFF — auditável, sem caixa-preta."""
+    import indicators
+    try:
+        idx = indicators.compute_indices_sinteticos(target)
+    except Exception:
+        return ""
+    metas = [
+        ("sobra_farelo", "Índice de Sobra de Farelo",
+         "quanto o mercado tende a gerar farelo acima da absorção (pressão baixista no farelo)"),
+        ("suporte_oleo", "Índice de Suporte do Óleo",
+         "quantos pilares de sustentação do óleo estão ativos"),
+    ]
+    cards = []
+    for key, titulo, sub in metas:
+        ix = idx.get(key)
+        if not ix or ix.get("valor") is None:
+            continue
+        cor = _VIES_CSS.get(ix["vies"], "var(--muted)")
+        v = ix["valor"]
+        conds = []
+        for nome, ativo, detalhe in ix["condicoes"]:
+            if ativo is None:
+                mark, c = "—", "var(--muted)"
+            elif ativo:
+                mark, c = "●", cor
+            else:
+                mark, c = "○", "var(--muted)"
+            conds.append(
+                f'<li style="margin:2px 0"><span style="color:{c}">{mark}</span> {nome} '
+                f'<span class="muted-small">({detalhe})</span></li>'
+            )
+        cards.append(f"""
+        <div class="card" style="flex:1;min-width:300px">
+          <h3 style="margin:0 0 6px">{titulo}</h3>
+          <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+            <span style="font-size:2.2em;font-weight:700;color:{cor};line-height:1">{v}</span>
+            <span style="color:{cor};font-weight:600">{ix['label']}</span>
+            <span class="muted-small">{ix['n_ativos']}/{ix['n_aval']} condições ativas</span>
+          </div>
+          <div style="height:8px;border-radius:4px;background:var(--surface2);margin:8px 0 10px;overflow:hidden">
+            <div style="height:100%;width:{v}%;background:{cor}"></div>
+          </div>
+          <p class="muted-small" style="margin:0 0 6px">{sub}</p>
+          <ul style="margin:0;padding:0;list-style:none;font-size:0.92em">{''.join(conds)}</ul>
+        </div>""")
+    if not cards:
+        return ""
+    return f'<div style="display:flex;gap:14px;flex-wrap:wrap">{"".join(cards)}</div>'
 
 
 def _gerar_resumo_executivo(d: dict) -> str:

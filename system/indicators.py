@@ -242,8 +242,152 @@ def calculate_all(target_date: date | None = None) -> dict:
             except Exception as e:
                 results["errors"].append(str(e))
 
+    # ---- Índices sintéticos (Onda 2): grava o VALOR (0-100) p/ série/alertas ----
+    try:
+        idx = compute_indices_sinteticos(target)
+        with db.connect() as conn:
+            for key, metrica in (("sobra_farelo", "indice_sobra_farelo"),
+                                 ("suporte_oleo", "indice_suporte_oleo")):
+                v = idx.get(key, {}).get("valor")
+                if v is not None:
+                    conn.execute(
+                        """INSERT OR REPLACE INTO dados_publicos
+                           (fonte, data_referencia, tipo, commodity, metrica, valor, unidade, contexto)
+                           VALUES ('indicators', ?, 'indicator', 'complexo_soja', ?, ?, '0-100', ?)""",
+                        (target.isoformat(), metrica, v,
+                         f"{idx[key]['label']} ({idx[key]['n_ativos']}/{idx[key]['n_aval']} condições)"),
+                    )
+        results["indices"] = 2
+    except Exception as e:
+        results["errors"].append(f"indices: {e}")
+
     results["total_calculados"] = len(novos)
     return results
+
+
+# ============================================================
+# Índices sintéticos (Onda 2) — 0-100 por CONTAGEM de condições.
+# Sem pesos mágicos: cada condição é um booleano claro e auditável; o índice é
+# a % de condições ATIVAS sobre as AVALIÁVEIS (condição sem dado = None, não conta).
+# ============================================================
+
+def _banda_sobra(v: int) -> tuple[str, str]:
+    """Sobra de farelo: alto = mais pressão baixista no farelo."""
+    if v <= 25:
+        return "sem sobra relevante", "bull"      # pouca pressão = sustenta farelo
+    if v <= 50:
+        return "pressão moderada", "warn"
+    if v <= 75:
+        return "sobra relevante", "bear"
+    return "forte pressão baixista no farelo", "bear"
+
+
+def _banda_suporte(v: int) -> tuple[str, str]:
+    """Suporte do óleo: alto = óleo mais sustentado (bull óleo)."""
+    if v <= 25:
+        return "óleo sem suporte", "bear"
+    if v <= 50:
+        return "suporte fraco", "warn"
+    if v <= 75:
+        return "suporte relevante", "bull"
+    return "óleo domina o crush", "bull"
+
+
+def _montar_indice(condicoes: list, banda_fn) -> dict:
+    avaliaveis = [c for c in condicoes if c[1] is not None]
+    ativos = [c for c in avaliaveis if c[1]]
+    valor = round(100.0 * len(ativos) / len(avaliaveis)) if avaliaveis else None
+    if valor is None:
+        label, vies = "dados insuficientes", "neutral"
+    else:
+        label, vies = banda_fn(valor)
+    return {"valor": valor, "label": label, "vies": vies,
+            "n_ativos": len(ativos), "n_aval": len(avaliaveis), "condicoes": condicoes}
+
+
+def compute_indices_sinteticos(target: date | None = None) -> dict:
+    """Índice de Sobra de Farelo + Índice de Suporte do Óleo (0-100, contagem de
+    condições). Lê o último valor de cada componente já no DB. Retorna o detalhe
+    (condições ON/OFF) pra auditar no HTML — não inventa peso."""
+    target = target or date.today()
+    iso = target.isoformat()
+    with db.connect() as conn:
+        def latest(fonte, commodity, metrica):
+            r = conn.execute(
+                "SELECT valor FROM dados_publicos WHERE fonte=? AND commodity=? AND metrica=? "
+                "AND valor IS NOT NULL AND data_referencia<=? ORDER BY data_referencia DESC LIMIT 1",
+                (fonte, commodity, metrica, iso)).fetchone()
+            return r["valor"] if r else None
+
+        def abiove_mes(commodity, metrica):
+            # ABIOVE projeta por mês (datas futuras) — pega o mês do target, senão o mais próximo
+            r = conn.execute(
+                "SELECT valor FROM dados_publicos WHERE fonte='abiove' AND commodity=? AND metrica=? "
+                "AND strftime('%Y-%m', data_referencia)=? AND valor IS NOT NULL LIMIT 1",
+                (commodity, metrica, target.strftime("%Y-%m"))).fetchone()
+            if r:
+                return r["valor"]
+            r = conn.execute(
+                "SELECT valor FROM dados_publicos WHERE fonte='abiove' AND commodity=? AND metrica=? "
+                "AND valor IS NOT NULL ORDER BY ABS(julianday(data_referencia)-julianday(?)) LIMIT 1",
+                (commodity, metrica, iso)).fetchone()
+            return r["valor"] if r else None
+
+        def abiove_avg(commodity, metrica):
+            rows = conn.execute(
+                "SELECT valor FROM dados_publicos WHERE fonte='abiove' AND commodity=? AND metrica=? "
+                "AND valor IS NOT NULL", (commodity, metrica)).fetchall()
+            vals = [r["valor"] for r in rows]
+            return sum(vals) / len(vals) if vals else None
+
+        crush = latest("indicators", "complexo_soja", "crush_margin_usd_bu")
+        oil_share = latest("indicators", "complexo_soja", "oil_share_pct")
+        bio_margem = latest("indicators", "biodiesel_us", "margem_usd_galao")
+        ho = latest("cme_cbot", "heating_oil_cbot", "fechamento")
+        premio_far = latest("nag_fisico", "farelo_paranagua", "premio_usd_sht")
+        rin = pu.get_param("rin_d4")
+        rin_v = rin["valor"] if rin else None
+        esmag_mes = abiove_mes("soja_brasil", "esmagamento")
+        esmag_avg = abiove_avg("soja_brasil", "esmagamento")
+        far_fim, far_ini = abiove_mes("farelo_brasil", "estoque_final"), abiove_mes("farelo_brasil", "estoque_inicial")
+        ole_fim, ole_ini = abiove_mes("oleo_brasil", "estoque_final"), abiove_mes("oleo_brasil", "estoque_inicial")
+
+    cond_sobra = [
+        ("Crush margin alto (esmagadora roda full)",
+         (crush >= 2.0) if crush is not None else None,
+         f"{crush:.2f} USD/bu" if crush is not None else "sem dado"),
+        ("Oil share alto (farelo vira sobra)",
+         (oil_share >= 50) if oil_share is not None else None,
+         f"{oil_share:.1f}%" if oil_share is not None else "sem dado"),
+        ("Esmagamento BR acima da média",
+         (esmag_mes > esmag_avg) if (esmag_mes is not None and esmag_avg) else None,
+         f"{esmag_mes:.0f} vs média {esmag_avg:.0f} mil t" if (esmag_mes is not None and esmag_avg) else "sem ABIOVE"),
+        ("Prêmio export farelo fraco (não disputa)",
+         (premio_far <= 5) if premio_far is not None else None,
+         f"{premio_far:.2f} US$/sht" if premio_far is not None else "sem dado"),
+        ("Estoque de farelo subindo (acumula)",
+         (far_fim > far_ini) if (far_fim is not None and far_ini is not None) else None,
+         f"fim {far_fim:.0f} vs ini {far_ini:.0f} mil t" if (far_fim is not None and far_ini is not None) else "sem ABIOVE"),
+    ]
+    cond_sup = [
+        ("Oil share alto (óleo manda no crush)",
+         (oil_share >= 50) if oil_share is not None else None,
+         f"{oil_share:.1f}%" if oil_share is not None else "sem dado"),
+        ("Margem biodiesel positiva",
+         (bio_margem > 0) if bio_margem is not None else None,
+         f"{bio_margem:.2f} US$/gal" if bio_margem is not None else "sem dado"),
+        ("RIN D4 firme (≥1,5)",
+         (rin_v >= 1.5) if rin_v is not None else None,
+         f"{rin_v:.2f}" if rin_v is not None else "sem dado"),
+        ("Estoque de óleo caindo (aperta)",
+         (ole_fim < ole_ini) if (ole_fim is not None and ole_ini is not None) else None,
+         f"fim {ole_fim:.0f} vs ini {ole_ini:.0f} mil t" if (ole_fim is not None and ole_ini is not None) else "sem ABIOVE"),
+        ("Heating oil firme (≥3,0)",
+         (ho >= 3.0) if ho is not None else None,
+         f"{ho:.2f} US$/gal" if ho is not None else "sem dado"),
+    ]
+    return {"sobra_farelo": _montar_indice(cond_sobra, _banda_sobra),
+            "suporte_oleo": _montar_indice(cond_sup, _banda_suporte)}
 
 
 if __name__ == "__main__":
