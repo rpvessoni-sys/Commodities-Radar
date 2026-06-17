@@ -44,9 +44,11 @@ def _telegram(texto: str) -> bool:
         return False
     try:
         import requests
+        # Texto PURO (sem parse_mode): a evidencia tem nomes de metrica com '_'
+        # (far_soj_ratio_pct, soja_cbot) que quebram o Markdown do Telegram (400).
         r = requests.post(
             f"https://api.telegram.org/bot{token}/sendMessage",
-            json={"chat_id": chat, "text": texto, "parse_mode": "Markdown"},
+            json={"chat_id": chat, "text": texto},
             timeout=30,
         )
         return r.status_code == 200
@@ -70,9 +72,9 @@ def enviar_novos(target=None, severidades=("alta",)) -> int:
         if not fp or _ja_enviado(fp):
             continue
         msg = (
-            f"🔴 *Radar — sinal novo*\n"
+            f"🔴 Radar — sinal novo\n"
             f"{it.get('titulo','')}\n\n"
-            f"_{it.get('evidencia','')}_\n\n"
+            f"{it.get('evidencia','')}\n\n"
             f"Leitura: {it.get('pergunta','')}\n"
             f"➜ abra o Claude no projeto: \"lê a fila de julgamento e trata\""
         )
