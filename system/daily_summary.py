@@ -189,29 +189,84 @@ def enviar(target: date | None = None) -> dict:
         return {"enviado": False, "erro": str(e)}
 
 
+def _fmt_brn(v, casas: int) -> str:
+    """Número em formato BR (1.234,56). '—' se None."""
+    if v is None:
+        return "—"
+    s = f"{v:,.{casas}f}"  # en-US 1,234.56
+    return s.replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def _serie_cbot(commodity: str) -> dict | None:
+    """{ult, ant, abert} da commodity: último fechamento (vivo), fechamento anterior
+    (D-1) e abertura do dia corrente. None se não houver preço."""
+    with db.connect() as conn:
+        rows = conn.execute(
+            "SELECT data_referencia, valor FROM dados_publicos WHERE fonte='cme_cbot' "
+            "AND commodity=? AND metrica='fechamento' AND valor IS NOT NULL "
+            "ORDER BY data_referencia DESC LIMIT 2", (commodity,)).fetchall()
+        if not rows:
+            return None
+        ult, data_ult = rows[0]["valor"], rows[0]["data_referencia"]
+        ant = rows[1]["valor"] if len(rows) > 1 else None
+        ab = conn.execute(
+            "SELECT valor FROM dados_publicos WHERE fonte='cme_cbot' AND commodity=? "
+            "AND metrica='abertura' AND data_referencia=? AND valor IS NOT NULL LIMIT 1",
+            (commodity, data_ult)).fetchone()
+    return {"ult": ult, "ant": ant, "abert": ab["valor"] if ab else None}
+
+
 def build_pulso_cbot(target: date | None = None) -> str | None:
-    """Linha compacta de pulso CBOT (1 linha) pro Telegram intraday.
-    Ex: '📈 CBOT 14:30 BRT — Farelo 305.50 ↑ · Soja 11.32 ↑ · Óleo 71.60 ↓ · Far/Soj 79.7%'
-    Setas = direção vs fechamento anterior (D-1). None se não houver preço."""
+    """Pulso CBOT estruturado (HTML, tabela monospace) pro Telegram.
+    Por commodity: último · fechamento anterior · abertura · variação do dia.
+    Rodapé: dólar · Far/Soj · oil share · crush. None se não houver preço."""
     from datetime import timezone, timedelta
     target = target or date.today()
-    soja, soja_a, _ = _ultimo_e_anterior("cme_cbot", "soja_cbot", "fechamento")
-    far, far_a, _ = _ultimo_e_anterior("cme_cbot", "farelo_cbot", "fechamento")
-    oleo, oleo_a, _ = _ultimo_e_anterior("cme_cbot", "oleo_cbot", "fechamento")
-    if far is None and soja is None and oleo is None:
+    # (rótulo, commodity, divisor p/ unidade de tela, casas)
+    COMMS = [("Farelo", "farelo_cbot", 1.0, 2),
+             ("Soja", "soja_cbot", 100.0, 2),
+             ("Óleo", "oleo_cbot", 1.0, 2)]
+    linhas = [f"{'':<7}{'Últ':>9}{'Ant':>9}{'Abert':>9}{'Var dia':>17}"]
+    achou = False
+    for nome, comm, div, casas in COMMS:
+        s = _serie_cbot(comm)
+        if not s or s["ult"] is None:
+            continue
+        achou = True
+        ult = s["ult"] / div
+        ant = s["ant"] / div if s["ant"] is not None else None
+        ab = s["abert"] / div if s["abert"] is not None else None
+        if ant is not None and s["ant"]:
+            va = ult - ant
+            vp = (s["ult"] - s["ant"]) / s["ant"] * 100
+            sinal = "+" if va >= 0 else "-"
+            sinal_p = "+" if vp >= 0 else "-"
+            var_s = f"{sinal}{_fmt_brn(abs(va), casas)} ({sinal_p}{_fmt_brn(abs(vp), 1)}%)"
+        else:
+            var_s = "—"
+        linhas.append(
+            f"{nome:<7}{_fmt_brn(ult, casas):>9}{_fmt_brn(ant, casas):>9}"
+            f"{_fmt_brn(ab, casas):>9}{var_s:>17}"
+        )
+    if not achou:
         return None
-    partes = []
-    if far is not None:
-        partes.append(f"Farelo {far:.2f} {_seta(far, far_a)}")
-    if soja is not None:
-        partes.append(f"Soja {soja / 100:.2f} {_seta(soja, soja_a)}")
-    if oleo is not None:
-        partes.append(f"Óleo {oleo:.2f} {_seta(oleo, oleo_a)}")
+
+    ptax, _, _ = _ultimo_e_anterior("bcb", "usd_brl_ptax", "valor")
     ratio = _ind("far_soj_ratio_pct")
-    if ratio is not None:
-        partes.append(f"Far/Soj {ratio:.1f}%")
+    oilsh = _ind("oil_share_pct")
+    crush = _ind("crush_margin_usd_bu")
+    rodape = " · ".join(p for p in [
+        f"Dólar {_fmt_brn(ptax, 4)}" if ptax is not None else None,
+        f"Far/Soj {_fmt_brn(ratio, 1)}%" if ratio is not None else None,
+        f"Oil share {_fmt_brn(oilsh, 1)}%" if oilsh is not None else None,
+        f"Crush {_fmt_brn(crush, 2)}" if crush is not None else None,
+    ] if p)
+
     hhmm = (datetime.now(timezone.utc) - timedelta(hours=3)).strftime("%H:%M")
-    return f"📈 CBOT {hhmm} BRT — " + " · ".join(partes)
+    return (f"<b>📈 Pulso CBOT · {hhmm} BRT</b>\n"
+            f"<pre>{chr(10).join(linhas)}</pre>"
+            f"Farelo US$/sht · Soja US$/bu · Óleo ¢/lb\n"
+            f"{rodape}")
 
 
 def _em_pregao_cbot() -> bool:
@@ -227,7 +282,8 @@ def _em_pregao_cbot() -> bool:
 
 
 def enviar_pulso_cbot(target: date | None = None) -> dict:
-    """Envia o pulso CBOT no Telegram (texto puro). No-op se Telegram off ou sem dado."""
+    """Envia o pulso CBOT no Telegram (parse_mode HTML — tabela <pre>). O conteúdo é
+    só número + nome de commodity, sem <>& dinâmicos, então o HTML não quebra."""
     texto = build_pulso_cbot(target)
     if not texto:
         return {"enviado": False, "motivo": "sem_dado"}
@@ -239,18 +295,42 @@ def enviar_pulso_cbot(target: date | None = None) -> dict:
         import requests
         r = requests.post(
             f"https://api.telegram.org/bot{token}/sendMessage",
-            json={"chat_id": chat, "text": texto}, timeout=30,
+            json={"chat_id": chat, "text": texto, "parse_mode": "HTML"}, timeout=30,
         )
+        if r.status_code != 200:
+            print(f"[pulso] Telegram HTTP {r.status_code}: {r.text[:200]}")
         return {"enviado": r.status_code == 200, "http": r.status_code}
     except Exception as e:
         return {"enviado": False, "erro": str(e)}
 
 
 def pulso_intraday(target: date | None = None) -> dict:
-    """Pulso CBOT a cada run intraday DENTRO do pregão. Fora da janela: no-op."""
+    """Pulso CBOT a cada ~30 min DENTRO do pregão. O intraday roda de 15 em 15, então
+    deduplicamos por SLOT de 30 min (topo/fundo da hora) — 1 pulso por slot. Fora da
+    janela do pregão: no-op."""
+    from datetime import timezone
     if not _em_pregao_cbot():
         return {"enviado": False, "motivo": "fora_pregao"}
-    return enviar_pulso_cbot(target)
+    now = datetime.now(timezone.utc)
+    slot = "30" if now.minute >= 30 else "00"
+    chave = f"pulso_{now.strftime('%Y%m%d_%H')}{slot}"
+    try:
+        with db.connect() as conn:
+            conn.execute("CREATE TABLE IF NOT EXISTS pipeline_heartbeat "
+                         "(evento TEXT PRIMARY KEY, ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+            if conn.execute("SELECT 1 FROM pipeline_heartbeat WHERE evento=?",
+                            (chave,)).fetchone():
+                return {"enviado": False, "motivo": "ja_enviado_slot"}
+    except Exception:
+        pass
+    res = enviar_pulso_cbot(target)
+    if res.get("enviado"):
+        try:
+            with db.connect() as conn:
+                conn.execute("INSERT OR IGNORE INTO pipeline_heartbeat (evento) VALUES (?)", (chave,))
+        except Exception:
+            pass
+    return res
 
 
 def _resumo_ja_enviado(target: date) -> bool:
