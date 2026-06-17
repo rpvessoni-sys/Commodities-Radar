@@ -139,6 +139,17 @@ def run_intraday():
     _log("MODO INTRADAY — só o que flutua sempre (CBOT + câmbio), a cada 15 min 24/7")
     for f in FREE_INTRADAY:
         _coletar(f)
+
+    # Input físico via Telegram: lê mensagens novas do dono e grava em precos_fisicos
+    # ANTES do _pos_coleta, pra o físico já entrar no HTML deste run.
+    try:
+        import telegram_input
+        n = telegram_input.poll_and_apply()
+        if n:
+            _log(f"  {n} input(s) físico via Telegram")
+    except Exception as e:
+        _log(f"  telegram_input ERRO (nao critico): {e}")
+
     _pos_coleta(gerar_forecast=False, gerar_dump=False)
 
     # Pulso CBOT: linha compacta de precos (farelo/soja/oleo + ratio) a cada run
