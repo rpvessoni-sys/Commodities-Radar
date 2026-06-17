@@ -1,0 +1,76 @@
+name: Camada de leitura (Claude autonomo)
+
+# FASE 2 — Claude le o briefing do dia e produz a LEITURA (insights/*.md com vies:),
+# 100% na nuvem do GitHub (sem o PC do dono), agendado. Abre um PR na branch claude/
+# que o guard-leitura.yml valida (so pode tocar insights/). O dono aprova do celular.
+#
+# Gate de custo: so chama o Claude se a fila no briefing tiver item — em dia sem sinal,
+# o run sai de graca. Auth via secret ANTHROPIC_API_KEY (token do dono).
+
+on:
+  schedule:
+    - cron: "0 23 * * *"      # ~20h BRT, ~1h apos o daily do robo (que publica o briefing)
+  workflow_dispatch:           # botao "Run workflow" pra testar na mao
+
+permissions:
+  contents: write              # commitar a branch claude/insights-DATA
+  pull-requests: write         # abrir o PR
+
+concurrency:
+  group: leitura
+  cancel-in-progress: false
+
+jobs:
+  leitura:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0       # historico completo (pra branch/PR)
+
+      # Gate: so roda o Claude se houver fila. queue_emit imprime "Nada pede leitura
+      # hoje" quando a fila esta vazia — nesse caso, pulamos (zero token).
+      - name: Checar fila no briefing
+        id: fila
+        run: |
+          if [ ! -f briefing/latest.md ]; then
+            echo "tem_fila=false" >> "$GITHUB_OUTPUT"
+            echo "Sem briefing/latest.md — pulando."
+          elif grep -q "Nada pede leitura hoje" briefing/latest.md; then
+            echo "tem_fila=false" >> "$GITHUB_OUTPUT"
+            echo "Fila vazia — pulando (gate de custo)."
+          else
+            echo "tem_fila=true" >> "$GITHUB_OUTPUT"
+            echo "Fila com item(ns) — chamando o Claude."
+          fi
+
+      - name: Claude le a fila e abre PR
+        if: steps.fila.outputs.tem_fila == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Voce e a CAMADA DE LEITURA autonoma do Commodities Radar. O dono e TRADER de
+            soja, farelo e oleo degomado (opera long e short) — leitura NEUTRA de preco,
+            NUNCA "comprador de farelo".
+
+            Leia o arquivo `system/prompts/routine_julgamento.txt` do repositorio e siga
+            as instrucoes dele EXATAMENTE. Em resumo:
+            1. Leia `briefing/latest.md` (= dump do dia + fila de julgamento no fim).
+            2. GATE: se a fila disser "Nada pede leitura hoje" ou nao tiver item, ENCERRE
+               sem abrir PR.
+            3. Senao, trate a fila: escreva 1-3 arquivos `insights/AAAA-MM-DD_slug.md`
+               (frontmatter com `data, titulo, tags[+auto-claude], fontes com data, status,
+               vies: [bull/bear-produto]`), citando o `id` da fila tratado no corpo. Se um
+               item so atualiza uma tese existente, EDITE o insight antigo (bloco
+               "Atualizacao AAAA-MM-DD"), nao duplique.
+            4. Toque SOMENTE em arquivos dentro de `insights/`. Nunca em .py, DB, config,
+               indicators, inputs_manuais ou briefing.
+            5. Commit numa branch `claude/insights-AAAA-MM-DD` e abra um Pull Request
+               contra `main` com titulo "leitura AAAA-MM-DD".
+
+            Regras: `vies` = direcao (bull/bear-produto), nunca preco. Numeros sempre com
+            fonte + data. Maximo 3 insights. Aplique a lente tributaria BR se a tese for de
+            preco. NAO recriar extracao StoneX (proibido). Seja conciso e especifico.
+          claude_args: "--max-turns 30"
