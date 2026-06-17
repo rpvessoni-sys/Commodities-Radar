@@ -1495,8 +1495,13 @@ def _renderizar(d: dict) -> str:
     kpis_html = _render_kpis(s, d["far_soj"], sparks)
     # === Mesa do dia (camada decisória: confiança + semáforo + invalidação) ===
     mesa_html = _render_mesa_do_dia(d)
-    # === Forecasts table ===
-    fcasts_html = _render_forecasts(d["forecasts"], s)
+    # === O que mudou desde ontem + sinais contraditórios (camada decisória) ===
+    mudou_html = _render_o_que_mudou(d["target"])
+    contradicoes_html = _render_contradicoes(_gerar_contradicoes(d))
+    # === Forecasts table (fail-closed: sem viés direcional se calibração ruim) ===
+    _calib = [c for c in (d.get("forecast_calib") or []) if c.get("n")]
+    _dir_confiavel = (min(c["dir_pct"] for c in _calib) >= 55) if _calib else True
+    fcasts_html = _render_forecasts(d["forecasts"], s, _dir_confiavel)
     # === Calibracao observada dos forecasts (honestidade do modelo) ===
     calib_html = _render_forecast_calib(d["forecast_calib"])
     # === Alertas ===
@@ -1569,6 +1574,10 @@ def _renderizar(d: dict) -> str:
     <div class="card">
       <p class="lead" id="resumo-executivo">{d["resumo_executivo"]}</p>
     </div>
+
+    {f'<h2>O que mudou desde ontem <span class="tag">D-1 · indicadores do complexo</span></h2>{mudou_html}' if mudou_html else ''}
+
+    {f'<h2>Sinais contraditórios <span class="tag">leitura de mesa</span></h2>{contradicoes_html}' if contradicoes_html else ''}
 
     <h2>Farelo CBOT — 52 semanas <span class="tag">série contínua front-month · níveis do alerta</span></h2>
     <div class="card chart-card">
@@ -1972,7 +1981,7 @@ def _render_kpis(s: dict, far_soj: dict | None = None, sparks: dict | None = Non
     return "\n".join(cards)
 
 
-def _render_forecasts(forecasts: list[dict], snapshot: dict) -> str:
+def _render_forecasts(forecasts: list[dict], snapshot: dict, dir_confiavel: bool = True) -> str:
     if not forecasts:
         return "<p>Sem forecasts ativos. Rode <code>python main.py forecast</code>.</p>"
 
@@ -2015,7 +2024,12 @@ def _render_forecasts(forecasts: list[dict], snapshot: dict) -> str:
                 return f"<span class=\"lo\">{_fmt_usd(f['valor_baixo'])}</span> <span class=\"mid\">{_fmt_usd(f['valor_central'])}</span> <span class=\"hi\">{_fmt_usd(f['valor_alto'])}</span>"
 
         vies = f7["vies"]
-        badge_klass = "bull" if vies == "altista" else ("bear" if vies == "baixista" else "neutral")
+        if dir_confiavel:
+            badge_klass = "bull" if vies == "altista" else ("bear" if vies == "baixista" else "neutral")
+            badge_html = f'<span class="badge {badge_klass}">{vies}</span>'
+        else:
+            # Fail-closed: acerto direcional do modelo baixo -> nao destaca direcao, so range.
+            badge_html = '<span class="badge neutral" title="calibração direcional baixa — use só o range">só range</span>'
 
         rows.append(f"""
         <tr>
@@ -2023,7 +2037,7 @@ def _render_forecasts(forecasts: list[dict], snapshot: dict) -> str:
           <td class="band">{spot_str}</td>
           <td class="band">{_band(f7, commodity)}</td>
           <td class="band">{_band(f30, commodity)}</td>
-          <td><span class="badge {badge_klass}">{vies}</span></td>
+          <td>{badge_html}</td>
         </tr>""")
 
     return f"""
@@ -3359,6 +3373,152 @@ def _render_mesa_do_dia(d: dict) -> str:
         Viés = drivers de alta − de baixa (escala −3…+3), <strong>leitura de preço</strong>
         long/short, não ordem de compra. {inval}
       </p>
+    </div>"""
+
+
+def _trend5_pct(commodity: str) -> float | None:
+    """Variação % nos últimos ~5 pregões de uma commodity CBOT (None se faltar série)."""
+    with db.connect() as conn:
+        rows = conn.execute(
+            """SELECT valor FROM dados_publicos WHERE fonte='cme_cbot'
+               AND commodity=? AND metrica='fechamento' AND valor IS NOT NULL
+               ORDER BY data_referencia DESC LIMIT 6""",
+            (commodity,),
+        ).fetchall()
+    if len(rows) >= 2 and rows[-1]["valor"]:
+        return (rows[0]["valor"] - rows[-1]["valor"]) / rows[-1]["valor"] * 100
+    return None
+
+
+# (label, fonte, commodity, metrica, casas, sufixo, frase_sobe, frase_desce)
+_MUDOU_SPECS = [
+    ("Ratio Far/Soj", "indicators", "complexo_soja", "far_soj_ratio_pct", 1, "%",
+     "spread esticando (farelo ganha de soja)", "spread comprimindo (farelo cede vs soja)"),
+    ("Oil share", "indicators", "complexo_soja", "oil_share_pct", 1, "%",
+     "óleo ganha peso no crush", "óleo cede peso no crush"),
+    ("Crush margin", "indicators", "complexo_soja", "crush_margin_usd_bu", 2, " USD/bu",
+     "esmagamento mais rentável", "esmagamento menos rentável"),
+    ("USD/BRL", "bcb", "usd_brl_ptax", "valor", 4, "",
+     "real mais fraco — sobe a paridade em R$", "real mais forte — pressiona a paridade em R$"),
+]
+
+
+def _render_o_que_mudou(target: date) -> str:
+    """Tabela 'o que mudou desde ontem': indicadores-chave do complexo, D-1, leitura neutra."""
+    linhas = []
+    with db.connect() as conn:
+        for label, fonte, comm, metrica, casas, sufixo, sobe, desce in _MUDOU_SPECS:
+            rows = conn.execute(
+                """SELECT valor FROM dados_publicos WHERE fonte=? AND commodity=? AND metrica=?
+                   AND valor IS NOT NULL AND data_referencia<=?
+                   ORDER BY data_referencia DESC LIMIT 2""",
+                (fonte, comm, metrica, target.isoformat()),
+            ).fetchall()
+            if not rows:
+                continue
+            hoje = rows[0]["valor"]
+            ontem = rows[1]["valor"] if len(rows) > 1 else None
+            if ontem is None:
+                d_txt, leitura, cor = "—", "sem referência D-1", "var(--muted)"
+            else:
+                # Δ sobre os valores ARREDONDADOS p/ bater com as colunas exibidas
+                # (senão 79,8→80,0 mostraria Δ+0,1 e parece erro).
+                delta = round(hoje, casas) - round(ontem, casas)
+                eps = 10 ** (-casas) / 2
+                if delta > eps:
+                    leitura, cor = sobe, "var(--bull)"
+                elif delta < -eps:
+                    leitura, cor = desce, "var(--bear)"
+                else:
+                    leitura, cor = "estável", "var(--muted)"
+                sinal = "+" if delta >= 0 else ""
+                d_txt = f'<span style="color:{cor}">{sinal}{_fmt_num(delta, casas)}</span>'
+            ontem_txt = (_fmt_num(ontem, casas) + sufixo) if ontem is not None else "—"
+            linhas.append(
+                f'<tr><td style="font-weight:600">{label}</td>'
+                f'<td class="hist-val">{ontem_txt}</td>'
+                f'<td class="hist-val">{_fmt_num(hoje, casas)}{sufixo}</td>'
+                f'<td class="hist-val">{d_txt}</td>'
+                f'<td><span class="muted-small" style="color:{cor}">{leitura}</span></td></tr>'
+            )
+    if not linhas:
+        return ""
+    return f"""
+    <div class="card">
+      <table class="hist-table" style="margin:0">
+        <thead><tr><th style="text-align:left">indicador</th><th>ontem</th>
+        <th>hoje</th><th>Δ</th><th style="text-align:left">leitura</th></tr></thead>
+        <tbody>{"".join(linhas)}</tbody>
+      </table>
+      <p class="muted-small" style="margin:6px 0 0">Δ vs último valor anterior (D-1).
+      Preços de farelo/soja/óleo já estão no snapshot acima.</p>
+    </div>"""
+
+
+def _gerar_contradicoes(d: dict) -> list[dict]:
+    """Detecta TENSÕES entre sinais (leitura de mesa): onde os indicadores não
+    apontam todos pro mesmo lado. Cada uma: o conflito + a implicação pro trader.
+    100% derivado de dados já no DB (convicção, ratio, oil share, COT)."""
+    out = []
+    conv = d.get("conviccao") or {}
+    fs = d.get("far_soj") or {}
+    s = d.get("snapshot") or {}
+    oil_share = (s.get("oil_share") or {}).get("valor")
+    pct_cot = {c["slug"]: c["percentil"] for c in (d.get("cot") or {}).get("commodities", [])}
+    soja_sc = (conv.get("soja") or {}).get("score", 0)
+    far_sc = (conv.get("farelo") or {}).get("score", 0)
+    zona = fs.get("zona")
+
+    if soja_sc > 0 and far_sc < 0:
+        out.append({
+            "titulo": "Soja com viés de alta × farelo de baixa",
+            "explicacao": "O óleo concentra o valor do crush; o farelo sai como sobra do esmagamento.",
+            "implicacao": "Spread far÷soj tende a seguir comprimido — convergência (long farelo/short soja) tem vento contra enquanto o óleo dominar.",
+        })
+
+    t_far = _trend5_pct("farelo_cbot")
+    if zona == "comprimido" and t_far is not None and t_far < -1:
+        out.append({
+            "titulo": "Farelo barato vs soja × ainda caindo no CBOT",
+            "explicacao": f"Spread comprimido (valor de mean-reversion), mas o farelo cai {t_far:+.1f}% em 5 pregões (faca caindo).",
+            "implicacao": "O valor existe, mas falta exaustão — esperar virada de momentum antes de apostar na convergência.",
+        })
+
+    p_oleo = pct_cot.get("oleo_cbot")
+    if oil_share is not None and oil_share >= 50 and p_oleo is not None and p_oleo >= 85:
+        out.append({
+            "titulo": "Óleo dominando o crush × fundos comprados no extremo",
+            "explicacao": f"Oil share {oil_share:.1f}% (óleo manda) e managed money no percentil {p_oleo:.0f} de 5 anos.",
+            "implicacao": "A tendência pode durar, mas a assimetria piora: notícia ruim de RIN/diesel/palma vira realização rápida.",
+        })
+
+    p_far = pct_cot.get("farelo_cbot")
+    if zona == "comprimido" and p_far is not None and 15 < p_far < 85:
+        out.append({
+            "titulo": "Spread comprimido × posicionamento sem extremo",
+            "explicacao": f"Farelo barato vs soja, mas os fundos estão no percentil {p_far:.0f} (sem capitulação técnica).",
+            "implicacao": "A oportunidade de spread existe, mas pode faltar o empurrão de um extremo de posicionamento.",
+        })
+
+    return out
+
+
+def _render_contradicoes(contras: list[dict]) -> str:
+    if not contras:
+        return ""
+    itens = []
+    for c in contras:
+        itens.append(
+            f'<div style="margin:0 0 10px">'
+            f'<strong>⚠ {c["titulo"]}</strong><br>'
+            f'<span class="muted-small">{c["explicacao"]}</span><br>'
+            f'<span class="muted-small">→ <em>{c["implicacao"]}</em></span></div>'
+        )
+    return f"""
+    <div class="card">
+      {"".join(itens)}
+      <p class="muted-small" style="margin:2px 0 0">Tensões entre sinais — onde a leitura
+      não é unânime. Pensar como mesa, não seguir um indicador só.</p>
     </div>"""
 
 
