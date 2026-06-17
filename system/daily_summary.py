@@ -189,5 +189,44 @@ def enviar(target: date | None = None) -> dict:
         return {"enviado": False, "erro": str(e)}
 
 
+def _resumo_ja_enviado(target: date) -> bool:
+    chave = f"resumo_enviado_{target.isoformat()}"
+    try:
+        with db.connect() as conn:
+            conn.execute("CREATE TABLE IF NOT EXISTS pipeline_heartbeat "
+                         "(evento TEXT PRIMARY KEY, ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+            return conn.execute("SELECT 1 FROM pipeline_heartbeat WHERE evento=?",
+                                (chave,)).fetchone() is not None
+    except Exception:
+        return False
+
+
+def _marcar_resumo(target: date):
+    chave = f"resumo_enviado_{target.isoformat()}"
+    try:
+        with db.connect() as conn:
+            conn.execute("CREATE TABLE IF NOT EXISTS pipeline_heartbeat "
+                         "(evento TEXT PRIMARY KEY, ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+            conn.execute("INSERT OR IGNORE INTO pipeline_heartbeat (evento) VALUES (?)", (chave,))
+    except Exception:
+        pass
+
+
+def enviar_diario_uma_vez(target: date | None = None, forcar: bool = False) -> dict:
+    """Envia o resumo no MÁXIMO 1×/dia-calendário (dedup no DB).
+
+    Desacopla o resumo do run 'daily' pesado: o intraday (que roda a cada 15 min
+    pelo pinger) chama isto após a hora-alvo, então o resumo SAI de forma confiável
+    mesmo se o job 'daily' do pinger não disparar. forcar=True (usado pelo daily
+    canônico) envia sempre e re-marca — bom pra teste manual."""
+    target = target or date.today()
+    if not forcar and _resumo_ja_enviado(target):
+        return {"enviado": False, "motivo": "ja_enviado_hoje"}
+    res = enviar(target)
+    if res.get("enviado"):
+        _marcar_resumo(target)
+    return res
+
+
 if __name__ == "__main__":
     enviar()

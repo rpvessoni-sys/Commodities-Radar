@@ -141,6 +141,19 @@ def run_intraday():
         _coletar(f)
     _pos_coleta(gerar_forecast=False, gerar_dump=False)
 
+    # Cobertura do resumo: se ja passou ~19h BRT (22 UTC) e o resumo ainda nao saiu
+    # hoje, o intraday garante o envio (1x/dia, deduplicado) — assim o resumo NAO
+    # depende do job 'daily' do pinger disparar; os runs intraday (15 min) cobrem.
+    try:
+        from datetime import timezone
+        if datetime.now(timezone.utc).hour >= 22:
+            import daily_summary
+            r = daily_summary.enviar_diario_uma_vez()
+            if r.get("enviado"):
+                _log("  resumo do dia enviado pelo intraday (cobertura)")
+    except Exception as e:
+        _log(f"  resumo intraday ERRO (nao critico): {e}")
+
     # Healthcheck: o intraday roda muito mais que o daily, então é o lugar certo
     # pra perceber que o daily parou (pinger/PAT morto) e avisar no Telegram (1x/dia).
     try:
@@ -166,7 +179,7 @@ def run_daily():
     _log("resumo do dia...")
     try:
         import daily_summary
-        daily_summary.enviar()
+        daily_summary.enviar_diario_uma_vez(forcar=True)  # daily canônico: sempre envia + marca
     except Exception as e:
         _log(f"  resumo ERRO (não crítico): {e}")
 
