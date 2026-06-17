@@ -61,11 +61,22 @@ class BaseCollector:
         saved = 0
         with db.connect() as conn:
             for r in records:
+                # UPSERT (last-write-wins): o preco do DIA CORRENTE evolui durante o
+                # pregao (barra diaria do Yahoo atualiza com delay ~15min). Com o antigo
+                # INSERT OR IGNORE, a 1a captura do dia travava e todo run seguinte era
+                # ignorado -> preco congelado o dia inteiro. Para serie de mercado, a
+                # leitura mais recente e a correta; re-fetch de dia passado so reescreve
+                # o mesmo valor (no-op). Chave = UNIQUE(fonte,data_referencia,tipo,metrica,commodity).
                 cursor = conn.execute(
                     """
-                    INSERT OR IGNORE INTO dados_publicos
+                    INSERT INTO dados_publicos
                     (fonte, data_referencia, tipo, commodity, metrica, valor, unidade, contexto, raw_json)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(fonte, data_referencia, tipo, metrica, commodity)
+                    DO UPDATE SET valor=excluded.valor,
+                                  unidade=excluded.unidade,
+                                  contexto=excluded.contexto,
+                                  raw_json=excluded.raw_json
                     """,
                     (
                         self.source_name,

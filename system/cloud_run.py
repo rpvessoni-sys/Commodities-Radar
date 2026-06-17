@@ -3,7 +3,7 @@
 
 Dois modos, SEPARADOS POR FREQUENCIA DO DADO (decisao 2026-06-16):
 
-  --mode intraday   (a cada 30 min, 24/7)
+  --mode intraday   (a cada 15 min, 24/7)
       SO o que flutua sempre: CBOT (Yahoo) + cambio (BCB). Sao gratis e o CBOT
       negocia quase 24h (Globex). Recalcula indicadores (crush, oil share,
       ratio Far/Soj) + alertas + HTML + alerta-na-hora. Em hora de mercado
@@ -136,7 +136,7 @@ def _pos_coleta(gerar_forecast: bool, gerar_dump: bool):
 
 
 def run_intraday():
-    _log("MODO INTRADAY — só o que flutua sempre (CBOT + câmbio), a cada 30 min 24/7")
+    _log("MODO INTRADAY — só o que flutua sempre (CBOT + câmbio), a cada 15 min 24/7")
     for f in FREE_INTRADAY:
         _coletar(f)
     _pos_coleta(gerar_forecast=False, gerar_dump=False)
