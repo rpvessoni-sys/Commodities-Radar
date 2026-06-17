@@ -122,6 +122,17 @@ def _pos_coleta(gerar_forecast: bool, gerar_dump: bool):
         try:
             dump = synth_daily.generate_full_dump()
             (config.DATA_DIR / "last_dump.md").write_text(dump, encoding="utf-8")
+            # Briefing pra Fase 2 (Claude autonomo agendado): dump + fila de julgamento,
+            # num arquivo VERSIONADO (briefing/latest.md). A Routine roda em clone sem o
+            # DB; le este briefing. O radar.yml commita no daily.
+            try:
+                import queue_emit
+                fila = queue_emit.render_markdown(queue_emit.build_queue())
+                brief_dir = config.ROOT / "briefing"
+                brief_dir.mkdir(exist_ok=True)
+                (brief_dir / "latest.md").write_text(f"{dump}\n\n---\n\n{fila}\n", encoding="utf-8")
+            except Exception as e:
+                _log(f"  briefing ERRO (nao critico): {e}")
         except Exception as e:
             _log(f"  dump ERRO: {e}")
 

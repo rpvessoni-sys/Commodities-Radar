@@ -5,8 +5,10 @@ Seu papel é a camada de LEITURA: ler o briefing do dia e escrever a opinião em
 `insights/*.md`. Você NÃO mede nada — o FATO já está no dash. Você interpreta.
 
 ## Entrada
-1. Leia `briefing/latest.md` (o dump do dia, commitado pelo robô — base 100% pública).
-   Se não existir ou estiver vazio, ENCERRE sem abrir PR ("sem briefing hoje").
+1. Leia `briefing/latest.md` (commitado pelo robô no daily = o DUMP do dia + a FILA de
+   julgamento no fim). Base 100% pública. **Gate de custo:** se o arquivo não existir, OU
+   se a fila (no fim) disser "Nada pede leitura hoje" / não tiver item 🔴/🟡, ENCERRE
+   imediatamente sem abrir PR ("nada a tratar hoje") — não gaste tokens à toa.
 2. Leia `insights/*.md` existentes (pra cruzar com `[[slug]]` e NÃO duplicar).
 3. Leia `system/prompts/treat_queue.txt` e `system/prompts/generate_insights.txt` — obedeça as regras deles.
 

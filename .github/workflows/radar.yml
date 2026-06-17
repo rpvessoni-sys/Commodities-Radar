@@ -31,6 +31,8 @@ jobs:
   radar:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: write              # commit-back do briefing (Fase 2) no modo daily
     outputs:
       mode: ${{ steps.mode.outputs.mode }}
     steps:
@@ -76,6 +78,20 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python cloud_run.py --mode ${{ steps.mode.outputs.mode }}
+
+      # Fase 2 (Claude autonomo): a Routine roda em clone SEM o DB, entao o robo
+      # publica o briefing (dump + fila) versionado. So no daily. So commita se mudou;
+      # nunca falha o run (push best-effort).
+      - name: Publicar briefing no git (so daily)
+        if: steps.mode.outputs.mode == 'daily'
+        working-directory: ${{ github.workspace }}
+        run: |
+          if [ -f briefing/latest.md ]; then
+            git config user.name "radar-bot"
+            git config user.email "radar-bot@users.noreply.github.com"
+            git add briefing/latest.md
+            git diff --cached --quiet || (git commit -m "briefing $(date -u +%F) [skip ci]" && git push) || echo "push do briefing pulado (main avancou?)"
+          fi
 
       - name: Montar site (HTML do relatorio)
         run: |
