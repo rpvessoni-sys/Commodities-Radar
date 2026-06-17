@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 """Entrypoint do radar na NUVEM (GitHub Actions) — substitui o Task Scheduler local.
 
-Dois modos (escolhidos pelo cron que disparou):
+Dois modos, SEPARADOS POR FREQUENCIA DO DADO (decisao 2026-06-16):
 
-  --mode intraday   (a cada 30 min, durante o pregao)
-      Fontes GRATIS (CBOT via Yahoo + cambio BCB) SEMPRE.
-      Fontes PAGAS (CEPEA/NAG via ScraperAPI) so se nao rodaram nas ultimas
-      PAID_MIN_HORAS (default 4h) — elas publicam 1x/dia, entao verificar a cada
-      30 min sem trava queimaria ~5 mil creditos/mes a toa. A trava da o dado
-      mais fresco que a fonte permite, sem desperdicio.
-      Recalcula indicadores (crush, oil share, ratio Far/Soj) + alertas + HTML.
+  --mode intraday   (a cada 30 min, 24/7)
+      SO o que flutua sempre: CBOT (Yahoo) + cambio (BCB). Sao gratis e o CBOT
+      negocia quase 24h (Globex). Recalcula indicadores (crush, oil share,
+      ratio Far/Soj) + alertas + HTML + alerta-na-hora. Em hora de mercado
+      fechado o re-fetch so devolve o mesmo (idempotente, sem custo).
 
   --mode daily      (1x/dia, pos-fechamento)
-      Varredura COMPLETA (todas as fontes, inclui fundamentos: WASDE, NOPA,
-      ABIOVE, COT, clima) + forecast 7d/30d + HTML + dump + resumo do dia.
+      Varredura COMPLETA (run_all): tambem as fontes PERIODICAS — fisico que
+      publica 1x/dia (CEPEA/NAG) e fundamentos (WASDE/NOPA/ABIOVE/COT/clima),
+      que so trazem dado novo no dia da release. + forecast + dump + resumo.
+      Bater nelas a cada 30 min seria desperdicio (e queima de credito ScraperAPI).
 
 Uso local pra testar:
     .venv\\Scripts\\python.exe cloud_run.py --mode intraday
@@ -21,8 +21,7 @@ Uso local pra testar:
 
 Variaveis de ambiente (no Actions vem dos Secrets; local vem do .env):
     SCRAPER_API_KEY, NASS_API_KEY   — coleta
-    PAID_MIN_HORAS                  — trava das fontes pagas no intraday (default 4)
-    TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID — resumo diario (opcional)
+    TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID — resumo/alerta (opcional)
 """
 import argparse
 import io
@@ -48,10 +47,10 @@ import notify_markdown
 from sources import registry
 
 
-# Fontes que custam ZERO (API direta) — rodam a cada 30 min sem dó
+# Dados que FLUTUAM SEMPRE (API direta, gratis) — rodam a cada 30 min, 24/7.
+# Tudo o mais (fisico CEPEA/NAG diario + fundamentos WASDE/NOPA/COT/... periodicos)
+# fica no modo daily, na cadencia de quem publica.
 FREE_INTRADAY = ["cme_cbot", "bcb"]
-# Fontes que custam crédito ScraperAPI — verificadas no intraday mas com trava
-PAID_GUARDED = ["nag_fisico", "cepea_paranagua", "cepea_rss", "noticias_rss"]
 
 
 def _log(msg):
@@ -59,7 +58,7 @@ def _log(msg):
 
 
 def _horas_desde_ultima_ok(fonte: str) -> float:
-    """Horas desde a última coleta OK desta fonte (1e9 se nunca)."""
+    """Horas desde a última coleta OK desta fonte (1e9 se nunca). (utilitario)."""
     try:
         with db.connect() as conn:
             row = conn.execute(
@@ -137,19 +136,9 @@ def _pos_coleta(gerar_forecast: bool, gerar_dump: bool):
 
 
 def run_intraday():
-    paid_min = float(os.getenv("PAID_MIN_HORAS", "4"))
-    _log(f"MODO INTRADAY — grátis sempre, pagas se >{paid_min:g}h desde a última")
-
+    _log("MODO INTRADAY — só o que flutua sempre (CBOT + câmbio), a cada 30 min 24/7")
     for f in FREE_INTRADAY:
         _coletar(f)
-
-    for f in PAID_GUARDED:
-        h = _horas_desde_ultima_ok(f)
-        if h >= paid_min:
-            _coletar(f)
-        else:
-            _log(f"  {f:<18} skip (rodou há {h:.1f}h < {paid_min:g}h — sem fechamento novo)")
-
     _pos_coleta(gerar_forecast=False, gerar_dump=False)
     _log("intraday OK")
 

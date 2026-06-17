@@ -1,16 +1,16 @@
 name: Commodities Radar (nuvem)
 
 # Substitui o Task Scheduler local — roda sem o PC do usuario ligado.
-# Dois ritmos:
-#   intraday (a cada 30 min, pregao seg-sex ~9h-18h30 BRT): CBOT+cambio gratis,
-#            CEPEA/NAG so quando ha fechamento novo (trava no cloud_run.py).
-#   daily    (1x/dia ~19h BRT): varredura completa + forecast + resumo no Telegram.
-# Horarios em UTC (BRT = UTC-3).
+# Separado por FREQUENCIA do dado (repo publico = Actions gratis/ilimitado):
+#   intraday (a cada 30 min, 24/7): SO o que flutua sempre — CBOT + cambio.
+#   daily    (1x/dia ~19h BRT): varredura completa, inclui as PERIODICAS
+#            (fisico CEPEA/NAG diario + fundamentos WASDE/NOPA/COT/...) + resumo.
+# Horarios em UTC (BRT = UTC-3). Cron do GitHub e best-effort (atrasa/pula).
 
 on:
   schedule:
-    - cron: "*/30 12-21 * * 1-5"   # intraday: 09:00-18:30 BRT, dias uteis
-    - cron: "0 22 * * *"           # daily: ~19:00 BRT, todo dia
+    - cron: "*/30 * * * *"         # intraday: a cada 30 min, TODO dia/hora (so CBOT+cambio)
+    - cron: "0 22 * * *"           # daily: ~19:00 BRT, varredura completa
   workflow_dispatch:               # botao "Run workflow" (manual)
     inputs:
       mode:
