@@ -375,15 +375,16 @@ _LABEL_COMMODITY = {
     "farelo_paranagua": "Prêmio farelo PGUA", "oleo_paranagua": "Prêmio óleo PGUA",
 }
 
-# Leitura do COMPRADOR de farelo por (commodity, tipo de quebra)
-_ALERTA_LENTE_COMPRADOR = {
-    ("farelo_cbot", "quebra_suporte"): ("bull", "farelo abaixo da mínima de referência — zona de compra escancarada"),
-    ("farelo_cbot", "quebra_resistencia"): ("bear", "queda do farelo invalidada — rever ritmo de compras"),
-    ("complexo_soja", "quebra_suporte"): ("bear", "crush normalizou — esmagadora tira o pé, menos farelo despejado"),
-    ("complexo_soja", "quebra_resistencia"): ("bull", "crush em expansão recorde — despejo de farelo continua"),
-    ("usd_brl_ptax", "quebra_resistencia"): ("bear", "dólar rompeu — paridades em R$ sobem mesmo com CBOT parado"),
-    ("usd_brl_ptax", "quebra_suporte"): ("bull", "real firme — melhora o custo em R$"),
-    ("oleo_cbot", "quebra_suporte"): ("bear", "tese 'óleo forte' rachando — pode reduzir o crush e secar farelo"),
+# Leitura de mercado por (commodity, tipo de quebra) — classe = sinal de preço
+# bull/bear (não 'bom/ruim pro comprador'); USD/BRL é neutro (só desloca paridades).
+_ALERTA_LENTE = {
+    ("farelo_cbot", "quebra_suporte"): ("bear", "farelo rompeu o suporte — momentum de baixa; spread far÷soj tende a comprimir vs soja"),
+    ("farelo_cbot", "quebra_resistencia"): ("bull", "farelo rompeu a resistência — momentum de alta; spread far÷soj tende a esticar vs soja"),
+    ("complexo_soja", "quebra_suporte"): ("bull", "crush recuou abaixo do suporte — esmagadora desacelera, menos farelo/óleo novo (suporte aos produtos)"),
+    ("complexo_soja", "quebra_resistencia"): ("bear", "crush rompeu a resistência — esmagamento a fundo, mais farelo/óleo ofertado (pressão nos produtos)"),
+    ("usd_brl_ptax", "quebra_resistencia"): ("neutral", "dólar rompeu — paridades em R$ sobem mesmo com o CBOT parado"),
+    ("usd_brl_ptax", "quebra_suporte"): ("neutral", "real firme — paridades em R$ recuam mesmo com o CBOT parado"),
+    ("oleo_cbot", "quebra_suporte"): ("bear", "óleo rompeu o suporte — momentum de baixa; pode comprimir o crush e o oil share"),
 }
 
 
@@ -418,7 +419,7 @@ def _get_alertas_tecnicos() -> list[dict]:
                 continue
         # Enriquecer pra renderizacao humana
         a["label"] = _LABEL_COMMODITY.get(comm, comm)
-        lente = _ALERTA_LENTE_COMPRADOR.get((comm, tipo))
+        lente = _ALERTA_LENTE.get((comm, tipo))
         if lente:
             a["lente_classe"], a["lente_texto"] = lente
         out.append(a)
@@ -654,12 +655,12 @@ def _get_biodiesel_margin(target: date) -> dict:
 
 
 def _get_far_soj_ratio(target: date) -> dict:
-    """Ratio Far/Soj (farelo ÷ soja) atual + histórico + zona de compra.
+    """Ratio Far/Soj (farelo ÷ soja) atual + histórico + zona do spread.
 
     Convenção IDÊNTICA à matriz crush: far_pct = farelo_usd_sht / (soja_usd_bu × 33,333).
-    Zonas: <80% farelo abundante (compra), 80-87% transição, >=87% apertado.
-    Perspectiva: comprador de farelo (ratio caindo = farelo barateando vs soja = bom).
-    Lê o indicador `far_soj_ratio_pct` calculado em indicators.py.
+    Zonas do SPREAD: <80% comprimido (farelo barato vs soja), 80-87% neutro, >=87% esticado.
+    Leitura de trader: extremo do spread far÷soj → mean-reversion nos dois lados (não é
+    'hora de comprar'). Lê o indicador `far_soj_ratio_pct` calculado em indicators.py.
     """
     with db.connect() as conn:
         cur = conn.execute(
@@ -681,11 +682,11 @@ def _get_far_soj_ratio(target: date) -> dict:
     delta = atual - ref
 
     if atual < 80:
-        zona, zona_label, zona_cor = "compra", "🟢 farelo abundante — zona de compra", "var(--bull)"
+        zona, zona_label, zona_cor = "comprimido", "🟢 spread comprimido — farelo barato vs soja", "var(--bull)"
     elif atual < 87:
-        zona, zona_label, zona_cor = "transicao", "🟡 transição — nem barato nem caro", "var(--warn)"
+        zona, zona_label, zona_cor = "neutro", "🟡 spread neutro — sem extremo", "var(--warn)"
     else:
-        zona, zona_label, zona_cor = "apertado", "🔴 farelo apertado — caro", "var(--bear)"
+        zona, zona_label, zona_cor = "esticado", "🔴 spread esticado — farelo caro vs soja", "var(--bear)"
 
     return {
         "disponivel": True,
@@ -903,7 +904,7 @@ def _render_cot(cot: dict, chart_svg: str = "") -> str:
             if c["percentil"] >= 85:
                 leitura_farelo = ("Fundos historicamente comprados em farelo com preço perto da mínima: "
                                   "posição que não está sendo paga — desmonte (venda) empurraria o preço "
-                                  "ainda mais pra baixo. Pro comprador: paciência tem amparo no posicionamento.")
+                                  "ainda mais pra baixo. Viés de preço baixista enquanto a posição não vira.")
             elif c["percentil"] <= 15:
                 leitura_farelo = ("Fundos vendidos ao extremo em farelo: short-covering (recompra forçada) "
                                   "vira combustível de alta — chão pode estar próximo.")
@@ -1477,7 +1478,7 @@ def _renderizar(d: dict) -> str:
     )
     ratio_svg = ch.line_chart(
         g.get("ratio") or [], width=860, height=170,
-        niveis={"zona de compra 80": 80.0, "apertado 87": 87.0},
+        niveis={"comprimido 80": 80.0, "esticado 87": 87.0},
         label_y="%", cor="var(--warn)",
         fmt_valor=lambda v: f"{v:.1f}",
     )
@@ -1489,7 +1490,7 @@ def _renderizar(d: dict) -> str:
     )
     sparks = {comm: ch.sparkline(vals) for comm, vals in (g.get("sparks") or {}).items()}
 
-    # === Snapshot KPIs (hierarquia do comprador + ratio no grid + sparklines) ===
+    # === Snapshot KPIs (farelo + ratio primeiro, no grid + sparklines) ===
     kpis_html = _render_kpis(s, d["far_soj"], sparks)
     # === Forecasts table ===
     fcasts_html = _render_forecasts(d["forecasts"], s)
@@ -1509,7 +1510,7 @@ def _renderizar(d: dict) -> str:
     noticias_html = _render_noticias(d["noticias"])
     # === Mercado fisico BR (Rancharia + Paranagua) ===
     fisico_html = _render_fisico(d["fisico_br"])
-    # === Ratio Far/Soj (metrica de decisao do comprador de farelo) ===
+    # === Ratio Far/Soj (spread farelo÷soja — leitura de trader) ===
     far_soj_html = _render_far_soj(d["far_soj"])
     # === Matriz de cenarios crush margin ===
     crush_matrix_html = _render_crush_matrix(d["crush_matrix"])
@@ -1576,7 +1577,7 @@ def _renderizar(d: dict) -> str:
 
     <details class="card chart-card">
       <summary style="cursor:pointer"><strong>📐 Ratio Far/Soj — histórico do indicador</strong>
-        <span class="muted-small">(régua: &lt;80 compra · 80-87 transição · ≥87 caro)</span></summary>
+        <span class="muted-small">(régua: &lt;80 comprimido · 80-87 neutro · ≥87 esticado)</span></summary>
       {ratio_svg if ratio_svg else '<p class="muted-small">Série curta demais.</p>'}
     </details>
 
@@ -1599,7 +1600,7 @@ def _renderizar(d: dict) -> str:
 
   <!-- =============== ABA 3: ANÁLISE QUANTITATIVA =============== -->
   <section class="tab-pane" id="tab-analise">
-    <h2>Ratio Farelo/Soja <span class="tag">métrica de decisão · comprador de farelo</span></h2>
+    <h2>Ratio Farelo/Soja <span class="tag">spread farelo÷soja · mean-reversion</span></h2>
     {far_soj_html}
 
     <h2>Matriz de cenários — Crush margin <span class="tag">stress test soja × farelo × óleo</span></h2>
@@ -1788,18 +1789,19 @@ def _render_drivers_por_produto(drivers: dict) -> str:
     return f'<div class="card">{"".join(blocos)}{legenda}</div>'
 
 
-def _kpi_change_line(info: dict, fmt_delta, lente_comprador: bool = False) -> str:
+def _kpi_change_line(info: dict, fmt_delta, cor_direcao: bool = True) -> str:
     """Linha 'change' do KPI: variação D-1 com seta + range/percentil 52 semanas.
 
-    lente_comprador=True (só farelo): queda = verde (bom pra quem compra),
-    alta = vermelho. Demais séries: seta neutra, sem julgamento.
+    cor_direcao=True (padrão): cor = DIREÇÃO do preço (subiu=verde, caiu=vermelho),
+    convenção de mercado — sem julgamento de 'bom/ruim'. Igual pra toda commodity,
+    porque o trader opera os dois lados (long e short).
     """
     partes = []
     if info.get("delta") is not None:
         d, dp = info["delta"], info.get("delta_pct", 0.0)
         seta = "▼" if d < 0 else ("▲" if d > 0 else "•")
-        if lente_comprador and d != 0:
-            cor = "var(--bull)" if d < 0 else "var(--bear)"
+        if cor_direcao and d != 0:
+            cor = "var(--bull)" if d > 0 else "var(--bear)"
             partes.append(f'<span style="color:{cor}">{seta} {fmt_delta(abs(d))} ({dp:+.1f}%)</span>')
         else:
             partes.append(f"{seta} {fmt_delta(abs(d))} ({dp:+.1f}%)")
@@ -1826,9 +1828,10 @@ def _render_fila_banner(n: int) -> str:
 
 
 def _render_kpis(s: dict, far_soj: dict | None = None, sparks: dict | None = None) -> str:
-    """KPIs na hierarquia do comprador de farelo: farelo e ratio primeiro,
-    contexto semanal (oil share/CFTC/plantio) por último. sparks = SVGs de
-    30 pregões por commodity (charts_svg.sparkline)."""
+    """KPIs do complexo: farelo + ratio Far/Soj primeiro (o spread que o trader
+    acompanha de perto), depois soja/óleo/crush, e contexto semanal
+    (oil share/CFTC/plantio) por último. A cor da variação = direção do preço
+    (subiu=verde, caiu=vermelho). sparks = SVGs de 30 pregões por commodity."""
     cards = []
     niveis = _niveis_alerta()
     sparks = sparks or {}
@@ -1837,28 +1840,25 @@ def _render_kpis(s: dict, far_soj: dict | None = None, sparks: dict | None = Non
         svg = sparks.get(comm) or ""
         return f'<div class="spark">{svg}</div>' if svg else ""
 
-    # 1. FARELO (a commodity do usuário — lente do comprador: queda = verde)
+    # 1. FARELO — tint neutro (como as demais); a cor vai na variação, por direção
     if "farelo_cbot" in s:
         farelo = s["farelo_cbot"]
         brl_html = ""
         if "brl" in farelo:
             brl_html = f'<div class="brl">{_fmt_brl(farelo["brl"])}/ton</div>'
-        klass = "neutral"
-        if farelo.get("delta"):
-            klass = "bull" if farelo["delta"] < 0 else "bear"
         cards.append(f"""
-        <div class="kpi {klass}">
+        <div class="kpi neutral">
           <div class="label">Farelo CBOT (ZM)</div>
           <div class="value">{_fmt_usd(farelo["valor"])}<span class="unit">/short ton</span></div>
           {brl_html}
-          <div class="change">{_kpi_change_line(farelo, lambda v: _fmt_num(v, 2), lente_comprador=True)}</div>
+          <div class="change">{_kpi_change_line(farelo, lambda v: _fmt_num(v, 2))}</div>
           {_spark("farelo_cbot")}
         </div>""")
 
-    # 2. RATIO FAR/SOJ (métrica central de decisão — cor da zona)
+    # 2. RATIO FAR/SOJ (spread farelo÷soja — cor pela zona do spread)
     if far_soj and far_soj.get("disponivel"):
         fs = far_soj
-        zona_klass = {"compra": "bull", "transicao": "warn", "apertado": "bear"}.get(fs["zona"], "neutral")
+        zona_klass = {"comprimido": "bull", "neutro": "warn", "esticado": "bear"}.get(fs["zona"], "neutral")
         delta_txt = ""
         if fs.get("delta_5d") is not None:
             seta = "▼" if fs["delta_5d"] < 0 else "▲"
@@ -2054,7 +2054,7 @@ def _render_alertas(alertas: list[dict]) -> str:
         if a.get("lente_texto"):
             cls = a.get("lente_classe", "neutral")
             icone = "🟢" if cls == "bull" else ("🔴" if cls == "bear" else "⚪")
-            lente_html = (f'<br><span class="muted-small">{icone} Pro comprador: '
+            lente_html = (f'<br><span class="muted-small">{icone} Leitura: '
                           f'{a["lente_texto"]}</span>')
         items.append(f"""
         <div class="card alert">
@@ -2095,7 +2095,8 @@ def _render_saude_fontes(fontes: list[dict]) -> str:
     resumo = ("✅ todas as fontes dentro da cadência esperada" if not problemas else
               f'⚠️ <strong>{len(problemas)} fonte(s) fora da cadência:</strong> '
               + ", ".join(f["fonte"] for f in problemas)
-              + " — rode <code>main.py run</code> ou confira o Task Scheduler")
+              + " — veja se o run <code>daily</code> rodou no GitHub Actions "
+                "(ou se a fonte mudou de cadência/quebrou)")
 
     return f"""
     <details class="card">
@@ -2170,8 +2171,8 @@ def _render_tributario(t: dict) -> str:
         f'<span style="color:var(--bull);">▼ {r.get("baixa",0)} baixistas</span> · '
         f'<span style="color:var(--warn);">◆ {r.get("misto",0)} mistos</span> · '
         f'<span style="color:var(--neutral);">● {r.get("neutro",0)} neutros</span> '
-        f'<br><em>altista/baixista = efeito no preço do complexo. Você é comprador de farelo '
-        f'→ baixista é favorável.</em></div>'
+        f'<br><em>altista/baixista = efeito esperado no preço do complexo. O trader lê os dois '
+        f'lados: alta favorece quem está comprado, baixa quem está vendido.</em></div>'
     )
 
     grupos_html = []
@@ -2593,22 +2594,25 @@ def _render_far_soj(fs: dict) -> str:
     w_a = (87 - 80) / (hi - lo) * 100
     w_r = (hi - 87) / (hi - lo) * 100
 
-    # comprador de farelo: ratio caindo (delta<0) = favorável = verde
+    # spread far÷soj: cor por direção do ratio (caindo=verde/comprimindo, subindo=vermelho)
     if delta < -0.05:
-        seta, dcor, dtxt = "↓", "var(--bull)", "favorável (farelo barateando)"
+        seta, dcor, dtxt = "↓", "var(--bull)", "spread comprimindo (farelo cede vs soja)"
     elif delta > 0.05:
-        seta, dcor, dtxt = "↑", "var(--bear)", "desfavorável (farelo encarecendo)"
+        seta, dcor, dtxt = "↑", "var(--bear)", "spread esticando (farelo ganha de soja)"
     else:
         seta, dcor, dtxt = "→", "#888", "estável"
 
-    if fs["zona"] == "compra":
-        interp = "Farelo barato vs soja — <strong>zona de compra</strong>. Momento favorável pra travar farelo."
-    elif fs["zona"] == "transicao":
-        interp = (f"Ratio em transição. Falta cair <strong>{fs['dist_77']:.1f} pp</strong> pra chegar à "
-                  f"zona de compra (77%). Como o preço <em>absoluto</em> do farelo já está baixo, considerar "
-                  f"compra em <strong>tranches</strong> em vez de esperar o ratio comprimir.")
+    if fs["zona"] == "comprimido":
+        interp = ("<strong>Spread comprimido</strong>: farelo barato vs soja. Mean-reversion favorece a "
+                  "convergência — leitura clássica de <strong>long farelo / short soja</strong> (ou crush "
+                  "comprado). Risco: o spread pode comprimir ainda mais se o óleo seguir dominando o crush.")
+    elif fs["zona"] == "neutro":
+        interp = (f"<strong>Spread neutro</strong> — sem extremo de valor. Falta <strong>{fs['dist_77']:.1f} pp</strong> "
+                  f"pra zona comprimida (&lt;80%). Sem assimetria clara de mean-reversion; operar por "
+                  f"momentum/nível em vez do spread.")
     else:
-        interp = "Farelo caro vs soja — <strong>evitar travar</strong>. Esperar compressão do ratio."
+        interp = ("<strong>Spread esticado</strong>: farelo caro vs soja. Mean-reversion favorece o lado "
+                  "inverso — <strong>short farelo / long soja</strong> (ou crush vendido).")
 
     hist_rows = "".join(
         f"<tr><td>{d}</td><td style='text-align:right'>{v:.2f}%</td></tr>"
@@ -2627,9 +2631,9 @@ def _render_far_soj(fs: dict) -> str:
 
       <div style="position:relative;margin:26px 0 40px;">
         <div style="display:flex;height:26px;border-radius:5px;overflow:hidden;font-size:0.72em;font-weight:600;">
-          <span style="width:{w_v:.1f}%;background:rgba(16,185,129,0.22);color:#6ee7b7;display:flex;align-items:center;justify-content:center;">&lt;80 compra</span>
-          <span style="width:{w_a:.1f}%;background:rgba(245,158,11,0.20);color:#fcd34d;display:flex;align-items:center;justify-content:center;">80–87 transição</span>
-          <span style="width:{w_r:.1f}%;background:rgba(239,68,68,0.20);color:#fca5a5;display:flex;align-items:center;justify-content:center;">≥87 caro</span>
+          <span style="width:{w_v:.1f}%;background:rgba(16,185,129,0.22);color:#6ee7b7;display:flex;align-items:center;justify-content:center;">&lt;80 comprimido</span>
+          <span style="width:{w_a:.1f}%;background:rgba(245,158,11,0.20);color:#fcd34d;display:flex;align-items:center;justify-content:center;">80–87 neutro</span>
+          <span style="width:{w_r:.1f}%;background:rgba(239,68,68,0.20);color:#fca5a5;display:flex;align-items:center;justify-content:center;">≥87 esticado</span>
         </div>
         <div style="position:absolute;left:{pos:.1f}%;top:-4px;transform:translateX(-50%);text-align:center;">
           <div style="font-size:1.1em;line-height:1;">▼</div>
@@ -2648,7 +2652,8 @@ def _render_far_soj(fs: dict) -> str:
       </details>
 
       <p class="muted-small" style="margin-top:10px;">Convenção: farelo (USD/short ton) ÷ (soja USD/bu × 33,33) —
-      mesma da matriz crush abaixo. Perspectiva: comprador de farelo (ratio caindo = favorável).</p>
+      mesma da matriz crush abaixo. Leitura de spread: ratio baixo = farelo barato vs soja, alto = caro;
+      mean-reversion vale nos dois sentidos.</p>
     </div>
     """
 
@@ -2766,8 +2771,8 @@ def _render_crush_matrix(m: dict) -> str:
     # ============================================================
     # Bloco dedicado FARELO (Soja × Far÷Soj, independente de oil share)
     # Replica a tabela superior da planilha StoneX.
-    # Cor pensada do lado do COMPRADOR de farelo (perspectiva do usuário):
-    #   verde = farelo barato (zona de compra) / vermelho = caro (apertado)
+    # Cor por NÍVEL de preço do farelo (não é lente de comprador):
+    #   verde = farelo barato em termos absolutos / vermelho = caro
     # ============================================================
     far_header = "".join(f'<th class="crush-h">{int(p*100)}%</th>' for p in m["far_soj_pcts"])
     far_rows = []
@@ -2777,7 +2782,7 @@ def _render_crush_matrix(m: dict) -> str:
         far_cells = []
         for ci, cell in enumerate(row["cells"]):
             farelo = cell["farelo_usd_sht"]
-            # Cores na perspectiva do comprador
+            # Cor por nível de preço absoluto do farelo
             if farelo < 290:
                 cls_f = "crush-green"
             elif farelo < 310:
@@ -2815,11 +2820,11 @@ def _render_crush_matrix(m: dict) -> str:
             <tbody>{"".join(far_rows)}</tbody>
           </table>
           <p class="muted-small" style="margin:6px 4px 0">
-            Independe de oil share (só depende de soja × ratio far÷soj). Cores na
-            perspectiva do <strong>comprador de farelo</strong>:
-            <span class="badge bull">verde &lt;$290</span> zona de compra ·
-            <span class="badge neutral">amarelo $290-310</span> observar ·
-            <span class="badge bear">vermelho ≥$310</span> apertado.
+            Independe de oil share (só depende de soja × ratio far÷soj). Cor por
+            <strong>nível de preço do farelo</strong>:
+            <span class="badge bull">verde &lt;$290</span> barato ·
+            <span class="badge neutral">amarelo $290-310</span> intermediário ·
+            <span class="badge bear">vermelho ≥$310</span> caro.
           </p>
         </div>"""
 
@@ -2926,7 +2931,7 @@ def _render_fisico_produto(slug: str, p: dict) -> str:
             idade_badge = f'<span class="badge neutral">D-{idade}</span>'
         else:
             # Âmbar (warn) = problema de QUALIDADE DE DADO (input velho), não
-            # sinal de mercado — vermelho fica reservado pra "contra o comprador"
+            # sinal de mercado — vermelho fica reservado pra movimento de preço
             idade_badge = f'<span class="badge warn">D-{idade} ⚠ dado velho</span>'
 
         brl_fmt = _fmt_brl(info["valor_brl"])
@@ -2965,11 +2970,11 @@ def _render_fisico_produto(slug: str, p: dict) -> str:
                 diff_html = ""
                 if info.get("valor_brl"):
                     diff = info["valor_brl"] - ind_brl
-                    # Lente do comprador: pagar ABAIXO do indicador = bom = verde
-                    cls_d = "bull" if diff < 0 else ("bear" if diff > 0 else "neutral")
-                    rotulo = "abaixo" if diff < 0 else ("acima" if diff > 0 else "igual")
+                    # Referência de preço (não vantagem de compra): badge neutro,
+                    # só posiciona seu físico vs o indicador CEPEA.
+                    rotulo = "abaixo" if diff < 0 else ("acima" if diff > 0 else "igual a")
                     diff_html = (
-                        f' <span class="badge {cls_d}">sua compra {_fmt_brl(abs(diff))}{sufixo} '
+                        f' <span class="badge neutral">seu físico {_fmt_brl(abs(diff))}{sufixo} '
                         f'{rotulo} do indicador</span>'
                     )
                 indicador_html = (
@@ -3012,27 +3017,29 @@ def _render_fisico_produto(slug: str, p: dict) -> str:
                 sinal_p = "+" if q["premio"] >= 0 else ""
                 extra = (f'<span class="muted-small">prêmio {sinal_p}{q["premio"]:.2f} '
                          f'{q["premio_unidade"]} s/ CBOT</span>')
-                # Leitura do comprador (só farelo; óleo é descolado do interno)
+                # Spread export × interno (só farelo; óleo é descolado do interno).
+                # Cor por DIREÇÃO do preço interno: export acima = puxa pra cima (bull).
                 if slug == "farelo":
                     if q.get("delta_vs_manual") is not None:
                         dv = q["delta_vs_manual"]
-                        cls_dv = "bear" if dv > 0 else "bull"
+                        cls_dv = "bull" if dv > 0 else "bear"
                         sinal_dv = "+" if dv > 0 else "−"
-                        rotulo = ("export paga mais que o interno"
-                                  if dv > 0 else "export não compete")
+                        rotulo = ("export acima do interno — puxa preço"
+                                  if dv > 0 else "export abaixo do interno — oferta sobra dentro")
                         extra += (f' <span class="badge {cls_dv}">{sinal_dv}{_fmt_brl(abs(dv))}{sufixo} '
-                                  f'vs sua compra ({q.get("manual_data", "?")}) · {rotulo}</span>')
+                                  f'vs seu físico ({q.get("manual_data", "?")}) · {rotulo}</span>')
                     elif q.get("comparacao_suspensa"):
                         notas.append(
-                            f'⚠️ <strong>Comparação suspensa:</strong> sua compra PGUA é de '
+                            f'⚠️ <strong>Comparação suspensa:</strong> seu físico PGUA é de '
                             f'{q.get("manual_data", "?")} ({q.get("gap_dias", "?")} dias antes '
                             f'desta cotação) — mercado mexeu no meio. Atualize via '
                             f'<code>main.py fisico add</code> (atalho "Input Fisico") '
                             f'pra reativar o delta.')
                 elif slug == "oleo_soja":
                     notas.append(
-                        'Paridade export = (CBOT+prêmio)×câmbio — referência de '
-                        'exportação; o degomado interno opera descolado, não comparar direto.')
+                        'Paridade export = (CBOT+prêmio)×câmbio — é a referência pra quem '
+                        'opera óleo CBOT/export. O degomado interno opera descolado: são dois '
+                        'mercados, não confundir um com o outro.')
             linhas_pub.append(
                 f'<tr><td style="text-align:left">{q["nome"]}</td>'
                 f'<td class="hist-val">{_fmt_brl(q["valor_brl"])}{sufixo}</td>'
@@ -3080,7 +3087,7 @@ def _render_fisico_produto(slug: str, p: dict) -> str:
         s = p["spread_pr_rc_brl"]
         sinal = "+" if s > 0 else ""
         # Sem badge de cor: spread entre praças é informação de logística,
-        # não favorece nem prejudica o comprador por si só
+        # não é sinal de preço por si só
         rodape_parts.append(
             f'<strong>Spread PR−Rancharia:</strong> '
             f'<span class="hist-val">{sinal}{_fmt_brl(abs(s)) if s >= 0 else "−" + _fmt_brl(abs(s))}{sufixo}</span>'
@@ -3214,11 +3221,11 @@ def _niveis_alerta() -> dict:
 
 
 def _gerar_resumo_executivo(d: dict) -> str:
-    """Resumo em 3 frases rotuladas: Mercado / Pro comprador / Leitura.
+    """Resumo em 3 frases rotuladas: Mercado / Farelo / Leitura.
 
-    Reescrito 2026-06-11 (revisão trader): a versão anterior concatenava 5+
-    fatos no mesmo nível, sem moeda de decisão. CFTC e WASDE moram nos
-    Insights críticos logo abaixo — aqui só o que muda a leitura de hoje.
+    Reescrito 2026-06-11 (revisão trader) e reenquadrado 2026-06-17 (lente de
+    trader, não de comprador). CFTC e WASDE moram nos Insights críticos logo
+    abaixo — aqui só o que muda a leitura de hoje.
     """
     s = d["snapshot"]
     fs = d.get("far_soj") or {}
@@ -3239,7 +3246,7 @@ def _gerar_resumo_executivo(d: dict) -> str:
         sufixo = f", oil share {_fmt_num(oshare, 1)}%." if oshare is not None else "."
         frases.append(f"<strong>Mercado:</strong> crush {estado} ({_fmt_usd(cm)}/bu){sufixo}")
 
-    # 2. Pro comprador — a única frase carregada de números, em farelo
+    # 2. Farelo — a única frase carregada de números, em farelo
     farelo = s.get("farelo_cbot") or {}
     if farelo.get("valor"):
         delta_txt = f" ({farelo['delta_pct']:+.1f}% no dia)" if farelo.get("delta_pct") is not None else ""
@@ -3247,24 +3254,26 @@ def _gerar_resumo_executivo(d: dict) -> str:
         brl_txt = f" ≈ {_fmt_brl(farelo['brl'])}/t paridade" if farelo.get("brl") else ""
         ratio_txt = f"; ratio Far/Soj {_fmt_num(fs['atual'], 1)}%" if fs.get("disponivel") else ""
         frases.append(
-            f"<strong>Pro comprador:</strong> farelo a {_fmt_usd(farelo['valor'])}/sht"
+            f"<strong>Farelo:</strong> {_fmt_usd(farelo['valor'])}/sht"
             f"{delta_txt}{pct_txt}{brl_txt}{ratio_txt}."
         )
 
-    # 3. Leitura — o que os dados dizem (informação, não ordem de compra)
+    # 3. Leitura — o que os dados dizem (informação, não ordem de compra/venda)
     if fs.get("disponivel"):
         res_farelo = (niveis.get("farelo_cbot") or {}).get("resistencia", 325)
-        if fs["zona"] == "compra":
-            leitura = "farelo historicamente barato vs grão — a janela que a tese mapeava"
-        elif fs["zona"] == "transicao" and (fs.get("delta_5d") or 0) < 0:
-            leitura = "ratio comprimindo rumo à zona &lt;80% — acompanhar de perto"
-        elif fs["zona"] == "transicao":
-            leitura = "ratio em transição, sem extremo de valor"
+        if fs["zona"] == "comprimido":
+            leitura = ("spread Far/Soj comprimido — farelo historicamente barato vs grão "
+                       "(mean-reversion favorece convergência)")
+        elif fs["zona"] == "neutro" and (fs.get("delta_5d") or 0) < 0:
+            leitura = "spread comprimindo rumo à zona &lt;80% — acompanhar de perto"
+        elif fs["zona"] == "neutro":
+            leitura = "spread em zona neutra, sem extremo de valor"
         else:
-            leitura = "farelo caro vs grão — sem pressa"
+            leitura = ("spread Far/Soj esticado — farelo caro vs grão "
+                       "(mean-reversion favorece o lado inverso)")
         frases.append(
-            f"<strong>Leitura:</strong> {leitura}; quadro invalida se o farelo CBOT "
-            f"superar {_fmt_num(res_farelo, 0)} USD/sht (resistência configurada)."
+            f"<strong>Leitura:</strong> {leitura}; referência técnica: o farelo CBOT "
+            f"superar {_fmt_num(res_farelo, 0)} USD/sht (resistência configurada) muda o quadro."
         )
 
     return " ".join(frases) if frases else "<em>Dados insuficientes para resumo automático.</em>"
@@ -3389,8 +3398,8 @@ def _gerar_drivers(d: dict) -> dict:
       (a) regras quantitativas sobre snapshot/DB (recalculam a cada synth)
       (b) Monitor Tributário: eventos vigentes/tramitando com produtos+direção
       (c) insights ativos com frontmatter `vies: [bull-farelo, bear-oleo_soja]`
-    Perspectiva NEUTRA de mercado (alta = bullish preço) — a leitura do
-    comprador de farelo fica no card Far/Soj.
+    Perspectiva NEUTRA de mercado (alta = bullish preço) — a leitura de spread
+    do farelo (far÷soj) fica no card Far/Soj.
     """
     out = {slug: {"bull": [], "bear": []} for slug, _ in _DRIVER_PRODUTOS}
     s = d["snapshot"]
@@ -3453,7 +3462,7 @@ def _gerar_drivers(d: dict) -> dict:
         t = trend5(comm)
         if t is not None and abs(t) >= 2:
             add(prod, "bull" if t > 0 else "bear",
-                f"{nome_c} CBOT {t:+.1f}% em 5 pregões — momentum {'comprador' if t > 0 else 'vendedor'}",
+                f"{nome_c} CBOT {t:+.1f}% em 5 pregões — momentum de {'alta' if t > 0 else 'baixa'}",
                 "CP", "dado")
 
     # FOB export do farelo vs interno (cotação pública NAG)

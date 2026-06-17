@@ -140,6 +140,16 @@ def run_intraday():
     for f in FREE_INTRADAY:
         _coletar(f)
     _pos_coleta(gerar_forecast=False, gerar_dump=False)
+
+    # Healthcheck: o intraday roda muito mais que o daily, então é o lugar certo
+    # pra perceber que o daily parou (pinger/PAT morto) e avisar no Telegram (1x/dia).
+    try:
+        import healthcheck
+        if healthcheck.checar_daily():
+            _log("  healthcheck: daily atrasado — aviso enviado no Telegram")
+    except Exception as e:
+        _log(f"  healthcheck ERRO (nao critico): {e}")
+
     _log("intraday OK")
 
 
@@ -159,6 +169,13 @@ def run_daily():
         daily_summary.enviar()
     except Exception as e:
         _log(f"  resumo ERRO (não crítico): {e}")
+
+    # Batimento: marca que o daily rodou agora, pro healthcheck do intraday vigiar.
+    try:
+        import healthcheck
+        healthcheck.marcar_daily()
+    except Exception as e:
+        _log(f"  heartbeat ERRO (nao critico): {e}")
 
     _log("daily OK")
 

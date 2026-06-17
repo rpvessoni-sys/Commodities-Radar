@@ -41,20 +41,21 @@ def _ind(metrica):
     return v
 
 
-def _seta(atual, ant, lente_comprador=False):
+def _seta(atual, ant):
     if atual is None or ant is None:
         return ""
     d = atual - ant
     if abs(d) < 1e-9:
         return "→"
-    sobe = d > 0
-    # lente do comprador de farelo: queda = bom (verde ↓)
-    return ("↑" if sobe else "↓")
+    return "↑" if d > 0 else "↓"
 
 
 def build_resumo(target: date | None = None) -> str:
+    # Texto PURO (sem Markdown): titulos de insight/evento e nomes de metrica com
+    # '_' '*' '[' quebram o parse do Telegram (HTTP 400 engolido). Mesma licao do
+    # alerts_push (commit 8aad10d). Por isso nenhum '*'/'_' de formatacao aqui.
     target = target or date.today()
-    L = [f"📊 *Radar Soja* — {target.strftime('%d/%m/%Y')}", ""]
+    L = [f"📊 Radar Soja — {target.strftime('%d/%m/%Y')}", ""]
 
     soja, soja_a, _ = _ultimo_e_anterior("cme_cbot", "soja_cbot", "fechamento")
     far, far_a, _ = _ultimo_e_anterior("cme_cbot", "farelo_cbot", "fechamento")
@@ -80,31 +81,32 @@ def build_resumo(target: date | None = None) -> str:
 
     if far is not None:
         d = f" ({far - far_a:+.2f})" if far_a is not None else ""
-        L.append(f"*Farelo* {far:.2f} USD/sht {_seta(far, far_a)}{d}{_brl(far, 'farelo')}")
+        L.append(f"Farelo {far:.2f} USD/sht {_seta(far, far_a)}{d}{_brl(far, 'farelo')}")
     if soja is not None:
         d = f" ({(soja - soja_a) / 100:+.2f})" if soja_a is not None else ""
-        L.append(f"*Soja* {soja / 100:.2f} USD/bu {_seta(soja, soja_a)}{d}{_brl(soja, 'soja')}")
+        L.append(f"Soja {soja / 100:.2f} USD/bu {_seta(soja, soja_a)}{d}{_brl(soja, 'soja')}")
     if oleo is not None:
         d = f" ({oleo - oleo_a:+.2f})" if oleo_a is not None else ""
-        L.append(f"*Óleo* {oleo:.2f} cts/lb {_seta(oleo, oleo_a)}{d}{_brl(oleo, 'oleo')}")
+        L.append(f"Óleo {oleo:.2f} cts/lb {_seta(oleo, oleo_a)}{d}{_brl(oleo, 'oleo')}")
     if ptax is not None:
-        L.append(f"*USD/BRL* {ptax:.4f} {_seta(ptax, ptax_a)}")
+        L.append(f"USD/BRL {ptax:.4f} {_seta(ptax, ptax_a)}")
 
     L.append("")
     ratio = _ind("far_soj_ratio_pct")
     crush = _ind("crush_margin_usd_bu")
     oilsh = _ind("oil_share_pct")
     if ratio is not None:
+        # Spread far÷soj na lente de trader (mean-reversion nos dois lados), nao "compra"
         if ratio < 80:
-            zona = "🟢 zona de compra"
+            zona = "🟢 spread comprimido (farelo barato vs soja)"
         elif ratio < 87:
-            zona = "🟡 transição"
+            zona = "🟡 spread neutro"
         else:
-            zona = "🔴 caro"
-        L.append(f"*Ratio Far/Soj* {ratio:.1f}% — {zona}")
+            zona = "🔴 spread esticado (farelo caro vs soja)"
+        L.append(f"Ratio Far/Soj {ratio:.1f}% — {zona}")
     if crush is not None:
-        L.append(f"*Crush* {crush:.2f} USD/bu · *oil share* {oilsh:.1f}%"
-                 if oilsh is not None else f"*Crush* {crush:.2f} USD/bu")
+        L.append(f"Crush {crush:.2f} USD/bu · oil share {oilsh:.1f}%"
+                 if oilsh is not None else f"Crush {crush:.2f} USD/bu")
 
     # Alertas do dia
     try:
@@ -128,7 +130,7 @@ def build_resumo(target: date | None = None) -> str:
                 and 0 <= (date.fromisoformat(e["proximo_data"]) - hoje).days <= 7]
         if prox:
             L.append("")
-            L.append("📅 *Marcos 7d:*")
+            L.append("📅 Marcos 7d:")
             for e in sorted(prox, key=lambda x: x["proximo_data"])[:3]:
                 L.append(f"  • {e['proximo_data']}: {e['titulo'][:55]}")
     except Exception:
@@ -140,12 +142,12 @@ def build_resumo(target: date | None = None) -> str:
         n_fila = queue_emit.count_pendentes(target)
         if n_fila:
             L.append("")
-            L.append(f"🔔 *{n_fila} leitura(s) pendente(s)* — abra o Claude: \"lê a fila e trata\"")
+            L.append(f"🔔 {n_fila} leitura(s) pendente(s) — abra o Claude: \"lê a fila e trata\"")
     except Exception:
         pass
 
     L.append("")
-    L.append("_Abra o link do relatório pro detalhe; cole este resumo no Claude pra interpretar._")
+    L.append("Abra o link do relatório pro detalhe; cole este resumo no Claude pra interpretar.")
     return "\n".join(L)
 
 
@@ -169,13 +171,18 @@ def enviar(target: date | None = None) -> dict:
 
     try:
         import requests
+        # Texto puro (sem parse_mode): Markdown quebrava com '_' '*' '[' dinamicos.
         r = requests.post(
             f"https://api.telegram.org/bot{token}/sendMessage",
-            json={"chat_id": chat, "text": texto, "parse_mode": "Markdown"},
+            json={"chat_id": chat, "text": texto},
             timeout=30,
         )
         ok = r.status_code == 200
-        print(f"[resumo] Telegram enviado: {ok} (HTTP {r.status_code})")
+        if ok:
+            print("[resumo] Telegram enviado: True (HTTP 200)")
+        else:
+            # Logar o corpo torna o proximo silencio VISIVEL no log do Actions.
+            print(f"[resumo] Telegram FALHOU HTTP {r.status_code}: {r.text[:300]}")
         return {"enviado": ok, "http": r.status_code}
     except Exception as e:
         print(f"[resumo] falha no envio Telegram: {e}")

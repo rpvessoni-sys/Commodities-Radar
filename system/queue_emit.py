@@ -12,7 +12,7 @@ tratei" mora no proprio insight (cita o id da fila no corpo).
 
 Regras (conservadoras de proposito — comecar so com sinal alto, igual fizemos
 com o alerts_config; afrouxar com calibracao):
-  1. ratio Far/Soj cruzou banda de zona (<80 compra / 80-87 transicao / >=87 caro)
+  1. ratio Far/Soj cruzou banda de zona do spread (<80 comprimido / 80-87 neutro / >=87 esticado)
   2. nivel de tese rompido (alerts_config via alerts_technical.check_alerts)
   3. evento tributario com proximo marco em <=7 dias
   4. release de fundamento com data inedita (WASDE/NOPA/ABIOVE/COT) <=3 dias
@@ -32,10 +32,10 @@ _ORDEM_SEV = {"alta": 0, "media": 1, "baixa": 2}
 
 def _zona_ratio(v: float) -> str:
     if v < 80:
-        return "compra"
+        return "comprimido"
     if v < 87:
-        return "transicao"
-    return "caro"
+        return "neutro"
+    return "esticado"
 
 
 def build_queue(target: date | None = None) -> list[dict]:
@@ -57,14 +57,17 @@ def build_queue(target: date | None = None) -> list[dict]:
         atual, ant = rows[0]["valor"], rows[1]["valor"]
         za, zp = _zona_ratio(atual), _zona_ratio(ant)
         if za != zp:
-            sev = "alta" if za == "compra" else "media"
+            # Trader opera mean-reversion nos DOIS lados: ambos os extremos do spread
+            # (comprimido <80 = long farelo/short soja; esticado >=87 = o inverso) sao
+            # acionaveis -> 'alta' (dispara o push). So a zona neutra fica 'media'.
+            sev = "alta" if za in ("comprimido", "esticado") else "media"
             itens.append({
                 "id": f"ratio-zona-{rows[0]['data_referencia']}",
                 "tipo": "ratio_zona", "severidade": sev,
                 "titulo": f"Ratio Far/Soj entrou na zona '{za}' ({atual:.1f}%, era '{zp}' {ant:.1f}%)",
                 "evidencia": f"far_soj_ratio_pct {ant:.1f}% -> {atual:.1f}% em {rows[0]['data_referencia']} (indicators/DB)",
                 "refs": "farelo",
-                "pergunta": "Muda a leitura da janela de compra/tranches do farelo?",
+                "pergunta": "Muda a leitura do spread Far/Soj (mean-reversion, os dois lados)?",
             })
 
     # --- Regra 2: nivel de tese rompido (alerts_config) ---
