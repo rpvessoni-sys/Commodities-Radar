@@ -74,11 +74,14 @@ def build_queue(target: date | None = None) -> list[dict]:
     try:
         for a in alerts_technical.check_alerts(target):
             nivel = a.get("nivel", a.get("valor_anterior", ""))
+            va = a.get("valor_atual")
+            va_s = f"{va:.2f}" if isinstance(va, (int, float)) else str(va)
+            niv_s = f"{nivel:.2f}" if isinstance(nivel, (int, float)) else str(nivel)
             itens.append({
                 "id": f"alerta-{a.get('tipo')}-{a.get('commodity')}-{a.get('data','')}",
                 "tipo": "nivel_tese", "severidade": "alta",
                 "titulo": a.get("msg", "nivel rompido"),
-                "evidencia": f"{a.get('commodity')} = {a.get('valor_atual')} vs nivel {nivel} ({a.get('data')})",
+                "evidencia": f"{a.get('commodity')} = {va_s} vs nivel {niv_s} ({a.get('data')})",
                 "refs": a.get("commodity", ""),
                 "pergunta": "Confirma ou muda a tese? O que voce faria diferente sabendo disso?",
             })

@@ -91,6 +91,7 @@ def _coletar_dados(target: date) -> dict:
     base["resumo_executivo"] = _gerar_resumo_executivo(base)
     base["insights"] = _gerar_insights(base)
     base["drivers"] = _gerar_drivers(base)
+    base["conviccao"] = _gerar_conviccao(base)
     return base
 
 
@@ -1492,6 +1493,8 @@ def _renderizar(d: dict) -> str:
 
     # === Snapshot KPIs (farelo + ratio primeiro, no grid + sparklines) ===
     kpis_html = _render_kpis(s, d["far_soj"], sparks)
+    # === Mesa do dia (camada decisória: confiança + semáforo + invalidação) ===
+    mesa_html = _render_mesa_do_dia(d)
     # === Forecasts table ===
     fcasts_html = _render_forecasts(d["forecasts"], s)
     # === Calibracao observada dos forecasts (honestidade do modelo) ===
@@ -1558,6 +1561,7 @@ def _renderizar(d: dict) -> str:
   <!-- =============== ABA 1: DASHBOARD =============== -->
   <section class="tab-pane active" id="tab-dashboard">
     {_render_fila_banner(d.get("fila_pendentes", 0))}
+    {mesa_html}
     <h2>Snapshot atual <span class="tag">último fechamento CBOT</span></h2>
     <div class="kpis">{kpis_html}</div>
 
@@ -3218,6 +3222,144 @@ def _niveis_alerta() -> dict:
         return {n["commodity"]: n for n in cfg.get("niveis", [])}
     except Exception:
         return {}
+
+
+# ============================================================
+# Camada decisória (Onda 1): convicção + confiança + Mesa do dia
+# ============================================================
+
+_CONV_PRODUTOS = [("soja", "Soja", "soja_cbot"),
+                  ("farelo", "Farelo", "farelo_cbot"),
+                  ("oleo_soja", "Óleo", "oleo_cbot")]
+
+
+def _conv_label(s: int) -> str:
+    return {3: "alta forte", 2: "alta", 1: "leve alta", 0: "neutro/misto",
+            -1: "leve baixa", -2: "baixa", -3: "baixa forte"}.get(s, "neutro")
+
+
+def _gerar_conviccao(d: dict) -> dict:
+    """Score de convicção por commodity = (drivers de alta − drivers de baixa),
+    limitado a [-3,+3]. Determinístico, reusa _gerar_drivers (que já cruza dado +
+    tributário + insights). NEUTRO: é a inclinação de preço (long/short) e quão
+    forte — NÃO ordem de compra/venda. A decisão fica com o trader."""
+    drivers = d.get("drivers") or {}
+    out = {}
+    for slug, nome, snap_key in _CONV_PRODUTOS:
+        dd = drivers.get(slug) or {}
+        bull = dd.get("bull") or []
+        bear = dd.get("bear") or []
+        score = max(-3, min(3, len(bull) - len(bear)))
+        out[slug] = {"nome": nome, "snap_key": snap_key, "score": score,
+                     "label": _conv_label(score), "bull": bull, "bear": bear}
+    return out
+
+
+def _confianca_leitura(d: dict) -> tuple[str, list[str]]:
+    """Confiança GLOBAL da leitura = saúde das fontes críticas + calibração
+    direcional do forecast. Honestidade estatística > falsa precisão.
+    Retorna (nivel, motivos). nivel: alta | media | baixa | suspensa."""
+    estados = {f["fonte"]: f["estado"] for f in (d.get("saude_fontes") or [])}
+    motivos = []
+    nivel = "alta"
+    core_off = [f for f in ("cme_cbot", "bcb") if estados.get(f) in ("erro", "atrasada")]
+    fund_off = [f for f in ("usda_wasde", "abiove") if estados.get(f) == "erro"]
+    if core_off:
+        nivel = "suspensa"
+        motivos.append("preço/câmbio fora (" + ", ".join(core_off) + ")")
+    elif fund_off:
+        nivel = "baixa"
+        motivos.append("fundamento S&D indisponível (" + ", ".join(fund_off) + ")")
+    calib = [c for c in (d.get("forecast_calib") or []) if c.get("n")]
+    if calib:
+        dir_pct = min(c["dir_pct"] for c in calib)
+        if dir_pct < 55:
+            motivos.append(f"forecast com acerto direcional baixo ({dir_pct:.0f}%) — use range, não direção")
+            if nivel == "alta":
+                nivel = "media"
+    if not motivos:
+        motivos.append("fontes de preço OK e calibração razoável")
+    return nivel, motivos
+
+
+_CONF_STYLE = {"alta": ("🟢", "var(--bull)"), "media": ("🟡", "var(--warn)"),
+               "baixa": ("🟠", "var(--bear)"), "suspensa": ("🔴", "var(--bear)")}
+
+
+def _linha_invalidacao(d: dict, conv: dict) -> str:
+    """1 linha: o nível técnico que VIRA a leitura do produto de maior convicção."""
+    candidatos = {k: v for k, v in conv.items() if v["score"] != 0}
+    if not candidatos:
+        return ""
+    slug = max(candidatos, key=lambda k: abs(candidatos[k]["score"]))
+    c = candidatos[slug]
+    cfg = _niveis_alerta().get(c["snap_key"]) or {}
+    if c["score"] > 0:  # viés de alta → vira se perder o suporte
+        sup = cfg.get("suporte")
+        if sup:
+            return f"<strong>Vira</strong> se {c['nome']} perder o suporte {_fmt_num(sup, 2)}."
+    else:  # viés de baixa → vira se romper a resistência
+        res = cfg.get("resistencia")
+        if res:
+            return f"<strong>Vira</strong> se {c['nome']} romper a resistência {_fmt_num(res, 2)}."
+    return ""
+
+
+def _render_mesa_do_dia(d: dict) -> str:
+    """Bloco-síntese no topo do Dashboard: confiança dos dados + semáforo por
+    produto (viés/score + drivers a observar) + o que invalida. Leitura em 30s."""
+    conv = d.get("conviccao") or {}
+    if not conv:
+        return ""
+    nivel, motivos = _confianca_leitura(d)
+    icone, cor = _CONF_STYLE.get(nivel, ("⚪", "var(--muted)"))
+
+    linhas = []
+    for slug, nome, snap_key in _CONV_PRODUTOS:
+        c = conv.get(slug)
+        if not c:
+            continue
+        score = c["score"]
+        if score > 0:
+            chip_cor, sinal = "var(--bull)", f"+{score}"
+        elif score < 0:
+            chip_cor, sinal = "var(--bear)", f"{score}"
+        else:
+            chip_cor, sinal = "var(--muted)", "0"
+        obs = []
+        if c["bull"]:
+            obs.append("▲ " + c["bull"][0]["texto"])
+        if c["bear"]:
+            obs.append("▼ " + c["bear"][0]["texto"])
+        obs_html = "<br>".join(f'<span class="muted-small">{o}</span>' for o in obs) \
+            or '<span class="muted-small">sem driver ativo</span>'
+        linhas.append(
+            f'<tr><td style="font-weight:600">{nome}</td>'
+            f'<td style="text-align:center"><span style="display:inline-block;min-width:2.2em;'
+            f'padding:2px 8px;border-radius:6px;background:{chip_cor};color:#fff;font-weight:700">{sinal}</span></td>'
+            f'<td style="color:{chip_cor};font-weight:600">{c["label"]}</td>'
+            f'<td>{obs_html}</td></tr>'
+        )
+
+    inval = _linha_invalidacao(d, conv)
+    motivos_html = " · ".join(motivos)
+    return f"""
+    <div class="card" style="border-left:3px solid {cor};">
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+        <strong style="font-size:1.05em">🧭 Mesa do dia</strong>
+        <span style="color:{cor};font-weight:700">{icone} confiança {nivel}</span>
+        <span class="muted-small">{motivos_html}</span>
+      </div>
+      <table class="hist-table" style="margin:0">
+        <thead><tr><th style="text-align:left">produto</th><th>viés</th>
+        <th>leitura</th><th style="text-align:left">o que observar</th></tr></thead>
+        <tbody>{"".join(linhas)}</tbody>
+      </table>
+      <p class="muted-small" style="margin:8px 0 0">
+        Viés = drivers de alta − de baixa (escala −3…+3), <strong>leitura de preço</strong>
+        long/short, não ordem de compra. {inval}
+      </p>
+    </div>"""
 
 
 def _gerar_resumo_executivo(d: dict) -> str:

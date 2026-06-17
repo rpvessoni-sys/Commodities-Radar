@@ -67,7 +67,7 @@ def check_alerts(target_date: date | None = None) -> list[dict]:
                         "valor_atual": valor_atual,
                         "nivel": level_value,
                         "delta": valor_atual - level_value,
-                        "msg": f"{commodity} fechou em {valor_atual} — abaixo do suporte {level_value}",
+                        "msg": f"{commodity} fechou em {valor_atual:.2f} — abaixo do suporte {level_value:.2f}",
                     })
                 elif tipo_nivel == "resistencia" and valor_atual > level_value:
                     alertas.append({
@@ -77,7 +77,7 @@ def check_alerts(target_date: date | None = None) -> list[dict]:
                         "valor_atual": valor_atual,
                         "nivel": level_value,
                         "delta": valor_atual - level_value,
-                        "msg": f"{commodity} fechou em {valor_atual} — acima da resistencia {level_value}",
+                        "msg": f"{commodity} fechou em {valor_atual:.2f} — acima da resistencia {level_value:.2f}",
                     })
 
             # Variacao diaria
@@ -94,7 +94,7 @@ def check_alerts(target_date: date | None = None) -> list[dict]:
                             "valor_atual": valor_atual,
                             "valor_anterior": prev,
                             "delta_pct": round(pct, 2),
-                            "msg": f"{commodity} variou {pct:+.2f}% no dia (de {prev} para {valor_atual})",
+                            "msg": f"{commodity} variou {pct:+.2f}% no dia (de {prev:.2f} para {valor_atual:.2f})",
                         })
 
     return alertas
