@@ -14,7 +14,7 @@ indicador, DB ou calibração.
 
 ## Critério "merece leitura"
 - Trate só itens 🔴 alta e 🟡 média. Ignore ⚪ baixa e itens `[erro ...]`.
-- Teste de cada item: **"o que eu faria diferente como comprador de farelo sabendo disso?"**
+- Teste de cada item: **"o que muda na minha leitura/posição (long ou short, nos 3 produtos) sabendo disso?"**
   Se a resposta é "nada", não vira insight.
 - Máximo **1-3 insights por sessão**. Menos é mais — a aba não é feed.
 

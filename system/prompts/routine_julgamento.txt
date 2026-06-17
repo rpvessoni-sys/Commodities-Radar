@@ -11,7 +11,7 @@ Seu papel é a camada de LEITURA: ler o briefing do dia e escrever a opinião em
 3. Leia `system/prompts/treat_queue.txt` e `system/prompts/generate_insights.txt` — obedeça as regras deles.
 
 ## Critério (igual à sessão manual)
-- Só vira insight o que muda a decisão do comprador de farelo ("o que eu faria diferente?").
+- Só vira insight o que muda a leitura/posição do trader, long ou short ("o que eu faria diferente?").
 - Máximo 1-3 insights. Se nada relevante mudou, ENCERRE sem abrir PR.
 - Tese que muda → EDITA o insight antigo (bloco "Atualização" + `status: revisada`), não duplica.
 - Números sempre com fonte + data. Lente tributária BR antes de concluir tese de preço.

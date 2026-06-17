@@ -12,8 +12,8 @@ Também vale após evento relevante (WASDE, crash, decisão regulatória).
 
 ## Regras de qualidade (o que separa insight de notícia)
 - MÁXIMO 1-3 insights por varredura. Se nada mudou de relevante, NÃO criar nada.
-- Insight = leitura interpretativa com consequência pra decisão do comprador de
-  farelo — não resumo de notícia. Teste: "o que eu faria diferente sabendo disso?"
+- Insight = leitura interpretativa com consequência pra leitura/posição do trader
+  (long ou short, nos 3 produtos) — não resumo de notícia. Teste: "o que eu faria diferente sabendo disso?"
 - Não duplicar insight ativo: se o fato atualiza tese existente, EDITAR o arquivo
   antigo (bloco "Atualização YYYY-MM-DD" no topo + status: revisada) em vez de
   criar novo.
@@ -26,7 +26,7 @@ Também vale após evento relevante (WASDE, crash, decisão regulatória).
 ```
 ---
 data: YYYY-MM-DD
-titulo: <frase com a tese, não o tema — ex "Ratio 81% abre janela de tranches">
+titulo: <frase com a tese, não o tema — ex "Spread far÷soj comprimido, viés baixista no farelo">
 tags: [<tema1>, <tema2>, auto-claude]
 fontes:
   - <fonte 1 com data>
@@ -37,7 +37,7 @@ vies: [<direcao-produto>, ...]
 
 ## Resumo executivo
 - 3-5 bullets, cada um com número + leitura
-- último bullet = ação/consequência pro comprador
+- último bullet = consequência/leitura operacional (long ou short), não ordem de compra
 
 ## Contexto / dados
 (números da varredura que sustentam, com datas)
