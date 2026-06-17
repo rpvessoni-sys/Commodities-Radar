@@ -217,56 +217,58 @@ def _serie_cbot(commodity: str) -> dict | None:
 
 
 def build_pulso_cbot(target: date | None = None) -> str | None:
-    """Pulso CBOT estruturado (HTML, tabela monospace) pro Telegram.
-    Por commodity: último · fechamento anterior · abertura · variação do dia.
-    Rodapé: dólar · Far/Soj · oil share · crush. None se não houver preço."""
+    """Pulso CBOT pro Telegram em BLOCOS VERTICAIS (mobile-friendly — linhas curtas,
+    sem tabela larga que estoura no celular). Por commodity: bolinha de direção +
+    último + variação do dia, e abaixo ant/abertura/unidade. Rodapé: dólar, Far/Soj,
+    oil share, crush. None se não houver preço."""
     from datetime import timezone, timedelta
     target = target or date.today()
-    # (rótulo, commodity, divisor p/ unidade de tela, casas)
-    COMMS = [("Farelo", "farelo_cbot", 1.0, 2),
-             ("Soja", "soja_cbot", 100.0, 2),
-             ("Óleo", "oleo_cbot", 1.0, 2)]
-    linhas = [f"{'':<7}{'Últ':>9}{'Ant':>9}{'Abert':>9}{'Var dia':>17}"]
-    achou = False
-    for nome, comm, div, casas in COMMS:
+    # (rótulo, commodity, divisor p/ unidade de tela, casas, unidade)
+    COMMS = [("Farelo", "farelo_cbot", 1.0, 2, "US$/sht"),
+             ("Soja", "soja_cbot", 100.0, 2, "US$/bu"),
+             ("Óleo", "oleo_cbot", 1.0, 2, "¢/lb")]
+    blocos = []
+    for nome, comm, div, casas, unid in COMMS:
         s = _serie_cbot(comm)
         if not s or s["ult"] is None:
             continue
-        achou = True
         ult = s["ult"] / div
         ant = s["ant"] / div if s["ant"] is not None else None
         ab = s["abert"] / div if s["abert"] is not None else None
         if ant is not None and s["ant"]:
             va = ult - ant
             vp = (s["ult"] - s["ant"]) / s["ant"] * 100
-            sinal = "+" if va >= 0 else "-"
-            sinal_p = "+" if vp >= 0 else "-"
+            dot = "🟢" if va > 0 else ("🔴" if va < 0 else "⚪")
+            sinal, sinal_p = ("+" if va >= 0 else "-"), ("+" if vp >= 0 else "-")
             var_s = f"{sinal}{_fmt_brn(abs(va), casas)} ({sinal_p}{_fmt_brn(abs(vp), 1)}%)"
         else:
-            var_s = "—"
-        linhas.append(
-            f"{nome:<7}{_fmt_brn(ult, casas):>9}{_fmt_brn(ant, casas):>9}"
-            f"{_fmt_brn(ab, casas):>9}{var_s:>17}"
+            dot, var_s = "⚪", "—"
+        blocos.append(
+            f"{dot} <b>{nome}</b> {_fmt_brn(ult, casas)}  ·  {var_s}\n"
+            f"<i>ant {_fmt_brn(ant, casas)} · abert {_fmt_brn(ab, casas)} · {unid}</i>"
         )
-    if not achou:
+    if not blocos:
         return None
 
     ptax, _, _ = _ultimo_e_anterior("bcb", "usd_brl_ptax", "valor")
     ratio = _ind("far_soj_ratio_pct")
     oilsh = _ind("oil_share_pct")
     crush = _ind("crush_margin_usd_bu")
-    rodape = " · ".join(p for p in [
-        f"Dólar {_fmt_brn(ptax, 4)}" if ptax is not None else None,
-        f"Far/Soj {_fmt_brn(ratio, 1)}%" if ratio is not None else None,
-        f"Oil share {_fmt_brn(oilsh, 1)}%" if oilsh is not None else None,
-        f"Crush {_fmt_brn(crush, 2)}" if crush is not None else None,
+    l1 = " · ".join(p for p in [
+        f"<b>Dólar</b> {_fmt_brn(ptax, 4)}" if ptax is not None else None,
+        f"<b>Far/Soj</b> {_fmt_brn(ratio, 1)}%" if ratio is not None else None,
+    ] if p)
+    l2 = " · ".join(p for p in [
+        f"<b>Oil share</b> {_fmt_brn(oilsh, 1)}%" if oilsh is not None else None,
+        f"<b>Crush</b> {_fmt_brn(crush, 2)}" if crush is not None else None,
     ] if p)
 
     hhmm = (datetime.now(timezone.utc) - timedelta(hours=3)).strftime("%H:%M")
-    return (f"<b>📈 Pulso CBOT · {hhmm} BRT</b>\n"
-            f"<pre>{chr(10).join(linhas)}</pre>"
-            f"Farelo US$/sht · Soja US$/bu · Óleo ¢/lb\n"
-            f"{rodape}")
+    partes = [f"<b>📈 Pulso CBOT · {hhmm} BRT</b>", "", "\n\n".join(blocos)]
+    rod = "\n".join(p for p in [l1, l2] if p)
+    if rod:
+        partes += ["", rod]
+    return "\n".join(partes)
 
 
 def _em_pregao_cbot() -> bool:
