@@ -61,13 +61,32 @@ def build_resumo(target: date | None = None) -> str:
     oleo, oleo_a, _ = _ultimo_e_anterior("cme_cbot", "oleo_cbot", "fechamento")
     ptax, ptax_a, _ = _ultimo_e_anterior("bcb", "usd_brl_ptax", "valor")
 
+    # Paridade CBOT -> BRL (mesmos fatores de notify_html.PARIDADES; constantes fisicas):
+    #   soja cents/bu × 0,022046 = R$/sc60kg · farelo USD/sht × 1,10231 = R$/ton
+    #   oleo cents/lb × 22,0462 = R$/ton — tudo × USD/BRL
+    PARIDADE = {"soja": (0.022046, "/sc", 2),
+                "farelo": (1 / 0.907185, "/ton", 0),
+                "oleo": (22.0462, "/ton", 0)}
+
+    def _fmt_brl(v, casas):
+        s = f"{v:,.{casas}f}"  # en-US 1,234.50
+        return s.replace(",", "X").replace(".", ",").replace("X", ".")  # BR 1.234,50
+
+    def _brl(val, key):
+        if val is None or ptax is None:
+            return ""
+        fator, un, casas = PARIDADE[key]
+        return f"  ·  R$ {_fmt_brl(val * fator * ptax, casas)}{un}"
+
     if far is not None:
-        L.append(f"*Farelo* {far:.2f} USD/sht {_seta(far, far_a)} "
-                 f"({(far-far_a):+.2f})" if far_a else f"*Farelo* {far:.2f} USD/sht")
+        d = f" ({far - far_a:+.2f})" if far_a is not None else ""
+        L.append(f"*Farelo* {far:.2f} USD/sht {_seta(far, far_a)}{d}{_brl(far, 'farelo')}")
     if soja is not None:
-        L.append(f"*Soja* {soja/100:.2f} USD/bu {_seta(soja, soja_a)}")
+        d = f" ({(soja - soja_a) / 100:+.2f})" if soja_a is not None else ""
+        L.append(f"*Soja* {soja / 100:.2f} USD/bu {_seta(soja, soja_a)}{d}{_brl(soja, 'soja')}")
     if oleo is not None:
-        L.append(f"*Óleo* {oleo:.2f} cts/lb {_seta(oleo, oleo_a)}")
+        d = f" ({oleo - oleo_a:+.2f})" if oleo_a is not None else ""
+        L.append(f"*Óleo* {oleo:.2f} cts/lb {_seta(oleo, oleo_a)}{d}{_brl(oleo, 'oleo')}")
     if ptax is not None:
         L.append(f"*USD/BRL* {ptax:.4f} {_seta(ptax, ptax_a)}")
 
