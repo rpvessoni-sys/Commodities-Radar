@@ -33,10 +33,18 @@ jobs:
 
       # Gate: so roda o Claude se houver fila. queue_emit imprime "Nada pede leitura
       # hoje" quando a fila esta vazia — nesse caso, pulamos (zero token).
-      - name: Checar fila no briefing
+      # Idempotencia: se a branch claude/insights-<DATA> ja existe no remoto, a leitura
+      # de hoje JA foi feita — nao rodamos de novo (era isso que empilhava commits
+      # "leitura DATA" duplicados quando o cron e um "Run workflow" manual coincidiam).
+      - name: Checar fila e idempotencia
         id: fila
         run: |
-          if [ ! -f briefing/latest.md ]; then
+          DATE=$(date -u +%F)
+          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --heads origin "claude/insights-$DATE" >/dev/null 2>&1; then
+            echo "tem_fila=false" >> "$GITHUB_OUTPUT"
+            echo "Branch claude/insights-$DATE ja existe — leitura de hoje feita, pulando."
+          elif [ ! -f briefing/latest.md ]; then
             echo "tem_fila=false" >> "$GITHUB_OUTPUT"
             echo "Sem briefing/latest.md — pulando."
           elif grep -q "Nada pede leitura hoje" briefing/latest.md; then
@@ -62,10 +70,18 @@ jobs:
             oleo) explicando O QUE SUSTENTA cada tese (cada driver com numero + fonte + data
             e o mecanismo de mercado), o que a invalida, e a leitura operacional (long/short);
             mais a leitura de spreads/crush, a lente fiscal BR, riscos/eventos e uma secao de
-            honestidade. Incorpore os gatilhos da fila citando o `id`. Grave em
-            `insights/AAAA-MM-DD_leitura-complexo.md` (frontmatter com `vies: [...]`), commit
-            numa branch `claude/insights-AAAA-MM-DD` e abra um PR contra `main`. Toque SOMENTE
-            em `insights/`.
+            honestidade. Incorpore os gatilhos da fila citando o `id`. A DATA DE HOJE e
+            ${{ steps.fila.outputs.date }} — use-a em tudo. Grave os insights em
+            `insights/${{ steps.fila.outputs.date }}_<slug>.md` (frontmatter com `vies: [...]`).
+
+            ENCANAMENTO (siga EXATO, isto evita conflito e commit empilhado):
+            - Antes de escrever, rode `git fetch origin` e crie a branch SEMPRE a partir do
+              main fresco: `git checkout -B claude/insights-${{ steps.fila.outputs.date }} origin/main`.
+            - Toque SOMENTE em arquivos dentro de `insights/`. NUNCA edite .py, DB, config,
+              indicators, briefing, nem este `.github/workflows/` — um PR claude/ que mexa
+              fora de `insights/` e REPROVADO pelo guard.
+            - Commit, push da branch `claude/insights-${{ steps.fila.outputs.date }}` e abra UM
+              PR contra `main` com titulo "leitura ${{ steps.fila.outputs.date }}".
 
             PROFUNDIDADE e o objetivo — o dono reclamou de leitura rasa/seca. Use BASTANTE
             texto, explique o porque e o como, nao bullets soltos. Numeros sempre com fonte+data.

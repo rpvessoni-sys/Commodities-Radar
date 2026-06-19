@@ -22,7 +22,10 @@ jobs:
         run: |
           base="${{ github.event.pull_request.base.sha }}"
           head="${{ github.event.pull_request.head.sha }}"
-          arquivos=$(git diff --name-only "$base" "$head")
+          # merge-base (nao base..head direto): so olha o que a branch INTRODUZIU desde o
+          # fork. Assim o check nao "zera" quando o main avanca mexendo nos mesmos arquivos.
+          mb=$(git merge-base "$base" "$head")
+          arquivos=$(git diff --name-only "$mb" "$head")
           echo "Arquivos alterados no PR:"; echo "$arquivos"
           fora=$(echo "$arquivos" | grep -vE '^insights/' || true)
           if [ -n "$fora" ]; then
