@@ -1,93 +1,112 @@
-# SUPER HANDOFF — Commodities Radar (atualizado 2026-06-17)
+# SUPER HANDOFF — Commodities Radar (atualizado 2026-06-19)
 
 > Substitui versões anteriores. Histórico antigo fica no git.
 > **Produto:** https://rpvessoni-sys.github.io/Commodities-Radar/#dashboard (atualiza sozinho na nuvem)
 > **Repo:** github.com/rpvessoni-sys/Commodities-Radar (PÚBLICO)
-> **Perfil do dono:** TRADER de soja, farelo e óleo degomado — compra E vende (long e short). NÃO é comprador de farelo. Toda leitura é neutra (viés/spread/mean-reversion nos dois lados).
+> **Perfil do dono:** TRADER de soja, farelo e óleo degomado — opera os DOIS lados (long e short). Leitura SEMPRE neutra de preço (viés/spread/mean-reversion). NUNCA "comprador de farelo".
 
 ---
 
 ## ▶️ PRÓXIMA CONVERSA — COMECE AQUI
 
-O dono vai **revisar item a item o que aparece no site** (validar visual/densidade/ordem da camada nova). Acompanhe-o nessa revisão. Depois, o roadmap aberto está no FOCO 3 abaixo.
+A sessão de 17–19/jun foi enorme e fechou 5 frentes grandes. **O que ficou pendente pra retomar:**
+1. **Revisão item a item do site** — o dono queria passar tela por tela validando o visual da camada nova (Mesa do dia, índices, etc.). Não chegamos a fazer.
+2. **FOCO 3 — Roadmap** (detalhado embaixo): display de venda no físico · Onda 3 (fontes novas) · durabilidade do bot de input.
+3. **Confirmar** que ABIOVE/WASDE coletam na nuvem (o fix do openpyxl/xlrd) — o briefing já mostra os dados, mas vale checar um run daily.
 
-**Sessão de 17/06 foi enorme** — entregue e no ar (commits `1c3a33e` → `2c95794` + prompts):
-- **Lente comprador → TRADER** (dashboard inteiro): KPIs por direção de preço; Ratio Far/Soj virou **sinal de spread** (comprimido/neutro/esticado, mean-reversion); tributário/alertas/resumo/físico/matriz/drivers/insight neutralizados; prompts da camada de leitura reescritos.
-- **BUG do preço congelado CONSERTADO** (era a maior dor): `save_to_db` usava `INSERT OR IGNORE` + chave única do dia → o 1º preço da madrugada travava o dia inteiro. Virou **upsert (last-write-wins)** → agora o preço acompanha o mercado a cada coleta. Validado vs barchart ao vivo.
-- **Onda 0** (consertos): `openpyxl`+`xlrd` no requirements (ABIOVE/WASDE coletavam NADA na nuvem); Telegram texto puro + log de falha; `queue_emit` dispara alerta nos DOIS extremos do spread; **healthcheck** (avisa no Telegram se o daily não roda >26h); 2 casas decimais nos alertas; cron `*/30`→`*/15`.
-- **Onda 1** (camada decisória, no topo do Dashboard): **🧭 Mesa do dia** (confiança alta/média/baixa/suspensa + semáforo por produto com score de convicção −3…+3 + linha de invalidação); **O que mudou desde ontem** (D-1 dos indicadores); **Sinais contraditórios** (detector de tensões de mesa); **fail-closed** do forecast ("só range" se acerto direcional <55%).
-- **Onda 2** (aba Análise): **Índice de Sobra de Farelo** + **Índice de Suporte do Óleo** (0-100 por contagem de condições auditáveis, sem pesos mágicos). Reusam o ABIOVE que estava órfão. Hoje: Sobra 100 (5/5), Suporte 80 (4/5).
-- **Input físico aceita `venda`** no `inputs_manuais.toml` (antes travado em compra).
+**A rotina diária do dono agora inclui:** aprovar o PR de leitura que o Claude autônomo abre (~30 seg no celular). Ver "Fase 2" abaixo.
 
 ---
 
-## ⚠️ VERIFICAÇÃO PENDENTE (o dono precisa fazer / confirmar)
+## ✅ O QUE A SESSÃO ENTREGOU (tudo na nuvem, validado)
 
-1. **ABIOVE/WASDE coletam na nuvem agora?** O fix do `openpyxl`/`xlrd` subiu — confirmar num run `daily` real (Actions → log do step "Rodar pipeline (daily)" → `abiove`/`usda_wasde` com `saved>0`). Era a descoberta nº1: estavam mortos por falta de dependência.
-2. **Telegram / disparo:** o resumo só sai se o `daily` rodar, e o disparo real depende do **pinger cron-job.org** (cron nativo do GitHub é best-effort). Conferir no painel cron-job.org se os 2 jobs (`radar-intraday`, `radar-daily`) estão habilitados e o **PAT** (expira **31/dez/2026**) está válido. O healthcheck agora avisa se o daily morrer.
-3. **`gh` CLI:** o dono instalou GitHub Desktop, não o CLI. Se instalar o `gh` CLI e reabrir o terminal, o Claude consegue disparar runs e ler logs direto.
+**1. Lente comprador → TRADER** (dashboard + Telegram + prompts da Fase 2): KPIs por direção de preço; Ratio Far/Soj virou **sinal de spread** (comprimido/neutro/esticado, mean-reversion nos dois lados); tributário/alertas/resumo/físico/matriz/drivers/insight neutralizados.
+
+**2. BUG do preço congelado CONSERTADO:** `save_to_db` usava `INSERT OR IGNORE` → o 1º preço da madrugada travava o dia todo. Virou **upsert** (`ON CONFLICT DO UPDATE`) → o preço acompanha o mercado a cada coleta.
+
+**3. Onda 0:** `openpyxl`+`xlrd` no requirements (ABIOVE/WASDE coletavam NADA na nuvem); Telegram texto puro + log de falha; **healthcheck** (avisa no Telegram se o daily não roda >26h); 2 casas decimais nos alertas; cron `*/30`→`*/15`; `queue_emit` dispara alerta nos DOIS extremos do spread.
+
+**4. Onda 1 — camada decisória** (topo do Dashboard): **🧭 Mesa do dia** (confiança alta/média/baixa/suspensa + semáforo por produto com score de convicção −3…+3 + linha de invalidação); **O que mudou desde ontem** (D-1); **Sinais contraditórios**; **fail-closed** do forecast ("só range" se acerto direcional <55%).
+
+**5. Onda 2 — índices sintéticos** (aba Análise): **Índice de Sobra de Farelo** + **Índice de Suporte do Óleo** (0-100 por contagem de condições auditáveis). Reusam o ABIOVE que estava órfão.
+
+**6. Físico aceita VENDA** no `inputs_manuais.toml` (`tipo = "venda"`; antes travado em compra).
+
+**7. Telegram:**
+- **Resumo diário** robusto — desacoplado do run `daily` pesado (qualquer run após 22 UTC manda 1×/dia, deduplicado), pra não depender do pinger.
+- **📈 Pulso CBOT** — a cada **30 min no pregão** (~10h30–16h20 BRT, dia útil): blocos verticais (mobile) por commodity com último/anterior/abertura/variação + dólar/Far-Soj/oil share/crush. `daily_summary.build_pulso_cbot`.
+- **🤖 Bot de input físico** (`telegram_input.py`) — o run intraday lê suas mensagens via `getUpdates` e grava em `precos_fisicos`. Gramática: `[compra|venda] <soja|farelo|oleo> <porto|rancharia> <valor>`. Comandos `fisico` (mostra o atual) e `ajuda`. Persiste no DB (durável via cache + backup diário; **commit-back no .toml = hardening futuro**, FOCO 3).
+
+**8. FASE 2 — Claude autônomo (LIGADA E FUNCIONANDO):** ver seção dedicada abaixo.
+
+---
+
+## 🤖 FASE 2 — LEITURA AUTÔNOMA DO CLAUDE (está rodando)
+
+**O que é:** todo dia, na nuvem do GitHub (sem o PC do dono, nos tokens da assinatura **Max**), o Claude lê o briefing e produz uma **LEITURA COMPLETA do complexo** (análise por commodity com "o que sustenta a tese" destrinchado, riscos, leitura operacional long/short, spreads/crush, lente fiscal, honestidade), abrindo um **PR** que o dono aprova do celular.
+
+**Como funciona (encanamento):**
+- O robô (`radar.yml`, modo daily) escreve `briefing/latest.md` = **dump do dia + fila de julgamento** e **commita** (precisa de `permissions: contents: write` no job — já está). É o que a Routine lê (ela roda em clone sem o DB).
+- O workflow **`.github/workflows/leitura.yml`** roda às **23 UTC** (+ botão manual): gate de custo (só chama o Claude se a fila tiver item) → `anthropics/claude-code-action@v1` → o Claude segue **`system/prompts/routine_julgamento.txt`** (o prompt da leitura completa, reescrito 19/jun pra PROFUNDIDADE) → escreve `insights/AAAA-MM-DD_leitura-complexo.md` → abre PR na branch `claude/insights-DATA`.
+- **`guard-leitura.yml`** reprova qualquer PR `claude/` que toque fora de `insights/` (calibração nunca é tocada).
+
+**Auth = assinatura Max** (NÃO API, sem cobrança extra): secret **`CLAUDE_CODE_OAUTH_TOKEN`** no repo, gerado com `claude setup-token`. **⚠️ O token vale 1 ANO (renovar ~jun/2027).** Se o workflow falhar com erro de auth, é só regenerar e atualizar o secret.
+
+**Detalhe do `setup-token` (o dono usa o app empacotado/MSIX, o `claude` não fica no PATH):** rodar com o caminho real
+`& "C:\Users\Usuario\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude-code\<versao>\claude.exe" setup-token`
+(o `<versao>` muda a cada update do Claude Code; achar pelo `Get-Process claude | Select Path` ou pela pasta). O comando abre o navegador → login Max → imprime o token (`sk-ant-oat...`) → vai no secret.
+
+**Permissões do workflow que foram necessárias (lições):** `contents: write` + `pull-requests: write` + **`id-token: write`** (OIDC da auth OAuth) no job; e `claude_args: --allowedTools Bash,Edit,Write,Read,Glob,Grep` (sem isso o agente toma `permission_denials` e não escreve nem abre PR).
+
+**Custo:** ~$1 equivalente/run (placar do SDK, NÃO é fatura — sai da cota Max). 1 run/dia + gate (pula dias sem fila).
+
+**Rotina do dono:** abrir o PR no celular → ler → merge → o site regenera com Drivers/score novos. (Auto-merge só se um dia confiar.)
+
+**Pendência boba:** o PR #2 (versão rasa, antes do prompt comprehensive) pode ainda estar aberto — fechar sem merge + deletar a branch. O próximo run (com o prompt novo) sai completo.
 
 ---
 
 ## 🎯 FOCO 3 — Roadmap aberto (em ordem de valor)
 
 ### A) Físico: DISPLAY de venda (curto)
-O input já aceita `venda`, mas o card físico (`_get_fisico_br`/`_render_fisico_produto` via `latest_per_praca(tipo_posicao="compra")`) só mostra COMPRA. Estender pra mostrar os dois lados (compra e venda) por praça/produto.
+O input já aceita venda, mas o card físico (`_render_fisico_produto` via `latest_per_praca(tipo_posicao="compra")`) só mostra COMPRA. Estender pra mostrar os dois lados. (O bot `fisico` já mostra os dois no Telegram.)
 
-### B) Onda 3 — Fontes novas de alto valor (precisam de coletor novo)
-Backlog verificado em `FONTES_CANDIDATAS_2026-06-16.md`. Prioridade:
-- **ANP biodiesel BR** (gap nº1 do óleo degomado — CSV público; share óleo soja vs sebo; destrava §9.6 e o painel biodiesel BR).
-- **USDA FAS Export Sales** (sinal China; API JSON, chave grátis → secret).
-- **ComexStat/MDIC por NCM** (export farelo/óleo por porto; POST JSON via ScraperAPI).
-- **Argentina FOB** (datos.gob.ar, CSV diário → spread BR×AR direto).
-- **SIFRECA** frete (decompõe o basis no PR).
-- **NASS_API_KEY** (Crop Progress já existe, só falta a secret).
-- **Parser ANEC** (hoje é stub, só guarda links — falta baixar XLSX e extrair embarques → Pressão Exportadora).
-- **Milho ZC=F** (1 ticker no `cme_cbot.py`) se quiser meal/corn ratio (§8.3/§9.5).
+### B) Durabilidade do bot de input (curto)
+Hoje o físico do bot grava só no DB (durável na prática, mas some num wipe de cache). Hardening = commit-back do físico no `inputs_manuais.toml` (mesma capacidade do briefing-publish). Decidir se vale.
 
-### C) Fase 2 — Claude lendo SEMPRE, agendado, sem consumir conversa (só tokens)
-Tudo desenhado, falta ativar. Mecanismo = **Claude Code Routine** (agente agendado headless), roda 1×/dia num clone fresco, lê um briefing, escreve `insights/*.md` com viés, abre PR (o dono aprova do celular). Artefatos JÁ existem: `system/prompts/routine_julgamento.txt` (já reescrito p/ trader) + `.github/workflows/guard-leitura.yml` (CI que barra PR fora de `insights/`). Passos de ativação:
-1. **Bloqueio técnico nº1:** o robô precisa **publicar o briefing no git** — adicionar ao `radar.yml` (modo daily) um passo que escreve `data/last_dump.md` (+ a fila `queue_emit.render_markdown`) em `briefing/latest.md` e commita (precisa `permissions: contents: write`). Sem isso a Routine acorda sem entrada. Snippet base em `FLUXO_JULGAMENTO.md` §Fase 2.
-2. Instalar o **Claude GitHub App** no repo + criar a **Routine** (prompt = `routine_julgamento.txt`, schedule ~20-21h BRT, 1h após o daily).
-3. Gate de custo: só chamar se a fila tiver item (hoje 0 é comum). PR revisável (não auto-merge até confiar).
+### C) Onda 3 — Fontes novas (backlog em `FONTES_CANDIDATAS_2026-06-16.md`)
+ANP biodiesel BR (gap nº1 do óleo) · USDA FAS Export Sales (sinal China; chave grátis) · ComexStat/MDIC por NCM · Argentina FOB (datos.gob.ar) · SIFRECA frete · **NASS_API_KEY** (Crop Progress já existe, falta a secret) · parser ANEC (hoje é stub) · milho ZC=F (meal/corn).
 
-### D) StoneX — padrão SEGURO (sem código novo)
-Extração PROIBIDA (PDFs têm marca d'água com o e-mail corporativo → rastro de vazamento). Padrão certo: **o dono lê e escreve um resumo curto COM AS PRÓPRIAS PALAVRAS** (tese destilada: direção, fatores, níveis) numa nota em `shared/from_consultor/` — sem citar StoneX, sem verbatim, sem o PDF. O `synth_daily` já varre essa pasta e injeta como "leitura de consultoria"; o Claude lê o **resumo do dono** (tokens sobre o texto dele, nunca o documento). Níveis de curva entram no slot manual `[[curva]]` do `inputs_manuais.toml`. **Nunca** baixar/parsear/colar o relatório.
-
-### E) Itens que decidimos NÃO fazer (governança de time, overkill p/ trader solo)
-Cadastro YAML formal de fonte, aba metodologia versionada, score de convicção de 11 componentes com pesos, plano de tranches/cobertura (lente de comprador), carimbo de origem em cada número, regime detection do forecast, parser pesado de Argentina/weather score completo.
+### D) Revisão visual do site (o dono pediu)
+Passar item a item nas telas validando densidade/cor/ordem da camada nova.
 
 ---
 
-## 🗺️ ESTADO DO SISTEMA (arquitetura)
+## 🗺️ ARQUITETURA (resumo)
 
-- **Coleta:** GitHub Actions (`.github/workflows/radar.yml`), 2 modos via `system/cloud_run.py`:
-  - `intraday` (a cada **15 min**, 24/7): só CBOT (Yahoo) + câmbio (BCB) → indicadores → HTML → alerta-na-hora → **healthcheck**. Auto-fallback ScraperAPI se o Yahoo bloquear.
-  - `daily` (~19h BRT): varredura completa (físico CEPEA/NAG + WASDE/NOPA/COT/ABIOVE/MPOB/clima) + forecast + dump + resumo Telegram + **heartbeat**.
-- **Disparo:** pinger **cron-job.org** (o cron nativo do GitHub é não-confiável). PAT expira 31/dez/2026.
-- **Publicação:** HTML → GitHub Pages. Estado (radar.db) vive no **cache do Actions** + backup diário (NÃO no git).
-- **Camada manual:** `inputs_manuais.toml` (raiz, versionado) — preço físico (compra E venda), curva do consultor (`[[curva]]`), params (RIN). Edita + push → nuvem aplica via `inputs_manuais.sync()`.
-- **Camada de julgamento (FATO vs LEITURA):** robô = FATO; Claude = LEITURA (`insights/*.md` com `vies:`). Fase 1 ativa (sessão paga, frase-gatilho "lê a fila de julgamento e trata"). Fase 2 pronta, não ativada (FOCO 3.C).
+- **Coleta:** GitHub Actions (`radar.yml`), 2 modos via `cloud_run.py`: `intraday` (**a cada 15 min**, 24/7: CBOT+câmbio → indicadores → HTML → pulso CBOT [30min/pregão] → alerta-na-hora → input físico via Telegram → healthcheck) e `daily` (~19h BRT: varredura completa + forecast + dump + **briefing** + resumo).
+- **Disparo:** pinger **cron-job.org** (cron nativo do GitHub é best-effort). **PAT expira 31/dez/2026.**
+- **Publicação:** HTML → GitHub Pages. DB → cache do Actions + backup diário (NÃO no git). `briefing/latest.md` SIM vai no git (commit-back do daily).
+- **Camada manual:** `inputs_manuais.toml` (físico compra/venda, curva, params) → `sync()` aplica.
+- **Camada de julgamento:** robô = FATO; Claude = LEITURA (`insights/*.md` com `vies:`). **Fase 1** (sessão paga, "lê a fila de julgamento e trata") + **Fase 2** (autônoma, LIGADA).
 
 ### Testes & comandos
 - `cd system; $env:PYTHONIOENCODING="utf-8"` sempre.
 - `.venv\Scripts\python.exe -m unittest discover -s tests` → **60 testes**.
-- `main.py synth` (gera HTML do DB, sem coletar) · `main.py indicators` (recalcula + índices) · `main.py run` (pipeline completo local) · `main.py queue` (fila) · `cloud_run.py --mode intraday|daily`.
+- `main.py synth` (HTML do DB) · `main.py indicators` (recalcula + índices) · `main.py dump` (gera o dump) · `main.py queue` (fila) · `cloud_run.py --mode intraday|daily`.
 
 ---
 
 ## ⚠️ CAVEATS / GOTCHAS
-1. **Preço "repetindo" agora é raro** — o upsert conserta o congelamento. Se repetir, é mercado fechado (sem trade novo) ou o run não rodou (ver healthcheck).
-2. **Cron do GitHub é preguiçoso** — confiar no pinger cron-job.org.
-3. **Dados não estão no git** (cache do Actions) — pré-requisito se algo exigir dado versionado (ex: backtest longo, ou o briefing da Fase 2).
-4. **PROIBIDO** recriar extração StoneX (marca d'água). Fontes 100% públicas. Scraping de CME/barchart também é ToS — só spot-check manual, nunca coletor.
-5. **PAT expira 31/dez/2026** (renovar antes; cron-job.org notifica falha por e-mail).
-6. **Repo é PÚBLICO** (dado de mercado + insights visíveis; segredos só no GitHub Secrets).
-7. **git commit no PowerShell:** mensagem longa quebra com here-string/aspas — usar vários `-m` de uma linha (como nesta sessão).
-8. **`print` em probe local:** stdout Windows é cp1252 — caracteres como `≥` quebram; usar `$env:PYTHONIOENCODING="utf-8"`. (Não afeta o HTML, que é UTF-8.)
-9. Memória do projeto: `project_commodities_radar.md` (perfil trader + histórico de decisões).
+1. **Token Max da Fase 2 vence em ~jun/2027** (`claude setup-token` de novo). **PAT do pinger vence 31/dez/2026.**
+2. **`claude` não está no PATH** (app empacotado) — usar o caminho `...AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude-code\<versao>\claude.exe`.
+3. **Cron do GitHub é preguiçoso** — confiar no pinger cron-job.org. Healthcheck avisa se o daily morrer.
+4. **PROIBIDO** recriar extração StoneX (marca d'água com e-mail corporativo). Fontes 100% públicas. Scraping CME/barchart = ToS (só spot-check manual, nunca coletor).
+5. **Repo é PÚBLICO** (sem segredo no repo; tudo em Secrets).
+6. **git commit no PowerShell:** mensagem longa quebra — usar vários `-m` de uma linha (ou `git -m` via bash).
+7. **`print` em probe local** é cp1252 (Windows) — `≥`/emoji quebram; usar `PYTHONIOENCODING=utf-8`. Não afeta o HTML (UTF-8).
+8. **Commit-back do daily faz o `main` avançar** todo dia (radar-bot) — antes de commitar local, `git pull --ff-only`.
+9. Memória do projeto: `project_commodities_radar.md`. Preferência de estilo: `feedback_analise_detalhada.md` (deliverable analítico = PROFUNDO/explicativo; UI/alerta = compacto).
 
 ## 📂 Docs no repo
-`FLUXO_JULGAMENTO.md` (camada de leitura + Fase 2) · `FONTES_CANDIDATAS_2026-06-16.md` (backlog de fontes) ·
-`REVISAO_TRADER_2026-06-11.md` (⚠ a Onda P0 dela é lente de COMPRADOR — reenquadrar antes de usar) ·
-`ARCHITECTURE_HTML.md` (estrutura das abas) · `DEPLOY_NUVEM.md` (deploy).
+`FLUXO_JULGAMENTO.md` (camada de leitura + Fase 2) · `FONTES_CANDIDATAS_2026-06-16.md` (backlog) · `REVISAO_TRADER_2026-06-11.md` (⚠ a Onda P0 dela é lente de COMPRADOR — reenquadrar antes de usar) · `ARCHITECTURE_HTML.md` · `DEPLOY_NUVEM.md`.
