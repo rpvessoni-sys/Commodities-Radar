@@ -36,11 +36,15 @@ vies: [<direcao-produto>, ...]
 ---
 
 ## Resumo executivo
-- 3-5 bullets, cada um com número + leitura
+- 5-8 bullets DENSOS, cada um com número + leitura (não frase solta — explique o porquê)
 - último bullet = consequência/leitura operacional (long ou short), não ordem de compra
 
 ## Contexto / dados
-(números da varredura que sustentam, com datas)
+EXPLIQUE O RACIOCÍNIO A FUNDO — esta é a seção principal do insight, use BASTANTE texto.
+Destrinche: o mecanismo de mercado, por que cada número importa, como os fatores se
+conectam, o que muda a leitura, e o que significa pro trader nos DOIS lados (long e short).
+Sempre com números + fonte + data. Quando fizer sentido, leitura separada por commodity
+(soja / farelo / óleo). Tamanho não é problema; profundidade e clareza são o que valem.
 
 ## Pergunta-tese
 O que precisa ser verdadeiro pra essa tese se confirmar:
@@ -65,4 +69,5 @@ O que precisa ser verdadeiro pra essa tese se confirmar:
 ## O que NUNCA fazer
 - Recriar qualquer mecanismo de extração StoneX (proibido desde 2026-06-05)
 - Criar insight sem vies quando a tese é direcional (drivers ficam cegos)
-- Inflar a aba com micro-observações — ela é o destilado, não o feed
+- Criar MUITOS insights triviais (a aba é destilado, não feed) — mas cada insight que
+  você criar deve ser FUNDO e bem explicado, com o raciocínio destrinchado, não um bullet seco
