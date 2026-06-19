@@ -16,6 +16,7 @@ on:
 permissions:
   contents: write              # commitar a branch claude/insights-DATA
   pull-requests: write         # abrir o PR
+  id-token: write              # OIDC — exigido pela auth (OAuth) do claude-code-action
 
 concurrency:
   group: leitura
