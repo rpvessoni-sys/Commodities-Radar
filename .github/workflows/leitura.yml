@@ -67,14 +67,25 @@ jobs:
                vies: [bull/bear-produto]`), citando o `id` da fila tratado no corpo. Se um
                item so atualiza uma tese existente, EDITE o insight antigo (bloco
                "Atualizacao AAAA-MM-DD"), nao duplique.
+               CORPO DETALHADO (este e o ponto principal): cada insight deve ser uma
+               ANALISE RICA e BEM EXPLICADA, nao bullets secos. Inclua: (a) resumo
+               executivo com varios bullets densos; (b) uma secao "Contexto / dados" que
+               EXPLICA O RACIOCINIO a fundo — o mecanismo de mercado, por que o numero
+               importa, como os fatores se conectam, o que isso significa pro trader nos
+               dois lados (long/short), sempre com numeros + fonte + data; (c) pergunta-tese
+               (o que precisa ser verdade); (d) gatilhos que invalidam; (e) leitura por
+               commodity quando fizer sentido. PODE e DEVE usar bastante texto —
+               profundidade e explicacao valem mais que brevidade.
             4. Toque SOMENTE em arquivos dentro de `insights/`. Nunca em .py, DB, config,
                indicators, inputs_manuais ou briefing.
             5. Commit numa branch `claude/insights-AAAA-MM-DD` e abra um Pull Request
                contra `main` com titulo "leitura AAAA-MM-DD".
 
             Regras: `vies` = direcao (bull/bear-produto), nunca preco. Numeros sempre com
-            fonte + data. Maximo 3 insights. Aplique a lente tributaria BR se a tese for de
-            preco. NAO recriar extracao StoneX (proibido). Seja conciso e especifico.
+            fonte + data. Maximo 3 insights (poucos, mas cada um FUNDO e bem explicado).
+            Aplique a lente tributaria BR se a tese for de preco. NAO recriar extracao
+            StoneX (proibido). Pode usar MUITOS caracteres — o dono quer leitura DETALHADA
+            e explicativa, com o raciocinio destrinchado, nao um resumo seco.
           claude_args: |
             --allowedTools Bash,Edit,Write,Read,Glob,Grep
             --max-turns 40
