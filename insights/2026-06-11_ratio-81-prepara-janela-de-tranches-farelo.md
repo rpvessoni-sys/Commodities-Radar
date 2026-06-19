@@ -13,9 +13,10 @@ vies: [bear-farelo]
 
 > **Atualização 2026-06-18 (revisão D+7 — trata fila `revisao-2026-06-11_ratio-81-prepara-janela-de-tranches-farelo-D+7`):**
 > Ratio Far/Soj comprimiu mais 90bps (81,4% → 80,51%, indicadores 18/jun) mas **não rompeu o gatilho de <80% ainda** — tese mantida, vigilância redobrada.
-> WASDE 11/jun: produção farelo Argentina 2026/27 cortada levemente (33,33 → 33,11 mi_t) — impacto marginal, não muda o quadro. NOPA mai/26 não acessível (membership pago, sem dado).
+> WASDE 11/jun: produção farelo Argentina 2026/27 cortada levemente (33,33 → 33,11 mi_t) — impacto marginal, não muda o quadro. NOPA mai/26 não acessível (membership pago, sem dado); `release-nopa-2026-06-19` também não entrou (monthly_status=0, sem número real).
 > Crush margin recuou de 3,78 → 3,07 USD/bu (18/jun) — esmagadora ainda lucrativa, mas com menor folga, podendo desacelerar levemente oferta de farelo (risco de alívio de curto prazo). Índice sobra_farelo mantido em 100.0 (5/5 condições) — pressão baixista máxima.
 > Prêmio export farelo Paranaguá inalterado (+0,05 USD/sht, NAG 18/jun). Física MT: R$ 1.545/t (IMEA) e R$ 1.560/t (Rondonópolis) — sem alteração nos últimos 7 dias.
+> Análise da queda do óleo (−2,59%) e contexto cambial (USD/BRL +1,92%) em `[[2026-06-18_oleo-quebra-suporte-72]]` e `[[2026-06-19_usd-brl-alta-amortece-queda-cbot-soja-br]]`.
 > **Próxima revisão**: D+7 = 2026-06-25 ou ao romper ratio <80%.
 
 > **Atualização 11/jun (mesmo dia, pós-backfill de 5 anos do CBOT):** o argumento
