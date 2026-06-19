@@ -49,6 +49,7 @@ A sessão de 17–19/jun foi enorme e fechou 5 frentes grandes. **O que ficou pe
 - O robô (`radar.yml`, modo daily) escreve `briefing/latest.md` = **dump do dia + fila de julgamento** e **commita** (precisa de `permissions: contents: write` no job — já está). É o que a Routine lê (ela roda em clone sem o DB).
 - O workflow **`.github/workflows/leitura.yml`** roda às **23 UTC** (+ botão manual): gate de custo (só chama o Claude se a fila tiver item) → `anthropics/claude-code-action@v1` → o Claude segue **`system/prompts/routine_julgamento.txt`** (o prompt da leitura completa, reescrito 19/jun pra PROFUNDIDADE) → escreve `insights/AAAA-MM-DD_leitura-complexo.md` → abre PR na branch `claude/insights-DATA`.
 - **`guard-leitura.yml`** reprova qualquer PR `claude/` que toque fora de `insights/` (calibração nunca é tocada).
+- **Fix de 19/jun (commit c9fc2b7) — encanamento à prova de re-run:** o `leitura.yml` agora (a) **pula se `claude/insights-<data>` já existe** no remoto (idempotência — antes o cron + um "Run workflow" manual empilhavam 2 commits "leitura DATA" na mesma branch); (b) injeta a data no prompt e manda o agente cortar a branch **sempre de `origin/main` fresco** (`git checkout -B`), eliminando o conflito por base velha; (c) reforça "SÓ `insights/`" no prompt. E o `guard` passou a comparar **`merge-base..head`** em vez de `base..head` (antes "zerava" quando o main avançava nos mesmos arquivos e deixava arquivo proibido escapar).
 
 **Auth = assinatura Max** (NÃO API, sem cobrança extra): secret **`CLAUDE_CODE_OAUTH_TOKEN`** no repo, gerado com `claude setup-token`. **⚠️ O token vale 1 ANO (renovar ~jun/2027).** Se o workflow falhar com erro de auth, é só regenerar e atualizar o secret.
 
@@ -62,7 +63,7 @@ A sessão de 17–19/jun foi enorme e fechou 5 frentes grandes. **O que ficou pe
 
 **Rotina do dono:** abrir o PR no celular → ler → merge → o site regenera com Drivers/score novos. (Auto-merge só se um dia confiar.)
 
-**Pendência boba:** o PR #2 (versão rasa, antes do prompt comprehensive) pode ainda estar aberto — fechar sem merge + deletar a branch. O próximo run (com o prompt novo) sai completo.
+**Histórico (resolvido 19/jun):** o PR de `claude/insights-2026-06-19` ficou travado (conflito em `leitura.yml` + 2 commits "leitura DATA" empilhados). Diagnóstico: o *conteúdo* dos insights estava bom (números batiam com o briefing) — o que quebrou foi o encanamento (ver fix c9fc2b7 acima). Branch deletada/PR abandonado por escolha do dono. O próximo run sai limpo e mergeável. Se o PR #2 antigo (versão rasa) ainda estiver aberto, fechar sem merge + deletar a branch.
 
 ---
 
@@ -106,6 +107,7 @@ Passar item a item nas telas validando densidade/cor/ordem da camada nova.
 6. **git commit no PowerShell:** mensagem longa quebra — usar vários `-m` de uma linha (ou `git -m` via bash).
 7. **`print` em probe local** é cp1252 (Windows) — `≥`/emoji quebram; usar `PYTHONIOENCODING=utf-8`. Não afeta o HTML (UTF-8).
 8. **Commit-back do daily faz o `main` avançar** todo dia (radar-bot) — antes de commitar local, `git pull --ff-only`.
+8b. **Re-rodar a leitura no MESMO dia** (workflow_dispatch) agora é **pulado** pela trava de idempotência se `claude/insights-<data>` já existir — pra forçar um novo run no mesmo dia, **delete a branch antes** (`git push origin --delete claude/insights-<data>`).
 9. Memória do projeto: `project_commodities_radar.md`. Preferência de estilo: `feedback_analise_detalhada.md` (deliverable analítico = PROFUNDO/explicativo; UI/alerta = compacto).
 
 ## 📂 Docs no repo
