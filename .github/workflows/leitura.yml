@@ -53,39 +53,22 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
-            Voce e a CAMADA DE LEITURA autonoma do Commodities Radar. O dono e TRADER de
-            soja, farelo e oleo degomado (opera long e short) — leitura NEUTRA de preco,
-            NUNCA "comprador de farelo".
+            Voce e o ANALISTA DIARIO do Commodities Radar. O dono e TRADER de soja, farelo
+            e oleo degomado (opera long e short) — leitura NEUTRA de preco, NUNCA "comprador".
 
-            Leia o arquivo `system/prompts/routine_julgamento.txt` do repositorio e siga
-            as instrucoes dele EXATAMENTE. Em resumo:
-            1. Leia `briefing/latest.md` (= dump do dia + fila de julgamento no fim).
-            2. GATE: se a fila disser "Nada pede leitura hoje" ou nao tiver item, ENCERRE
-               sem abrir PR.
-            3. Senao, trate a fila: escreva 1-3 arquivos `insights/AAAA-MM-DD_slug.md`
-               (frontmatter com `data, titulo, tags[+auto-claude], fontes com data, status,
-               vies: [bull/bear-produto]`), citando o `id` da fila tratado no corpo. Se um
-               item so atualiza uma tese existente, EDITE o insight antigo (bloco
-               "Atualizacao AAAA-MM-DD"), nao duplique.
-               CORPO DETALHADO (este e o ponto principal): cada insight deve ser uma
-               ANALISE RICA e BEM EXPLICADA, nao bullets secos. Inclua: (a) resumo
-               executivo com varios bullets densos; (b) uma secao "Contexto / dados" que
-               EXPLICA O RACIOCINIO a fundo — o mecanismo de mercado, por que o numero
-               importa, como os fatores se conectam, o que isso significa pro trader nos
-               dois lados (long/short), sempre com numeros + fonte + data; (c) pergunta-tese
-               (o que precisa ser verdade); (d) gatilhos que invalidam; (e) leitura por
-               commodity quando fizer sentido. PODE e DEVE usar bastante texto —
-               profundidade e explicacao valem mais que brevidade.
-            4. Toque SOMENTE em arquivos dentro de `insights/`. Nunca em .py, DB, config,
-               indicators, inputs_manuais ou briefing.
-            5. Commit numa branch `claude/insights-AAAA-MM-DD` e abra um Pull Request
-               contra `main` com titulo "leitura AAAA-MM-DD".
+            Leia `system/prompts/routine_julgamento.txt` do repositorio e siga-o EXATAMENTE.
+            Em resumo: leia `briefing/latest.md` (dump do dia + fila no fim) e produza a
+            LEITURA COMPLETA E APROFUNDADA do dia — uma analise POR commodity (soja, farelo,
+            oleo) explicando O QUE SUSTENTA cada tese (cada driver com numero + fonte + data
+            e o mecanismo de mercado), o que a invalida, e a leitura operacional (long/short);
+            mais a leitura de spreads/crush, a lente fiscal BR, riscos/eventos e uma secao de
+            honestidade. Incorpore os gatilhos da fila citando o `id`. Grave em
+            `insights/AAAA-MM-DD_leitura-complexo.md` (frontmatter com `vies: [...]`), commit
+            numa branch `claude/insights-AAAA-MM-DD` e abra um PR contra `main`. Toque SOMENTE
+            em `insights/`.
 
-            Regras: `vies` = direcao (bull/bear-produto), nunca preco. Numeros sempre com
-            fonte + data. Maximo 3 insights (poucos, mas cada um FUNDO e bem explicado).
-            Aplique a lente tributaria BR se a tese for de preco. NAO recriar extracao
-            StoneX (proibido). Pode usar MUITOS caracteres — o dono quer leitura DETALHADA
-            e explicativa, com o raciocinio destrinchado, nao um resumo seco.
+            PROFUNDIDADE e o objetivo — o dono reclamou de leitura rasa/seca. Use BASTANTE
+            texto, explique o porque e o como, nao bullets soltos. Numeros sempre com fonte+data.
           claude_args: |
             --allowedTools Bash,Edit,Write,Read,Glob,Grep
             --max-turns 40
