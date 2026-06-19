@@ -5,7 +5,8 @@ name: Camada de leitura (Claude autonomo)
 # que o guard-leitura.yml valida (so pode tocar insights/). O dono aprova do celular.
 #
 # Gate de custo: so chama o Claude se a fila no briefing tiver item — em dia sem sinal,
-# o run sai de graca. Auth via secret ANTHROPIC_API_KEY (token do dono).
+# o run sai de graca. Auth pela ASSINATURA MAX: secret CLAUDE_CODE_OAUTH_TOKEN gerado
+# pelo dono com `claude setup-token` (sem conta de API separada).
 
 on:
   schedule:
@@ -49,7 +50,7 @@ jobs:
         if: steps.fila.outputs.tem_fila == 'true'
         uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             Voce e a CAMADA DE LEITURA autonoma do Commodities Radar. O dono e TRADER de
             soja, farelo e oleo degomado (opera long e short) — leitura NEUTRA de preco,
