@@ -75,4 +75,6 @@ jobs:
             Regras: `vies` = direcao (bull/bear-produto), nunca preco. Numeros sempre com
             fonte + data. Maximo 3 insights. Aplique a lente tributaria BR se a tese for de
             preco. NAO recriar extracao StoneX (proibido). Seja conciso e especifico.
-          claude_args: "--max-turns 30"
+          claude_args: |
+            --allowedTools Bash,Edit,Write,Read,Glob,Grep
+            --max-turns 40
