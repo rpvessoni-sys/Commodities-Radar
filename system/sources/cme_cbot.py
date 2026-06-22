@@ -159,6 +159,18 @@ class CMECollector(BaseCollector):
                 })
                 continue
 
+            # Guard anti-carry (frescor): se o fechamento da ULTIMA barra (dia em
+            # formacao) repetir exatamente o fechamento anterior, e quase sempre
+            # cotacao TRAVADA do Yahoo — o ZM=F (farelo, pouco liquido) carrega o
+            # ultimo print. Nao gravar esse fechamento espurio evita que o run
+            # intraday sobrescreva o close bom do daily por um numero velho. So
+            # afeta a metrica 'fechamento'; OHLC/volume do dia seguem gravados.
+            _idx_close = [j for j in range(len(timestamps))
+                          if j < len(closes) and closes[j] is not None]
+            _skip_close_i = None
+            if len(_idx_close) >= 2 and closes[_idx_close[-1]] == closes[_idx_close[-2]]:
+                _skip_close_i = _idx_close[-1]
+
             for i, ts in enumerate(timestamps):
                 try:
                     data_ref = datetime.fromtimestamp(ts).date().isoformat()
@@ -173,6 +185,8 @@ class CMECollector(BaseCollector):
                 ]
                 for metrica, lista, un in metricas:
                     if i >= len(lista) or lista[i] is None:
+                        continue
+                    if metrica == "fechamento" and i == _skip_close_i:
                         continue
                     results.append({
                         "data_referencia": data_ref,

@@ -35,6 +35,56 @@ def far_soj_ratio_pct(farelo_usd_sht: float, soja_cents_bu: float) -> float:
     return farelo_usd_sht / (soja_usd_bu * (2000.0 / 60.0)) * 100.0
 
 
+# Pernas front-month do complexo (as que alimentam crush/ratio/oil-share/Mesa).
+FRONT_MONTH_LEGS = ("soja_cbot", "farelo_cbot", "oleo_cbot")
+
+
+def cbot_freshness(conn, target: date | None = None) -> dict:
+    """Frescor POR commodity do front-month CBOT — detecta a perna defasada/travada.
+
+    Motivacao: em 2026-06 o farelo (ZM=F) ficou preso no fechamento de 18/jun
+    enquanto soja/oleo andaram. Como crush, ratio Far/Soj, oil share e a Mesa do
+    dia derivam do farelo, todos passaram a dar leitura FALSA ('farelo barato',
+    'crush quebrou suporte') sem nenhum aviso — a 'Saude das fontes' media frescor
+    por FONTE (cme_cbot rodou), nunca por commodity.
+
+    Retorna {commodity: {data, valor, delta, ref_date, stale: bool, motivo}}.
+    stale = True quando a perna esta DEFASADA (data < a mais fresca do complexo)
+    OU TRAVADA (delta == 0 num pregao em que outra perna se moveu). Funcao pura
+    (recebe conn) — testada em tests/.
+    """
+    target = target or date.today()
+    iso = target.isoformat()
+    info = {}
+    for c in FRONT_MONTH_LEGS:
+        rows = conn.execute(
+            """
+            SELECT data_referencia, valor FROM dados_publicos
+            WHERE fonte='cme_cbot' AND commodity=? AND metrica='fechamento'
+              AND valor IS NOT NULL AND data_referencia <= ?
+            ORDER BY data_referencia DESC LIMIT 2
+            """,
+            (c, iso),
+        ).fetchall()
+        if not rows:
+            continue
+        d = {"data": rows[0]["data_referencia"], "valor": rows[0]["valor"], "delta": None}
+        if len(rows) == 2 and rows[1]["valor"] is not None:
+            d["delta"] = round(rows[0]["valor"] - rows[1]["valor"], 6)
+        info[c] = d
+    if not info:
+        return {}
+    ref_date = max(d["data"] for d in info.values())
+    algum_moveu = any(d.get("delta") not in (None, 0.0) for d in info.values())
+    for d in info.values():
+        defasada = d["data"] < ref_date
+        travada = (d.get("delta") == 0.0) and algum_moveu
+        d["ref_date"] = ref_date
+        d["stale"] = bool(defasada or travada)
+        d["motivo"] = f"sem fechamento novo desde {d['data']}" if d["stale"] else None
+    return info
+
+
 def calculate_all(target_date: date | None = None) -> dict:
     target = target_date or date.today()
     results = {"crush_margin": 0, "oil_share": 0, "soja_brl": 0, "spreads": 0, "errors": []}

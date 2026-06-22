@@ -30,10 +30,25 @@ def check_alerts(target_date: date | None = None) -> list[dict]:
     target = target_date or date.today()
     cfg = load_config()
     alertas = []
+    import indicators
 
     with db.connect() as conn:
+        # Frescor por commodity: nao disparar quebra/movimento em cima de perna
+        # CBOT travada (ex. farelo ZM=F preso). Era a fonte dos alertas espurios
+        # 'QUEBRA SUPORTE crush' e 'MOVIMENTO FORTE' gerados por delta fantasma.
+        fresh = indicators.cbot_freshness(conn, target)
+
+        def _stale(commodity: str) -> bool:
+            if commodity in fresh:
+                return bool(fresh[commodity].get("stale"))
+            if commodity == "complexo_soja":  # crush/derivados: qualquer perna velha contamina
+                return any(v.get("stale") for v in fresh.values())
+            return False
+
         for nivel in cfg.get("niveis", []):
             commodity = nivel["commodity"]
+            if _stale(commodity):
+                continue
             metrica = nivel.get("metrica", "fechamento")
             cur = conn.execute(
                 """

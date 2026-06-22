@@ -19,6 +19,7 @@ from pathlib import Path
 
 import config
 import db
+import indicators
 import precos_fisicos as pf
 import insights as ins_mod
 import curvas as cv_mod
@@ -261,6 +262,19 @@ def _get_snapshot(target: date) -> dict:
                 info["pct52"] = 100.0 * est["abaixo"] / est["n"]
             out[commodity] = info
 
+        # Frescor POR commodity: marca a perna do complexo que travou/defasou
+        # (ex. farelo ZM=F preso enquanto soja/oleo andaram). Sem isso, crush,
+        # ratio Far/Soj, oil share e a Mesa do dia herdam o numerador velho e
+        # mostram '0,00%' como se fosse dado fresco.
+        fresh = indicators.cbot_freshness(conn, target)
+        for c, fr in fresh.items():
+            if c in out:
+                out[c]["stale"] = fr["stale"]
+                out[c]["stale_desde"] = fr["data"]
+                out[c]["stale_motivo"] = fr["motivo"]
+        complexo_stale = any(out.get(c, {}).get("stale") for c in
+                             ("soja_cbot", "farelo_cbot", "oleo_cbot"))
+
         # Cambio USD/BRL
         cur = conn.execute(
             """
@@ -282,6 +296,8 @@ def _get_snapshot(target: date) -> dict:
         )
         row = cur.fetchone()
         out["crush_margin"] = {"valor": row["valor"], "data": row["data_referencia"]} if row else None
+        if out["crush_margin"]:
+            out["crush_margin"]["stale"] = complexo_stale
 
         # Oil share
         cur = conn.execute(
@@ -293,6 +309,8 @@ def _get_snapshot(target: date) -> dict:
         )
         row = cur.fetchone()
         out["oil_share"] = {"valor": row["valor"], "data": row["data_referencia"]} if row else None
+        if out["oil_share"]:
+            out["oil_share"]["stale"] = complexo_stale
 
         # Paridade BR (calculada pelo indicators)
         cur = conn.execute(
@@ -674,6 +692,12 @@ def _get_far_soj_ratio(target: date) -> dict:
             (target.isoformat(),),
         )
         rows = [(r["data_referencia"], r["valor"]) for r in cur]
+        # Frescor do farelo/soja — o ratio é farelo÷soja; se o farelo travou, a
+        # queda do ratio é a soja subindo (não farelo barateando) = sinal FALSO.
+        fresh = indicators.cbot_freshness(conn, target)
+        stale = bool((fresh.get("farelo_cbot") or {}).get("stale")
+                     or (fresh.get("soja_cbot") or {}).get("stale"))
+        stale_desde = (fresh.get("farelo_cbot") or {}).get("data")
 
     if not rows:
         return {"disponivel": False}
@@ -689,6 +713,13 @@ def _get_far_soj_ratio(target: date) -> dict:
     else:
         zona, zona_label, zona_cor = "esticado", "🔴 spread esticado — farelo caro vs soja", "var(--bear)"
 
+    if stale:
+        # Não publicar o veredito de spread em cima de farelo defasado.
+        zona = "stale"
+        zona_label = (f"⚠ farelo CBOT defasado ({_data_curta(stale_desde)}) — "
+                      f"ratio distorcido pela soja, não confiável")
+        zona_cor = "var(--warn)"
+
     return {
         "disponivel": True,
         "data": atual_data,
@@ -697,6 +728,7 @@ def _get_far_soj_ratio(target: date) -> dict:
         "zona": zona,
         "zona_label": zona_label,
         "zona_cor": zona_cor,
+        "stale": stale,
         "dist_77": atual - 77.0,
         "historico": rows[:14],
     }
@@ -1806,6 +1838,19 @@ def _render_drivers_por_produto(drivers: dict) -> str:
     return f'<div class="card">{"".join(blocos)}{legenda}</div>'
 
 
+_MESES_ABBR = ["jan", "fev", "mar", "abr", "mai", "jun",
+               "jul", "ago", "set", "out", "nov", "dez"]
+
+
+def _data_curta(iso: str) -> str:
+    """'2026-06-18' -> '18/jun'. Devolve o original se nao parsear."""
+    try:
+        dt = date.fromisoformat(iso[:10])
+        return f"{dt.day:02d}/{_MESES_ABBR[dt.month - 1]}"
+    except (ValueError, TypeError, IndexError):
+        return iso or "?"
+
+
 def _kpi_change_line(info: dict, fmt_delta, cor_direcao: bool = True) -> str:
     """Linha 'change' do KPI: variação D-1 com seta + range/percentil 52 semanas.
 
@@ -1814,6 +1859,18 @@ def _kpi_change_line(info: dict, fmt_delta, cor_direcao: bool = True) -> str:
     porque o trader opera os dois lados (long e short).
     """
     partes = []
+    if info.get("stale"):
+        # Perna travada/defasada: NAO mostrar '0,00%' como se fosse pregao novo.
+        desde = info.get("stale_desde") or info.get("data") or ""
+        partes.append(
+            f'<span style="color:var(--warn)">⚠ travado desde {_data_curta(desde)} '
+            f'— sem fechamento novo</span>'
+        )
+        if info.get("min52") is not None:
+            partes.append(
+                f'52s: {fmt_delta(info["min52"])}–{fmt_delta(info["max52"])} · p{info["pct52"]:.0f}'
+            )
+        return " · ".join(partes)
     if info.get("delta") is not None:
         d, dp = info["delta"], info.get("delta_pct", 0.0)
         seta = "▼" if d < 0 else ("▲" if d > 0 else "•")
@@ -1924,7 +1981,12 @@ def _render_kpis(s: dict, far_soj: dict | None = None, sparks: dict | None = Non
         cm = s["crush_margin"]
         cfg_cm = niveis.get("complexo_soja") or {}
         sup, res = cfg_cm.get("suporte", 2.5), cfg_cm.get("resistencia", 4.25)
-        if cm["valor"] > res:
+        if cm.get("stale"):
+            # Uma perna do complexo (ex. farelo) esta travada → o crush e o delta
+            # sao parciais; nao gritar 'quebrou suporte' em cima de dado velho.
+            klass = "warn"
+            warn_text = "⚠ leitura parcial — farelo CBOT defasado (crush distorcido)"
+        elif cm["valor"] > res:
             klass, warn_text = "warn", f"⚠ acima de {_fmt_usd(res)} — expansão além do recorde"
         elif cm["valor"] < sup:
             klass, warn_text = "warn", f"⚠ abaixo de {_fmt_usd(sup)} — esmagadora tira o pé"
@@ -3262,11 +3324,21 @@ def _gerar_conviccao(d: dict) -> dict:
     tributário + insights). NEUTRO: é a inclinação de preço (long/short) e quão
     forte — NÃO ordem de compra/venda. A decisão fica com o trader."""
     drivers = d.get("drivers") or {}
+    snap = d.get("snapshot") or {}
     out = {}
     for slug, nome, snap_key in _CONV_PRODUTOS:
         dd = drivers.get(slug) or {}
         bull = dd.get("bull") or []
         bear = dd.get("bear") or []
+        if (snap.get(snap_key) or {}).get("stale"):
+            # Perna CBOT travada/defasada → NAO pontuar. Senao o score vira
+            # fantasma (ex. farelo -3 'baixa forte' so porque a soja subiu com o
+            # farelo parado em 18/jun). Segura em 0 com rotulo explicito.
+            out[slug] = {"nome": nome, "snap_key": snap_key, "score": 0,
+                         "label": "dado travado", "stale": True,
+                         "stale_desde": (snap.get(snap_key) or {}).get("stale_desde"),
+                         "bull": [], "bear": []}
+            continue
         score = max(-3, min(3, len(bull) - len(bear)))
         out[slug] = {"nome": nome, "snap_key": snap_key, "score": score,
                      "label": _conv_label(score), "bull": bull, "bear": bear}
@@ -3288,6 +3360,18 @@ def _confianca_leitura(d: dict) -> tuple[str, list[str]]:
     elif fund_off:
         nivel = "baixa"
         motivos.append("fundamento S&D indisponível (" + ", ".join(fund_off) + ")")
+    # Frescor por commodity: perna CBOT travada (ex. ZM=F preso) contamina os
+    # derivados mesmo com a fonte 'verde' na Saúde — rebaixa a confiança.
+    snap = d.get("snapshot") or {}
+    nomes_leg = {"soja_cbot": "soja", "farelo_cbot": "farelo", "oleo_cbot": "óleo"}
+    stale_legs = [nomes_leg[k] for k in nomes_leg if (snap.get(k) or {}).get("stale")]
+    if stale_legs:
+        desde = next((snap[k].get("stale_desde") for k in nomes_leg
+                      if (snap.get(k) or {}).get("stale")), None)
+        suf = f" (sem fechamento novo desde {_data_curta(desde)})" if desde else ""
+        motivos.append("CBOT travado: " + ", ".join(stale_legs) + suf)
+        if nivel == "alta":
+            nivel = "media"
     calib = [c for c in (d.get("forecast_calib") or []) if c.get("n")]
     if calib:
         dir_pct = min(c["dir_pct"] for c in calib)
@@ -3345,10 +3429,15 @@ def _render_mesa_do_dia(d: dict) -> str:
         else:
             chip_cor, sinal = "var(--muted)", "0"
         obs = []
-        if c["bull"]:
-            obs.append("▲ " + c["bull"][0]["texto"])
-        if c["bear"]:
-            obs.append("▼ " + c["bear"][0]["texto"])
+        if c.get("stale"):
+            desde = c.get("stale_desde")
+            suf = f" desde {_data_curta(desde)}" if desde else ""
+            obs.append(f"⚠ fechamento CBOT travado{suf} — sinal suspenso até dado novo")
+        else:
+            if c["bull"]:
+                obs.append("▲ " + c["bull"][0]["texto"])
+            if c["bear"]:
+                obs.append("▼ " + c["bear"][0]["texto"])
         obs_html = "<br>".join(f'<span class="muted-small">{o}</span>' for o in obs) \
             or '<span class="muted-small">sem driver ativo</span>'
         linhas.append(
