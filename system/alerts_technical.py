@@ -95,13 +95,23 @@ def check_alerts(target_date: date | None = None) -> list[dict]:
                         "msg": f"{commodity} fechou em {valor_atual:.2f} — acima da resistencia {level_value:.2f}",
                     })
 
-            # Variacao diaria
+            # Variacao diaria. Para SPREAD (ex. crush margin) a %-variacao e
+            # ruidosa por construcao — diferenca de numeros grandes amplifica
+            # (um -0,58/bu vira -18%). Se o nivel define variacao_abs_alert, usa
+            # variacao ABSOLUTA na unidade do indicador em vez de %.
             if len(rows) >= 2:
                 prev = rows[1]["valor"]
                 if prev:
-                    pct = ((valor_atual - prev) / prev) * 100
-                    threshold = nivel.get("variacao_dia_pct_alert", 3.0)
-                    if abs(pct) > threshold:
+                    delta_abs = valor_atual - prev
+                    pct = (delta_abs / prev) * 100
+                    abs_thr = nivel.get("variacao_abs_alert")
+                    if abs_thr is not None:
+                        disparou = abs(delta_abs) > abs_thr
+                        gatilho = f"{delta_abs:+.2f} no dia (de {prev:.2f} para {valor_atual:.2f})"
+                    else:
+                        disparou = abs(pct) > nivel.get("variacao_dia_pct_alert", 3.0)
+                        gatilho = f"{pct:+.2f}% no dia (de {prev:.2f} para {valor_atual:.2f})"
+                    if disparou:
                         alertas.append({
                             "commodity": commodity,
                             "tipo": "movimento_forte",
@@ -109,7 +119,7 @@ def check_alerts(target_date: date | None = None) -> list[dict]:
                             "valor_atual": valor_atual,
                             "valor_anterior": prev,
                             "delta_pct": round(pct, 2),
-                            "msg": f"{commodity} variou {pct:+.2f}% no dia (de {prev:.2f} para {valor_atual:.2f})",
+                            "msg": f"{commodity} variou {gatilho}",
                         })
 
     return alertas

@@ -48,4 +48,6 @@ commodity = "complexo_soja"
 metrica = "crush_margin_usd_bu"
 suporte = 2.50            # crush normalizou = esmagadora tira o pe = menos farelo despejado (tese muda)
 resistencia = 4.25        # nova expansao alem do recorde atual (~3.8)
-variacao_dia_pct_alert = 15.0
+# Crush e SPREAD: %-variacao e ruidosa (um -0,58/bu vira -18%). Usa delta
+# ABSOLUTO em USD/bu — so avisa movimento de mesa de verdade (>0,50/bu/dia).
+variacao_abs_alert = 0.50

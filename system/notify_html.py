@@ -3340,6 +3340,17 @@ def _gerar_conviccao(d: dict) -> dict:
                          "bull": [], "bear": []}
             continue
         score = max(-3, min(3, len(bull) - len(bear)))
+        # Cap de momentum: o score e contagem de drivers (a maioria estrutural/
+        # tributaria, horizonte lento). Sem isso o oleo virava +3 'alta forte'
+        # enquanto o preco caia -10% em 5 pregoes. Quando o momentum de 5 pregoes
+        # CONTRADIZ forte o sinal, segura o modulo em 1 ('leve', nao 'forte') — o
+        # driver de momentum ja aparece nos 'observar', entao a tensao fica visivel.
+        mom = dd.get("momentum_5d")
+        if mom is not None:
+            if score > 0 and mom <= -4:
+                score = min(score, 1)
+            elif score < 0 and mom >= 4:
+                score = max(score, -1)
         out[slug] = {"nome": nome, "snap_key": snap_key, "score": score,
                      "label": _conv_label(score), "bull": bull, "bear": bear}
     return out
@@ -3500,9 +3511,10 @@ def _render_o_que_mudou(target: date) -> str:
     """Tabela 'o que mudou desde ontem': indicadores-chave do complexo, D-1, leitura neutra."""
     linhas = []
     with db.connect() as conn:
+        datas_atual, datas_ant = set(), set()
         for label, fonte, comm, metrica, casas, sufixo, sobe, desce in _MUDOU_SPECS:
             rows = conn.execute(
-                """SELECT valor FROM dados_publicos WHERE fonte=? AND commodity=? AND metrica=?
+                """SELECT valor, data_referencia FROM dados_publicos WHERE fonte=? AND commodity=? AND metrica=?
                    AND valor IS NOT NULL AND data_referencia<=?
                    ORDER BY data_referencia DESC LIMIT 2""",
                 (fonte, comm, metrica, target.isoformat()),
@@ -3510,7 +3522,10 @@ def _render_o_que_mudou(target: date) -> str:
             if not rows:
                 continue
             hoje = rows[0]["valor"]
+            datas_atual.add(rows[0]["data_referencia"])
             ontem = rows[1]["valor"] if len(rows) > 1 else None
+            if len(rows) > 1:
+                datas_ant.add(rows[1]["data_referencia"])
             if ontem is None:
                 d_txt, leitura, cor = "—", "sem referência D-1", "var(--muted)"
             else:
@@ -3536,15 +3551,20 @@ def _render_o_que_mudou(target: date) -> str:
             )
     if not linhas:
         return ""
+    # Rótulos com a DATA REAL (não 'ontem/hoje' — num pregão de segunda o
+    # "anterior" é sexta, gap de 3 dias; chamar de 'ontem' engana).
+    h_atual = _data_curta(max(datas_atual)) if datas_atual else "atual"
+    h_ant = _data_curta(max(datas_ant)) if datas_ant else "anterior"
     return f"""
     <div class="card">
       <table class="hist-table" style="margin:0">
-        <thead><tr><th style="text-align:left">indicador</th><th>ontem</th>
-        <th>hoje</th><th>Δ</th><th style="text-align:left">leitura</th></tr></thead>
+        <thead><tr><th style="text-align:left">indicador</th><th>anterior<br><span class="muted-small">{h_ant}</span></th>
+        <th>atual<br><span class="muted-small">{h_atual}</span></th><th>Δ</th><th style="text-align:left">leitura</th></tr></thead>
         <tbody>{"".join(linhas)}</tbody>
       </table>
-      <p class="muted-small" style="margin:6px 0 0">Δ vs último valor anterior (D-1).
-      Preços de farelo/soja/óleo já estão no snapshot acima.</p>
+      <p class="muted-small" style="margin:6px 0 0">Δ vs último pregão com dado
+      (pode ser &gt;1 dia em fim de semana/feriado). Preços de farelo/soja/óleo já
+      estão no snapshot acima.</p>
     </div>"""
 
 
@@ -3734,19 +3754,30 @@ def _gerar_insights(d: dict) -> list[dict]:
     s = d["snapshot"]
     out = []
 
-    # 1. Crush margin alto (nível econômico fixo $2,00 = "zona gorda" histórica;
-    # NÃO confundir com o nível de ALERTA do alerts_config, que marca mudança de tese)
+    # 1. Crush margin alto. Dois níveis coexistem: $2,00 = "zona gorda" econômica
+    # (esmagadora roda full); o suporte do alerts_config (~2,50) = nível de TESE.
+    # Na faixa [2,00, suporte] o texto reconhece os dois, sem contradizer o card.
     cm = s.get("crush_margin", {}).get("valor")
-    if cm and cm > 2.0:
-        out.append({
-            "tipo": "warn",
-            "icon": "🔥",
-            "texto": (
-                f"<strong>Crush margin {_fmt_usd(cm)}/bu</strong> em zona historicamente "
-                f"gorda (>$2,00 vs média $0,40–0,80). Esmagadoras ULTRA rentáveis = rodam full = "
-                f"pressão sobre farelo+óleo em 4–6 semanas."
-            ),
-        })
+    if cm and cm > 2.0 and not s.get("crush_margin", {}).get("stale"):
+        sup_cm = (_niveis_alerta().get("complexo_soja") or {}).get("suporte", 2.5)
+        if cm < sup_cm:
+            out.append({
+                "tipo": "neutral", "icon": "🔥",
+                "texto": (
+                    f"<strong>Crush margin {_fmt_usd(cm)}/bu</strong> — ainda rentável (>$2,00) "
+                    f"MAS perdeu o nível de tese ({_fmt_usd(sup_cm)}): esmagamento desacelerando, "
+                    f"menos pressão NOVA sobre farelo/óleo."
+                ),
+            })
+        else:
+            out.append({
+                "tipo": "warn", "icon": "🔥",
+                "texto": (
+                    f"<strong>Crush margin {_fmt_usd(cm)}/bu</strong> em zona historicamente "
+                    f"gorda (>$2,00 vs média $0,40–0,80). Esmagadoras ULTRA rentáveis = rodam full = "
+                    f"pressão sobre farelo+óleo em 4–6 semanas."
+                ),
+            })
 
     # 2. Paridade BR
     soja_brl = s.get("soja_brl_paridade", {}).get("valor")
@@ -3820,17 +3851,18 @@ def _gerar_insights(d: dict) -> list[dict]:
             })
             break
 
-    # 6. Oleo proximo do suporte
+    # 6. Óleo perto/abaixo do suporte — texto CONDICIONAL ao preço vs nível real
+    # (antes dizia "testando 72" mesmo com o preço já 8% abaixo de 72).
     oleo = s.get("oleo_cbot", {}).get("valor")
-    if oleo and oleo < 75:
-        out.append({
-            "tipo": "bear",
-            "icon": "⚠",
-            "texto": (
-                f"<strong>Óleo CBOT em {_fmt_num(oleo, 2)} cts/lb</strong> — testando suporte psicológico de 72. "
-                f"Quebra abre caminho para 68/65."
-            ),
-        })
+    sup_oleo = (_niveis_alerta().get("oleo_cbot") or {}).get("suporte", 72.0)
+    if oleo and oleo < sup_oleo * 1.05 and not s.get("oleo_cbot", {}).get("stale"):
+        if oleo < sup_oleo:
+            txt = (f"<strong>Óleo CBOT em {_fmt_num(oleo, 2)} cts/lb</strong> — ROMPEU o suporte "
+                   f"{_fmt_num(sup_oleo, 0)}; opera abaixo, próximos pisos 68/65.")
+        else:
+            txt = (f"<strong>Óleo CBOT em {_fmt_num(oleo, 2)} cts/lb</strong> — testando o suporte "
+                   f"{_fmt_num(sup_oleo, 0)}; quebra abre 68/65.")
+        out.append({"tipo": "bear", "icon": "⚠", "texto": txt})
 
     return out[:6]  # cap em 6
 
@@ -3910,10 +3942,12 @@ def _gerar_drivers(d: dict) -> dict:
                                ("farelo", "farelo_cbot", "Farelo"),
                                ("oleo_soja", "oleo_cbot", "Óleo")):
         t = trend5(comm)
-        if t is not None and abs(t) >= 2:
-            add(prod, "bull" if t > 0 else "bear",
-                f"{nome_c} CBOT {t:+.1f}% em 5 pregões — momentum de {'alta' if t > 0 else 'baixa'}",
-                "CP", "dado")
+        if t is not None:
+            out[prod]["momentum_5d"] = t      # guardado p/ o cap de convicção
+            if abs(t) >= 2:
+                add(prod, "bull" if t > 0 else "bear",
+                    f"{nome_c} CBOT {t:+.1f}% em 5 pregões — momentum de {'alta' if t > 0 else 'baixa'}",
+                    "CP", "dado")
 
     # FOB export do farelo vs interno (cotação pública NAG)
     fb = (((d.get("fisico_br") or {}).get("produtos") or {})
