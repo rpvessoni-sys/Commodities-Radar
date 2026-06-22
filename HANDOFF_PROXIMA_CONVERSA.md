@@ -1,9 +1,23 @@
-# SUPER HANDOFF — Commodities Radar (atualizado 2026-06-19)
+# SUPER HANDOFF — Commodities Radar (atualizado 2026-06-22)
 
 > Substitui versões anteriores. Histórico antigo fica no git.
 > **Produto:** https://rpvessoni-sys.github.io/Commodities-Radar/#dashboard (atualiza sozinho na nuvem)
 > **Repo:** github.com/rpvessoni-sys/Commodities-Radar (PÚBLICO)
 > **Perfil do dono:** TRADER de soja, farelo e óleo degomado — opera os DOIS lados (long e short). Leitura SEMPRE neutra de preço (viés/spread/mean-reversion). NUNCA "comprador de farelo".
+
+---
+
+## 🔧 SESSÃO 2026-06-22 — Auditoria dos sinais + 2 fixes grandes (no ar)
+
+O dono achou que "os sinais estavam errados". Auditoria adversarial (workflow, 34 achados confirmados) **confirmou** e corrigi:
+
+**A) Farelo congelado + cascata (commit `7896f52`).** O farelo CBOT (ZM=F) ficava **preso no fechamento de 18/jun** enquanto soja/óleo andavam (intraday sobrescrevia o close bom do daily com print travado do Yahoo). Como crush, ratio Far/Soj, oil share e a Mesa derivam do farelo, **todos davam leitura falsa** ("farelo barato", "crush quebrou suporte", "Farelo −3") — sem aviso, porque a Saúde das fontes media frescor por FONTE, não por commodity. Fix = detector único **`indicators.cbot_freshness(conn)`** (perna defasada OU travada/delta-0) ligado em: KPI ("⚠ travado desde DD/mês" em vez de 0,00%), ratio (aviso em vez de "farelo barato"), crush ("leitura parcial"), Mesa (segura o score, rebaixa confiança), alertas técnicos (não dispara em perna travada), e **guard anti-carry no `cme_cbot.py`** (não grava fechamento repetido do dia em formação). NÃO mexe nas fórmulas (calibração intacta). Teste novo `tests/test_freshness.py`.
+
+**B) Bucket de lógica (commit `09f92f1`).** Score da Mesa ganhou **cap de momentum** (óleo não fica +3 "alta forte" caindo −10%; segura em +1); alerta do **crush por delta absoluto** (`variacao_abs_alert=0.50`, fim do −18% ruidoso); insight do óleo **condicional ao preço** ("ROMPEU 72" quando abaixo); crush insight reconhece os 2 níveis ($2,00 vs $2,50); "O que mudou" usa **datas reais** (não ontem/hoje). Forecast direcional (15% acerto) **já falha-fechado certo** ("só range") — sem mudança; modelo fraco = tarefa separada.
+
+**Validação:** 64 testes OK; `radar.yml` 60 runs sem falha (7896f52 confirmado verde ao vivo); Fase 2 produziu PR #4 (06-20) e #5 (06-21) **limpos** (1 commit, só insights/, guard verde) — o desastre de 06-19 não repetiu. **PRs #4/#5 são de alta qualidade** (lidos na íntegra) e leem CBOT 06-18 (fim de semana, complexo todo consistente em 06-18 — NÃO contaminados pela cascata). Decisão do dono: revisar e mergear/fechar.
+
+**Aberto:** revisão visual do site (FOCO 3 D) segue pendente; bucket de lógica "deeper" (modelo de forecast) não atacado.
 
 ---
 
