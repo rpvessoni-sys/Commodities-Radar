@@ -2326,6 +2326,27 @@ def _render_eventos(eventos: list[dict]) -> str:
     return f'<ul class="events">{"".join(items)}</ul>'
 
 
+def _render_insight_commodities(pc: list, visao: str = "") -> str:
+    """Bloco POR COMMODITY de uma leitura (soja/farelo/óleo): viés + a call.
+    Usado quando o insight não tem '## Resumo executivo' (leituras auto-claude)."""
+    def esc(s):
+        return (s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    DIREC = {"bull": ("🟢", "var(--bull)"), "bear": ("🔴", "var(--bear)"),
+             "neutro": ("⚪", "var(--muted)")}
+    linhas = []
+    for c in pc:
+        ico, cor = DIREC.get(c.get("direc"), DIREC["neutro"])
+        vl = esc(c.get("vies_label") or "")
+        vl_html = f' <span class="muted-small" style="color:{cor}">— {vl}</span>' if vl else ""
+        linhas.append(
+            f'<div style="margin:7px 0">'
+            f'<span style="color:{cor};font-weight:700">{ico} {esc(c["nome"])}</span>{vl_html}<br>'
+            f'<span class="muted-small">{esc(c["explicacao"])}</span></div>')
+    visao_html = (f'<p class="muted-small" style="margin:0 0 8px"><em>{esc(visao)}</em></p>'
+                  if visao else "")
+    return f'<div class="insight-resumo">{visao_html}{"".join(linhas)}</div>'
+
+
 def _render_insights_estudo(insights: list[dict]) -> str:
     """Lista cards de insights ordenados por data DESC."""
     if not insights:
@@ -2368,10 +2389,13 @@ def _render_insights_estudo(insights: list[dict]) -> str:
                 f'<span class="insight-tag">{t}</span>' for t in i["tags"]
             )
 
-        # Resumo executivo como lista
+        # Conteúdo do card: resumo executivo (insights de estudo) OU leitura por
+        # commodity (leituras auto-claude, que têm seções ## Soja/## Farelo/## Óleo).
         if i["resumo"]:
             resumo_items = "".join(f"<li>{r}</li>" for r in i["resumo"])
             resumo_html = f'<ul class="insight-resumo">{resumo_items}</ul>'
+        elif i.get("por_commodity"):
+            resumo_html = _render_insight_commodities(i["por_commodity"], i.get("visao_geral", ""))
         else:
             resumo_html = '<p class="muted-small">(sem resumo executivo no .md)</p>'
 

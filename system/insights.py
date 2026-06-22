@@ -119,6 +119,95 @@ def _extract_resumo_executivo(body: str) -> list[str]:
     return bullets
 
 
+# --- Leitura POR COMMODITY (leituras auto-claude: ## Soja/## Farelo/## Óleo) ---
+# As leituras autônomas não têm "## Resumo executivo"; têm uma seção por commodity
+# com a linha **Viés:** e a **Leitura operacional** (a call). O radar puxa daqui pra
+# mostrar as 3 commodities de forma inteligente em vez de "(sem resumo)".
+_COMMODITY_SECOES = [
+    ("soja", "Soja", r"##\s*Soja\b"),
+    ("farelo", "Farelo", r"##\s*Farelo\b"),
+    ("oleo", "Óleo", r"##\s*Óleo"),
+]
+
+
+def _limpa_md(texto: str) -> str:
+    texto = re.sub(r"\[\[([^\]|]+)(?:\|[^\]]+)?\]\]", r"\1", texto)   # wikilinks
+    texto = re.sub(r"[*_`#]", "", texto)
+    return re.sub(r"\s+", " ", texto).strip()
+
+
+def _primeiras_frases(texto: str, max_chars: int = 320) -> str:
+    texto = texto.strip()
+    if len(texto) <= max_chars:
+        return texto
+    corte = texto[:max_chars]
+    ponto = corte.rfind(". ")
+    return (corte[:ponto + 1] if ponto > max_chars * 0.5 else corte.rstrip() + "…")
+
+
+def _secao(body: str, pat: str) -> str | None:
+    m = re.search(pat, body, re.IGNORECASE)
+    if not m:
+        return None
+    start = m.end()
+    nxt = re.search(r"\n##\s+", body[start:])
+    return body[start: start + nxt.start()] if nxt else body[start:]
+
+
+def _explicacao_da_secao(secao: str) -> str:
+    """A call: pega 'Leitura operacional' (### ou **); senão o 1o parágrafo de prosa."""
+    m = re.search(r"(?:###\s*|\*\*)\s*Leitura operacional\s*:?\s*\**\s*\n+(.+)",
+                  secao, re.IGNORECASE | re.DOTALL)
+    fonte = m.group(1) if m else secao
+    for bloco in re.split(r"\n\s*\n", fonte):
+        linha = _limpa_md(bloco)
+        if len(linha) >= 60 and not re.match(r"^Viés", linha, re.IGNORECASE):
+            return _primeiras_frases(linha)
+    return ""
+
+
+def _vies_label(secao: str) -> str:
+    m = re.search(r"Viés\s*:?\s*\**\s*([^\n*]+)", secao, re.IGNORECASE)
+    return _limpa_md(m.group(1)) if m else ""
+
+
+def _extract_por_commodity(body: str, vies_tokens: list) -> list[dict]:
+    # direção por commodity a partir do frontmatter vies (ex: bear-oleo_soja -> oleo)
+    vmap = {}
+    for tok in (vies_tokens or []):
+        t = str(tok).lower().strip()
+        direc = "bull" if t.startswith("bull") else ("bear" if t.startswith("bear") else "neutro")
+        suf = re.sub(r"^(bull|bear)[-_ ]?", "", t)
+        if suf.startswith("oleo") or suf.startswith("óleo"):
+            vmap["oleo"] = direc
+        elif suf.startswith("farelo"):
+            vmap["farelo"] = direc
+        elif suf.startswith("soja"):
+            vmap["soja"] = direc
+    out = []
+    for key, nome, pat in _COMMODITY_SECOES:
+        secao = _secao(body, pat)
+        if not secao:
+            continue
+        explic = _explicacao_da_secao(secao)
+        if not explic:
+            continue
+        out.append({"key": key, "nome": nome, "direc": vmap.get(key, "neutro"),
+                    "vies_label": _vies_label(secao), "explicacao": explic})
+    return out
+
+
+def _extract_visao_geral(body: str) -> str:
+    secao = _secao(body, r"##\s*Vis(?:ã|a)o [Gg]eral")
+    if not secao:
+        return ""
+    for bloco in re.split(r"\n\s*\n", secao):
+        linha = _limpa_md(bloco)
+        if len(linha) >= 60:
+            return _primeiras_frases(linha, 260)
+    return ""
+
+
 def _extract_proximas_acoes(body: str) -> list[dict]:
     """Pega seção '## Próximas ações' — bullets com [ ] ou [x]."""
     m = re.search(r"##\s*Próximas ações\s*\n", body, re.IGNORECASE)
@@ -206,6 +295,8 @@ def list_insights() -> list[dict]:
             # alimenta os Drivers ativos por commodity no HTML (2026-06-11)
             "vies": fm.get("vies") or [],
             "resumo": _extract_resumo_executivo(body),
+            "por_commodity": _extract_por_commodity(body, fm.get("vies") or []),
+            "visao_geral": _extract_visao_geral(body),
             "proximas_acoes": _extract_proximas_acoes(body),
             "revisoes": _extract_revisoes(body),
             "body_md": body,
