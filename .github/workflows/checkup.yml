@@ -1,0 +1,52 @@
+name: Check-up das fontes
+
+# AGENDA de check-up: certifica que toda fonte coleta dado ATUALIZADO e FIDEDIGNO.
+# Lê o radar.db do cache (mesmo do radar.yml, read-only) e manda relatório pro
+# Telegram. Diário: silencioso se tudo OK, alerta se houver problema; 2ª feira
+# manda o relatório completo (heartbeat). Botão "Run workflow" = relatório agora.
+
+on:
+  schedule:
+    - cron: "30 2 * * *"      # ~23h30 BRT, depois do daily (22 UTC) popular o cache
+  workflow_dispatch:           # botao manual = relatorio completo na hora
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: system
+
+jobs:
+  checkup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -q requests
+
+      # Mesmo cache do radar.yml — restore-keys 'radar-db-' pega o DB mais recente.
+      - name: Restaurar banco (cache, read-only)
+        uses: actions/cache/restore@v4
+        with:
+          path: data/radar.db
+          key: radar-db-checkup-miss
+          restore-keys: |
+            radar-db-
+
+      - name: Rodar check-up
+        env:
+          PYTHONIOENCODING: utf-8
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python checkup.py --report
+          else
+            python checkup.py
+          fi
