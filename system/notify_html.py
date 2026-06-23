@@ -1574,6 +1574,9 @@ def _renderizar(d: dict) -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Commodities Radar — Daily — {target.strftime("%d/%m/%Y")}</title>
 <style>{css}</style>
 </head>
@@ -1879,6 +1882,10 @@ def _kpi_change_line(info: dict, fmt_delta, cor_direcao: bool = True) -> str:
             partes.append(f'<span style="color:{cor}">{seta} {fmt_delta(abs(d))} ({dp:+.1f}%)</span>')
         else:
             partes.append(f"{seta} {fmt_delta(abs(d))} ({dp:+.1f}%)")
+    # Data do fechamento VISÍVEL — pra dar pra ver de relance que a cotação é de
+    # hoje (antes só o USD/BRL mostrava data; o resto parecia "sem data" = velho).
+    if info.get("data"):
+        partes.append(f'fech. {_data_curta(info["data"])}')
     if info.get("min52") is not None:
         partes.append(
             f'52s: {fmt_delta(info["min52"])}–{fmt_delta(info["max52"])} '
