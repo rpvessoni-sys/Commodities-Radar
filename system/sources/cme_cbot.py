@@ -99,6 +99,73 @@ def _proximos_vencimentos(commodity: str, n: int = 6, ref: date | None = None) -
     return out
 
 
+# Roll: quantos dias antes do MES DE ENTREGA o mercado ja migrou pro proximo
+# contrato (aprox. do roll por volume / first notice day do complexo soja). Ex: em
+# 23/jun o julho ja rolou pro agosto — igual o Barchart mostra como contrato ativo.
+ROLL_DIAS = 12
+_MES_NUM = {c: m for m, c in MES_CME.items()}   # 'N' -> 7
+
+
+def _front_contract(commodity: str, ref: date | None = None) -> tuple[str, str, str] | None:
+    """Contrato ATIVO (front) = o vencimento liquido mais proximo, ROLANDO pro
+    proximo quando faltam <= ROLL_DIAS pro mes de entrega. Devolve (ticker, codigo,
+    label) ou None. Existe porque o simbolo continuo do Yahoo (ZL=F/ZS=F) rola
+    ERRADO perto do vencimento (em 23/jun o ZL=F retornava o contrato de dezembro)."""
+    ref = ref or date.today()
+    for ticker, codigo, label in _proximos_vencimentos(commodity, n=4, ref=ref):
+        mes = _MES_NUM.get(codigo[:1])
+        try:
+            ano = 2000 + int(codigo[1:])
+        except ValueError:
+            continue
+        if mes and (date(ano, mes, 1) - ref).days > ROLL_DIAS:
+            return (ticker, codigo, label)
+    vs = _proximos_vencimentos(commodity, n=1, ref=ref)
+    return vs[0] if vs else None
+
+
+def _serie_ohlc(ticker, commodity, unidade, headers, start_ts, end_ts) -> list[dict] | None:
+    """Serie diaria OHLC de um ticker (com guard anti-carry). None se nao houver
+    dado utilizavel — o caller tenta o fallback (=F)."""
+    url = (f"https://query1.finance.yahoo.com/v8/finance/chart/{quote(ticker)}"
+           f"?period1={start_ts}&period2={end_ts}&interval=1d")
+    try:
+        data = _fetch_chart(url, headers)
+    except Exception:
+        return None
+    try:
+        chart = data["chart"]["result"][0]
+        timestamps = chart.get("timestamp", []) or []
+        ind = chart.get("indicators", {}).get("quote", [{}])[0]
+        opens, highs = ind.get("open", []), ind.get("high", [])
+        lows, closes, volumes = ind.get("low", []), ind.get("close", []), ind.get("volume", [])
+    except (KeyError, IndexError, TypeError):
+        return None
+    if not any(c is not None for c in closes):
+        return None
+    # Guard anti-carry: nao gravar o fechamento da ultima barra (dia em formacao)
+    # se repetir exatamente o anterior (cotacao travada do Yahoo).
+    idx_close = [j for j in range(len(timestamps)) if j < len(closes) and closes[j] is not None]
+    skip_close_i = idx_close[-1] if (len(idx_close) >= 2 and closes[idx_close[-1]] == closes[idx_close[-2]]) else None
+    out = []
+    for i, ts in enumerate(timestamps):
+        try:
+            data_ref = datetime.fromtimestamp(ts).date().isoformat()
+        except (ValueError, OSError):
+            continue
+        for metrica, lista, un in (("abertura", opens, unidade), ("maxima", highs, unidade),
+                                   ("minima", lows, unidade), ("fechamento", closes, unidade),
+                                   ("volume", volumes, "contratos")):
+            if i >= len(lista) or lista[i] is None:
+                continue
+            if metrica == "fechamento" and i == skip_close_i:
+                continue
+            out.append({"data_referencia": data_ref, "tipo": "preco", "commodity": commodity,
+                        "metrica": metrica, "valor": float(lista[i]), "unidade": un,
+                        "contexto": f"ticker={ticker}", "raw": {"ticker": ticker, "ts": ts}})
+    return out or None
+
+
 class CMECollector(BaseCollector):
     source_name = "cme_cbot"
     cadence = "daily"
@@ -121,83 +188,35 @@ class CMECollector(BaseCollector):
             "Accept": "application/json",
         }
 
-        for ticker, (commodity, unidade) in TICKERS.items():
-            url = (
-                f"https://query1.finance.yahoo.com/v8/finance/chart/{quote(ticker)}"
-                f"?period1={start_ts}&period2={end_ts}&interval=1d"
-            )
-            try:
-                data = _fetch_chart(url, headers)
-            except Exception as e:
+        # ====== FRONT-MONTH = CONTRATO ATIVO (o numero do Barchart) ======
+        # O simbolo continuo do Yahoo (ZS=F/ZM=F/ZL=F) rola ERRADO perto do
+        # vencimento — em 23/jun o ZL=F vinha do contrato de DEZEMBRO e o ZS=F de
+        # NOVEMBRO. Buscamos o CONTRATO ATIVO explicito (ex ZLQ26.CBT), que bate com
+        # o Barchart. Fallback pro =F so se o contrato ativo nao tiver dado.
+        FRONT = [("soja_cbot", "USD/bushel", "ZS=F"),
+                 ("farelo_cbot", "USD/short_ton", "ZM=F"),
+                 ("oleo_cbot", "USD_cts/lb", "ZL=F")]
+        for commodity, unidade, fallback in FRONT:
+            fc = _front_contract(commodity)
+            tentativas = ([fc[0]] if fc else []) + [fallback]
+            serie = None
+            for tk in tentativas:
+                serie = _serie_ohlc(tk, commodity, unidade, headers, start_ts, end_ts)
+                if serie:
+                    break
+            if serie:
+                results.extend(serie)
+            else:
                 results.append({
-                    "data_referencia": date.today().isoformat(),
-                    "tipo": "erro",
-                    "commodity": commodity,
-                    "metrica": "fetch_error",
-                    "valor": None,
-                    "contexto": f"{type(e).__name__}: {e} (Yahoo+ScraperAPI falharam)",
+                    "data_referencia": date.today().isoformat(), "tipo": "erro",
+                    "commodity": commodity, "metrica": "fetch_error", "valor": None,
+                    "contexto": f"front {tentativas} sem dado (Yahoo+ScraperAPI falharam)",
                 })
-                continue
 
-            try:
-                chart = data["chart"]["result"][0]
-                timestamps = chart.get("timestamp", [])
-                indicators = chart.get("indicators", {}).get("quote", [{}])[0]
-                opens = indicators.get("open", [])
-                highs = indicators.get("high", [])
-                lows = indicators.get("low", [])
-                closes = indicators.get("close", [])
-                volumes = indicators.get("volume", [])
-            except (KeyError, IndexError, TypeError) as e:
-                results.append({
-                    "data_referencia": date.today().isoformat(),
-                    "tipo": "erro",
-                    "commodity": commodity,
-                    "metrica": "parse_error",
-                    "valor": None,
-                    "contexto": f"{type(e).__name__}: {e}",
-                })
-                continue
-
-            # Guard anti-carry (frescor): se o fechamento da ULTIMA barra (dia em
-            # formacao) repetir exatamente o fechamento anterior, e quase sempre
-            # cotacao TRAVADA do Yahoo — o ZM=F (farelo, pouco liquido) carrega o
-            # ultimo print. Nao gravar esse fechamento espurio evita que o run
-            # intraday sobrescreva o close bom do daily por um numero velho. So
-            # afeta a metrica 'fechamento'; OHLC/volume do dia seguem gravados.
-            _idx_close = [j for j in range(len(timestamps))
-                          if j < len(closes) and closes[j] is not None]
-            _skip_close_i = None
-            if len(_idx_close) >= 2 and closes[_idx_close[-1]] == closes[_idx_close[-2]]:
-                _skip_close_i = _idx_close[-1]
-
-            for i, ts in enumerate(timestamps):
-                try:
-                    data_ref = datetime.fromtimestamp(ts).date().isoformat()
-                except (ValueError, OSError):
-                    continue
-                metricas = [
-                    ("abertura", opens, unidade),
-                    ("maxima", highs, unidade),
-                    ("minima", lows, unidade),
-                    ("fechamento", closes, unidade),
-                    ("volume", volumes, "contratos"),
-                ]
-                for metrica, lista, un in metricas:
-                    if i >= len(lista) or lista[i] is None:
-                        continue
-                    if metrica == "fechamento" and i == _skip_close_i:
-                        continue
-                    results.append({
-                        "data_referencia": data_ref,
-                        "tipo": "preco",
-                        "commodity": commodity,
-                        "metrica": metrica,
-                        "valor": float(lista[i]),
-                        "unidade": un,
-                        "contexto": f"ticker={ticker}",
-                        "raw": {"ticker": ticker, "ts": ts},
-                    })
+        # Heating oil — =F mesmo (mercado distinto, sem roll do complexo soja)
+        serie_ho = _serie_ohlc("HO=F", "heating_oil_cbot", "USD/galão", headers, start_ts, end_ts)
+        if serie_ho:
+            results.extend(serie_ho)
 
         # ====== CURVA FORWARD (próximos 6 vencimentos por commodity) ======
         # Salvo como metrica='fechamento_<CODIGO>' (ex: 'fechamento_N26')

@@ -198,22 +198,25 @@ def _fmt_brn(v, casas: int) -> str:
 
 
 def _serie_cbot(commodity: str) -> dict | None:
-    """{ult, ant, abert} da commodity: último fechamento (vivo), fechamento anterior
-    (D-1) e abertura do dia corrente. None se não houver preço."""
+    """{ult, ant, abert, ref5} da commodity: último fechamento (vivo), fechamento
+    anterior (D-1), abertura do dia corrente e o fechamento de ~5 pregões atrás
+    (pra variação 5d, estilo 'Past 5 Days' do Barchart). None se não houver preço."""
     with db.connect() as conn:
         rows = conn.execute(
             "SELECT data_referencia, valor FROM dados_publicos WHERE fonte='cme_cbot' "
             "AND commodity=? AND metrica='fechamento' AND valor IS NOT NULL "
-            "ORDER BY data_referencia DESC LIMIT 2", (commodity,)).fetchall()
+            "ORDER BY data_referencia DESC LIMIT 6", (commodity,)).fetchall()
         if not rows:
             return None
         ult, data_ult = rows[0]["valor"], rows[0]["data_referencia"]
         ant = rows[1]["valor"] if len(rows) > 1 else None
+        # 5 pregões atrás = 6ª data distinta; se a série for curta, a mais antiga
+        ref5 = rows[5]["valor"] if len(rows) >= 6 else (rows[-1]["valor"] if len(rows) > 1 else None)
         ab = conn.execute(
             "SELECT valor FROM dados_publicos WHERE fonte='cme_cbot' AND commodity=? "
             "AND metrica='abertura' AND data_referencia=? AND valor IS NOT NULL LIMIT 1",
             (commodity, data_ult)).fetchone()
-    return {"ult": ult, "ant": ant, "abert": ab["valor"] if ab else None}
+    return {"ult": ult, "ant": ant, "abert": ab["valor"] if ab else None, "ref5": ref5}
 
 
 def build_pulso_cbot(target: date | None = None) -> str | None:
@@ -243,8 +246,13 @@ def build_pulso_cbot(target: date | None = None) -> str | None:
             var_s = f"{sinal}{_fmt_brn(abs(va), casas)} ({sinal_p}{_fmt_brn(abs(vp), 1)}%)"
         else:
             dot, var_s = "⚪", "—"
+        # variação de 5 pregões (a "posição de 5d" do Barchart)
+        v5_s = ""
+        if s.get("ref5"):
+            vp5 = (s["ult"] - s["ref5"]) / s["ref5"] * 100
+            v5_s = f" · 5d {'+' if vp5 >= 0 else '-'}{_fmt_brn(abs(vp5), 1)}%"
         blocos.append(
-            f"{dot} <b>{nome}</b> {_fmt_brn(ult, casas)}  ·  {var_s}\n"
+            f"{dot} <b>{nome}</b> {_fmt_brn(ult, casas)}  ·  {var_s}{v5_s}\n"
             f"<i>ant {_fmt_brn(ant, casas)} · abert {_fmt_brn(ab, casas)} · {unid}</i>"
         )
     if not blocos:
