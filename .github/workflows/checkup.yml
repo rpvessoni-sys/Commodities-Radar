@@ -27,8 +27,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: system/requirements.txt
 
-      - run: pip install -q requests
+      # checkup.py importa db/indicators -> config (precisa de python-dotenv) e o
+      # registry (importa os coletores). Instala o requirements completo, igual radar.yml.
+      - run: pip install -q -r requirements.txt
 
       # Mesmo cache do radar.yml — restore-keys 'radar-db-' pega o DB mais recente.
       - name: Restaurar banco (cache, read-only)

@@ -23,7 +23,9 @@ O dono achou que "os sinais estavam errados". Auditoria adversarial (workflow, 3
 
 **E) AGENDA de check-up (`83bbbee`).** `system/checkup.py` certifica cada fonte: rodou? (coletas_log vs cadência) e EXTRAIU dado real? (MAX data_referencia não-nula — pega ANEC/stub que "roda mas não traz número") + frescor CBOT por commodity. `checkup.yml`: restaura o `radar.db` do cache (read-only), roda diário ~23h30 BRT (silencioso se OK, alerta se problema, 2ª feira = relatório completo) + botão manual. Coleta certificada hoje (16 fontes rodaram 2026-06-23).
 
-**Aberto / próximos:** (1) **prompt enxuto da Fase 2** (o grande, melhora a qualidade na origem); (2) revisão visual do site (FOCO 3 D); (3) bucket de lógica "deeper" (modelo de forecast 15%); (4) auto-merge da leitura se o dono quiser (hoje aprova manual — gate de propósito).
+**F) AUTO-MERGE ligado + fix do check-up (2026-06-23).** O dono ligou o auto-merge: `leitura.yml` ganhou passo `gh pr merge --squash --delete-branch` que mergeia a leitura no main automaticamente — **só se tocar apenas `insights/`** (guard inline via merge-base; senão aborta e deixa pro dono). Link do Telegram passou a apontar pro `blob/main`. E o `checkup.yml` falhou no 1º run (exit 1: só instalava `requests`, mas `config` precisa de `python-dotenv` e o registry importa os coletores) → corrigido pra `pip install -r requirements.txt` (igual radar.yml) + cache pip. **Ciclo 100% automático agora:** coleta → leitura → Telegram → auto-merge no main → aparece no radar; check-up diário certifica.
+
+**Aberto / próximos:** (1) **prompt enxuto da Fase 2** (o grande, melhora a qualidade na origem); (2) revisão visual do site (FOCO 3 D); (3) bucket de lógica "deeper" (modelo de forecast 15%).
 
 ---
 

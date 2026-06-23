@@ -101,5 +101,27 @@ jobs:
           DATE="${{ steps.fila.outputs.date }}"
           git fetch origin "claude/insights-$DATE" && git checkout "claude/insights-$DATE"
           pip install -q requests
-          BASE="${{ github.server_url }}/${{ github.repository }}/blob/claude/insights-$DATE"
+          # link aponta pro main (o auto-merge abaixo coloca a leitura la em seguida)
+          BASE="${{ github.server_url }}/${{ github.repository }}/blob/main"
           python system/notify_leitura.py --latest --blobbase "$BASE" || true
+
+      # AUTO-MERGE (o dono ligou): mergeia a leitura no main automaticamente — MAS
+      # so se o PR tocar APENAS insights/ (mesmo cinto do guard), pra nunca
+      # contaminar codigo/calibracao nem num erro do agente. Falha nao derruba o run.
+      - name: Auto-merge da leitura
+        if: steps.fila.outputs.tem_fila == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DATE="${{ steps.fila.outputs.date }}"
+          git fetch origin main "claude/insights-$DATE"
+          MB=$(git merge-base origin/main "origin/claude/insights-$DATE")
+          FORA=$(git diff --name-only "$MB" "origin/claude/insights-$DATE" | grep -vE '^insights/' || true)
+          if [ -n "$FORA" ]; then
+            echo "::warning::PR toca fora de insights/ — auto-merge ABORTADO (deixa pro dono):"
+            echo "$FORA"
+            exit 0
+          fi
+          gh pr merge "claude/insights-$DATE" --squash --delete-branch \
+            && echo "Leitura $DATE auto-mergeada no main." \
+            || echo "::warning::auto-merge falhou — PR segue aberto pro merge manual"
