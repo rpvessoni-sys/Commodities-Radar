@@ -242,9 +242,21 @@ def _get_snapshot(target: date) -> dict:
             if not rows:
                 continue
             info = {"valor": rows[0]["valor"], "data": rows[0]["data_referencia"]}
-            if len(rows) == 2 and rows[1]["valor"]:
-                info["delta"] = rows[0]["valor"] - rows[1]["valor"]
-                info["delta_pct"] = info["delta"] / rows[1]["valor"] * 100
+            # Referencia da variacao = ABERTURA do MESMO pregao (sempre o dia
+            # corrente). Antes usava o fechamento anterior, que num GAP de coleta
+            # (farelo pulou pregao, fim de semana) vinha de DIAS ATRAS e distorcia
+            # a alta/baixa do dia. Fallback p/ fechamento anterior se nao houver abertura.
+            ab = conn.execute(
+                "SELECT valor FROM dados_publicos WHERE fonte='cme_cbot' AND commodity=? "
+                "AND metrica='abertura' AND data_referencia=? AND valor IS NOT NULL LIMIT 1",
+                (commodity, info["data"]),
+            ).fetchone()
+            usou_abertura = bool(ab and ab["valor"])
+            ref = ab["valor"] if usou_abertura else (rows[1]["valor"] if len(rows) == 2 else None)
+            if ref:
+                info["delta"] = info["valor"] - ref
+                info["delta_pct"] = info["delta"] / ref * 100
+                info["ref_tipo"] = "abertura" if usou_abertura else "fech_anterior"
             # Range/percentil 52 semanas — depende do backfill 5y; com série
             # curta (<60 pregões) fica omitido pra não dar percentil enganoso
             est = conn.execute(
@@ -1877,11 +1889,13 @@ def _kpi_change_line(info: dict, fmt_delta, cor_direcao: bool = True) -> str:
     if info.get("delta") is not None:
         d, dp = info["delta"], info.get("delta_pct", 0.0)
         seta = "▼" if d < 0 else ("▲" if d > 0 else "•")
+        # deixa explicito que a variacao e vs a ABERTURA do dia (nao vs dias atras)
+        ref_lbl = " vs abert." if info.get("ref_tipo") == "abertura" else ""
         if cor_direcao and d != 0:
             cor = "var(--bull)" if d > 0 else "var(--bear)"
-            partes.append(f'<span style="color:{cor}">{seta} {fmt_delta(abs(d))} ({dp:+.1f}%)</span>')
+            partes.append(f'<span style="color:{cor}">{seta} {fmt_delta(abs(d))} ({dp:+.1f}%{ref_lbl})</span>')
         else:
-            partes.append(f"{seta} {fmt_delta(abs(d))} ({dp:+.1f}%)")
+            partes.append(f"{seta} {fmt_delta(abs(d))} ({dp:+.1f}%{ref_lbl})")
     # Data do fechamento VISÍVEL — pra dar pra ver de relance que a cotação é de
     # hoje (antes só o USD/BRL mostrava data; o resto parecia "sem data" = velho).
     if info.get("data"):
