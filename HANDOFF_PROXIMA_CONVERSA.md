@@ -15,9 +15,15 @@ O dono achou que "os sinais estavam errados". Auditoria adversarial (workflow, 3
 
 **B) Bucket de lógica (commit `09f92f1`).** Score da Mesa ganhou **cap de momentum** (óleo não fica +3 "alta forte" caindo −10%; segura em +1); alerta do **crush por delta absoluto** (`variacao_abs_alert=0.50`, fim do −18% ruidoso); insight do óleo **condicional ao preço** ("ROMPEU 72" quando abaixo); crush insight reconhece os 2 níveis ($2,00 vs $2,50); "O que mudou" usa **datas reais** (não ontem/hoje). Forecast direcional (15% acerto) **já falha-fechado certo** ("só range") — sem mudança; modelo fraco = tarefa separada.
 
-**Validação:** 64 testes OK; `radar.yml` 60 runs sem falha (7896f52 confirmado verde ao vivo); Fase 2 produziu PR #4 (06-20) e #5 (06-21) **limpos** (1 commit, só insights/, guard verde) — o desastre de 06-19 não repetiu. **PRs #4/#5 são de alta qualidade** (lidos na íntegra) e leem CBOT 06-18 (fim de semana, complexo todo consistente em 06-18 — NÃO contaminados pela cascata). Decisão do dono: revisar e mergear/fechar.
+**Validação:** 64 testes OK; `radar.yml` 60 runs sem falha (7896f52 confirmado verde ao vivo); Fase 2 produziu PR #4 (06-20) e #5 (06-21) **limpos** (1 commit, só insights/, guard verde) — o desastre de 06-19 não repetiu. PRs #4/#5 leem CBOT 06-18 (fim de semana, complexo consistente em 06-18 — NÃO contaminados pela cascata). Dono mergeou os 2.
 
-**Aberto:** revisão visual do site (FOCO 3 D) segue pendente; bucket de lógica "deeper" (modelo de forecast) não atacado.
+**C) Radar mostra a leitura POR COMMODITY (`a51ce70`).** O card da aba 💡 Insights mostrava "(sem resumo executivo)" pras leituras auto-claude (elas têm `## Soja/## Farelo/## Óleo`, não `## Resumo executivo`). Agora `insights.py` extrai por commodity (direção do frontmatter `vies` + rótulo + a **Leitura operacional**/call) + Visão geral; `notify_html._render_insight_commodities` exibe 🟢/🔴 por commodity. Texto escapado (`<80%` não quebra). **Nota do dono: a leitura auto-claude é boa MAS verbosa/genérica e tem especificidades regulatórias não-verificáveis (STJ REsp, nº WASDE) — pendente reescrever o prompt pra nascer ENXUTA e afiada.**
+
+**D) ENTREGA da leitura no Telegram (`6eaf448`).** A leitura ficava presa no PR — o dono nunca recebia. `system/notify_leitura.py` formata (título + visão geral + 🟢/🔴 por commodity com viés+call + link) e manda pro Telegram. `leitura.yml` ganhou passo que envia após abrir o PR (futuras chegam sozinhas). Workflow manual **`enviar-leitura.yml`** (Run workflow) = preview na hora de uma leitura existente.
+
+**E) AGENDA de check-up (`83bbbee`).** `system/checkup.py` certifica cada fonte: rodou? (coletas_log vs cadência) e EXTRAIU dado real? (MAX data_referencia não-nula — pega ANEC/stub que "roda mas não traz número") + frescor CBOT por commodity. `checkup.yml`: restaura o `radar.db` do cache (read-only), roda diário ~23h30 BRT (silencioso se OK, alerta se problema, 2ª feira = relatório completo) + botão manual. Coleta certificada hoje (16 fontes rodaram 2026-06-23).
+
+**Aberto / próximos:** (1) **prompt enxuto da Fase 2** (o grande, melhora a qualidade na origem); (2) revisão visual do site (FOCO 3 D); (3) bucket de lógica "deeper" (modelo de forecast 15%); (4) auto-merge da leitura se o dono quiser (hoje aprova manual — gate de propósito).
 
 ---
 
