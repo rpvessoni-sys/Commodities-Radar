@@ -88,3 +88,18 @@ jobs:
           claude_args: |
             --allowedTools Bash,Edit,Write,Read,Glob,Grep
             --max-turns 40
+
+      # ENTREGA: manda a leitura recém-criada pro Telegram (viés + call por
+      # commodity + link), pra ela CHEGAR no dono em vez de ficar presa no PR.
+      # Falha de envio nao derruba o run (o PR ja foi aberto pelo passo acima).
+      - name: Enviar a leitura pro Telegram
+        if: steps.fila.outputs.tem_fila == 'true'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          DATE="${{ steps.fila.outputs.date }}"
+          git fetch origin "claude/insights-$DATE" && git checkout "claude/insights-$DATE"
+          pip install -q requests
+          BASE="${{ github.server_url }}/${{ github.repository }}/blob/claude/insights-$DATE"
+          python system/notify_leitura.py --latest --blobbase "$BASE" || true

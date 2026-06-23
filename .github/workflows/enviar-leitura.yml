@@ -1,0 +1,35 @@
+name: Enviar leitura pro Telegram (manual)
+
+# Botao "Run workflow" pra o dono RECEBER no Telegram uma leitura que ja existe
+# (mergeada no main), sem esperar o run autonomo das 23 UTC. Serve de preview do
+# formato de entrega. Vazio = a leitura mais recente.
+
+on:
+  workflow_dispatch:
+    inputs:
+      arquivo:
+        description: "slug/arquivo da leitura (vazio = a mais recente)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  enviar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -q requests
+      - name: Enviar pro Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          ARQ="${{ github.event.inputs.arquivo }}"
+          BASE="${{ github.server_url }}/${{ github.repository }}/blob/main"
+          if [ -n "$ARQ" ]; then
+            python system/notify_leitura.py "$ARQ" --blobbase "$BASE"
+          else
+            python system/notify_leitura.py --latest --blobbase "$BASE"
+          fi
