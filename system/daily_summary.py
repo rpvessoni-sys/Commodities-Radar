@@ -230,6 +230,12 @@ def build_pulso_cbot(target: date | None = None) -> str | None:
     COMMS = [("Farelo", "farelo_cbot", 1.0, 2, "US$/sht"),
              ("Soja", "soja_cbot", 100.0, 2, "US$/bu"),
              ("Óleo", "oleo_cbot", 1.0, 2, "¢/lb")]
+    # Conversão CBOT -> R$ (paridade sem basis): soja R$/sc, farelo/óleo R$/ton.
+    # Fatores iguais aos do PARIDADES do notify_html (aplicados ao valor BRUTO do DB).
+    BRL = {"soja_cbot": (0.022046, "/sc", 2),
+           "farelo_cbot": (1 / 0.907185, "/ton", 0),
+           "oleo_cbot": (22.0462, "/ton", 0)}
+    ptax, _, _ = _ultimo_e_anterior("bcb", "usd_brl_ptax", "valor")
     blocos = []
     for nome, comm, div, casas, unid in COMMS:
         s = _serie_cbot(comm)
@@ -251,9 +257,14 @@ def build_pulso_cbot(target: date | None = None) -> str | None:
         if s.get("ref5"):
             vp5 = (s["ult"] - s["ref5"]) / s["ref5"] * 100
             v5_s = f" · 5d {'+' if vp5 >= 0 else '-'}{_fmt_brn(abs(vp5), 1)}%"
+        # paridade em R$ (CBOT × câmbio), no valor BRUTO do DB
+        brl_s = ""
+        if ptax is not None and comm in BRL:
+            fbrl, unb, cb = BRL[comm]
+            brl_s = f" · <b>R$ {_fmt_brn(s['ult'] * fbrl * ptax, cb)}</b>{unb}"
         blocos.append(
-            f"{dot} <b>{nome}</b> {_fmt_brn(ult, casas)}  ·  {var_s}{v5_s}\n"
-            f"<i>ant {_fmt_brn(ant, casas)} · abert {_fmt_brn(ab, casas)} · {unid}</i>"
+            f"{dot} <b>{nome}</b> {_fmt_brn(ult, casas)} {unid}{brl_s}\n"
+            f"<i>{var_s}{v5_s} · ant {_fmt_brn(ant, casas)} · abert {_fmt_brn(ab, casas)}</i>"
         )
     if not blocos:
         return None
