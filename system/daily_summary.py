@@ -291,15 +291,15 @@ def build_pulso_cbot(target: date | None = None) -> str | None:
 
 
 def _em_pregao_cbot() -> bool:
-    """True se for dia útil E dentro da janela do day session da CBOT (grãos).
-    Janela 13:30–19:20 UTC (~10:30–16:20 BRT) cobre o pregão diurno em CDT/CST.
-    Fora disso (overnight/fechado/fim de semana) não manda pulso."""
+    """True se for dia útil E dentro da janela de 7h–20h BRT (horário de Brasília).
+    Fora disso (madrugada/noite/fim de semana) não manda pulso.
+    BRT = UTC-3 → 7h BRT = 10:00 UTC · 20h BRT = 23:00 UTC."""
     from datetime import timezone
     now = datetime.now(timezone.utc)
     if now.weekday() >= 5:                      # 5=sáb, 6=dom — CBOT fechada
         return False
     m = now.hour * 60 + now.minute
-    return (13 * 60 + 30) <= m <= (19 * 60 + 20)
+    return (10 * 60) <= m <= (23 * 60)          # 10:00–23:00 UTC = 7h–20h BRT
 
 
 def enviar_pulso_cbot(target: date | None = None) -> dict:
