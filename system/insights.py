@@ -208,6 +208,25 @@ def _extract_visao_geral(body: str) -> str:
     return ""
 
 
+def _extract_visao_geral_full(body: str, limite: int = 700) -> str:
+    """Visão geral mais longa (1-2 parágrafos) — alimenta o RESUMO EXECUTIVO DIDÁTICO
+    do topo do Dashboard (a leitura do Claude diário). Junta blocos até ~limite chars,
+    em vez do 1º parágrafo curto que o card da aba Insights usa."""
+    secao = _secao(body, r"##\s*Vis(?:ã|a)o [Gg]eral")
+    if not secao:
+        return ""
+    partes, total = [], 0
+    for bloco in re.split(r"\n\s*\n", secao):
+        linha = _limpa_md(bloco)
+        if len(linha) < 40:
+            continue
+        partes.append(linha)
+        total += len(linha)
+        if total >= limite:
+            break
+    return _primeiras_frases(" ".join(partes), limite) if partes else ""
+
+
 def _extract_proximas_acoes(body: str) -> list[dict]:
     """Pega seção '## Próximas ações' — bullets com [ ] ou [x]."""
     m = re.search(r"##\s*Próximas ações\s*\n", body, re.IGNORECASE)
@@ -297,6 +316,7 @@ def list_insights() -> list[dict]:
             "resumo": _extract_resumo_executivo(body),
             "por_commodity": _extract_por_commodity(body, fm.get("vies") or []),
             "visao_geral": _extract_visao_geral(body),
+            "visao_geral_didatica": _extract_visao_geral_full(body),
             "proximas_acoes": _extract_proximas_acoes(body),
             "revisoes": _extract_revisoes(body),
             "body_md": body,

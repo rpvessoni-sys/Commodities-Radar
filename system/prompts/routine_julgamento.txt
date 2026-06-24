@@ -23,9 +23,16 @@ precisar pra a analise ficar completa.
 Escreva `insights/AAAA-MM-DD_leitura-complexo.md`. Estrutura (use bastante texto, a
 profundidade e o objetivo):
 
-  ## Visao geral
-  A tese do dia do complexo em 1-2 paragrafos: quem manda no crush, onde esta o spread
-  Far/Soj, o que esta sustentando ou pressionando cada perna, o que mudou hoje.
+  ## Visao geral  (= o RESUMO EXECUTIVO que aparece no TOPO do Dashboard)
+  1-2 paragrafos EXECUTIVOS POREM DIDATICOS — escreva como quem ENSINA o complexo pra
+  alguem inteligente que NAO acompanha o dia a dia. Explique o MECANISMO em linguagem
+  simples, ligando causa->efeito: por que o oleo "paga o crush", por que o farelo
+  "sobra", o que significa NA PRATICA o spread Far/Soj estar comprimido ou esticado.
+  Cubra: quem manda no crush e POR QUE; onde esta o spread Far/Soj e o que isso quer
+  dizer; o que sustenta ou pressiona cada perna; o que MUDOU hoje; e feche com a
+  leitura de uma linha (pivo do complexo + maior conviccao + nivel de confianca).
+  Toda sigla explicada na 1a mencao, sem jargao solto. Esse texto e a porta de entrada
+  do dono no dia: tem que dar pra entender o complexo SO lendo ele.
 
   ## Soja   |   ## Farelo   |   ## Oleo   (uma secao POR commodity — a parte central)
   Para CADA uma, com profundidade:

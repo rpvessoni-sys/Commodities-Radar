@@ -87,10 +87,10 @@ def _coletar_dados(target: date) -> dict:
         "revisoes_pendentes": _get_revisoes_pendentes(target),
         "graficos": _get_series_graficos(target),
         "fila_pendentes": _get_fila_pendentes(target),
+        "fila_itens": _get_fila_itens(target),
     }
     # Geracao narrativa heuristica (baseada em regras sobre os dados)
-    base["resumo_executivo"] = _gerar_resumo_executivo(base)
-    base["insights"] = _gerar_insights(base)
+    base["resumo_executivo"] = _resolver_resumo_executivo(base)
     base["drivers"] = _gerar_drivers(base)
     base["conviccao"] = _gerar_conviccao(base)
     return base
@@ -755,6 +755,17 @@ def _get_fila_pendentes(target: date) -> int:
         return 0
 
 
+def _get_fila_itens(target: date) -> list[dict]:
+    """Itens da fila de julgamento (severidade alta/media) p/ o banner autoexplicativo.
+    [] se nada/erro. Mesmo critério do count_pendentes — aqui devolve o conteúdo."""
+    try:
+        import queue_emit
+        return [i for i in queue_emit.build_queue(target)
+                if i.get("severidade") in ("alta", "media")]
+    except Exception:
+        return []
+
+
 def _get_series_graficos(target: date) -> dict:
     """Séries temporais pros gráficos SVG (backfill 5y tornou isso possível).
 
@@ -850,9 +861,13 @@ def _render_revisoes(revisoes: list[dict]) -> str:
         badge = ('<span class="badge bear">VENCIDA</span>' if r["vencida"]
                  else '<span class="badge warn">vence em breve</span>')
         texto = f' — <span class="muted-small">{r["texto"]}</span>' if r["texto"] else ""
+        # Trunca no limite da PALAVRA (antes cortava no meio: "...viés baixi[sta]").
+        titulo = r["insight"]
+        if len(titulo) > 110:
+            titulo = titulo[:110].rsplit(" ", 1)[0].rstrip(" ,;:—-") + "…"
         itens.append(
             f'<li><strong>{r["label"]} em {r["data"]}</strong> {badge} · '
-            f'{r["insight"][:80]}{texto}</li>'
+            f'{titulo}{texto}</li>'
         )
     return f"""
     <h2>Revisões de insight na fila <span class="tag">D+N programados</span></h2>
@@ -1540,7 +1555,7 @@ def _renderizar(d: dict) -> str:
     # === Mesa do dia (camada decisória: confiança + semáforo + invalidação) ===
     mesa_html = _render_mesa_do_dia(d)
     # === O que mudou desde ontem + sinais contraditórios (camada decisória) ===
-    mudou_html = _render_o_que_mudou(d["target"])
+    mudou_html = _render_o_que_mudou(d)
     contradicoes_html = _render_contradicoes(_gerar_contradicoes(d))
     # === Índices sintéticos (Onda 2): sobra de farelo + suporte do óleo ===
     indices_html = _render_indices_sinteticos(d["target"])
@@ -1614,7 +1629,7 @@ def _renderizar(d: dict) -> str:
 
   <!-- =============== ABA 1: DASHBOARD =============== -->
   <section class="tab-pane active" id="tab-dashboard">
-    {_render_fila_banner(d.get("fila_pendentes", 0))}
+    {_render_fila_banner(d.get("fila_itens", []), d.get("target"))}
     {mesa_html}
     <h2>Snapshot atual <span class="tag">último fechamento CBOT</span></h2>
     <div class="kpis">{kpis_html}</div>
@@ -1642,9 +1657,6 @@ def _renderizar(d: dict) -> str:
         <span class="muted-small">(régua: &lt;80 comprimido · 80-87 neutro · ≥87 esticado)</span></summary>
       {ratio_svg if ratio_svg else '<p class="muted-small">Série curta demais.</p>'}
     </details>
-
-    <h2>Insights críticos <span class="tag">auto-gerado</span></h2>
-    <ul class="insights">{_render_insights(d["insights"])}</ul>
 
     <h2>Alertas técnicos ativos</h2>
     {alertas_html}
@@ -1908,17 +1920,79 @@ def _kpi_change_line(info: dict, fmt_delta, cor_direcao: bool = True) -> str:
     return " · ".join(partes) if partes else f'fechamento {info.get("data", "")}'
 
 
-def _render_fila_banner(n: int) -> str:
-    """Gatilho da camada de julgamento: avisa que há sinais pedindo leitura do Claude."""
-    if not n:
+_FILA_TIPO_LABEL = {
+    "ratio_zona": "Spread Far/Soj mudou de zona",
+    "nivel_tese": "Nível técnico rompido",
+    "tributario": "Marco tributário próximo",
+    "release": "Dado novo de fundamento",
+    "revisao": "Revisão de tese vencendo",
+    "erro": "Falha técnica na fila",
+}
+_FILA_SEV_ICON = {"alta": "🔴", "media": "🟡", "baixa": "⚪"}
+
+
+def _render_fila_banner(itens, target: date | None = None) -> str:
+    """Gatilho da camada de julgamento — AUTOEXPLICATIVO (revisão 2026-06-24).
+
+    Em vez de só "N pendentes + abra o Claude", agora: (1) explica em linguagem de
+    leitor o que é uma "leitura pendente" e o que é "tratar"; (2) LISTA cada item da
+    fila com a pergunta de decisão; (3) colore por severidade (🔴 alta / 🟡 média);
+    (4) carimba a data da fila; (5) deixa claro que a leitura automática (Fase 2,
+    Claude na nuvem) já cuida disso. Aceita lista de itens (detalhado) OU só um int
+    (compat antigo — sem detalhe). É CTA/processo, não dado de mercado: não toca calibração."""
+    if isinstance(itens, int):
+        itens = [{}] * itens if itens > 0 else []
+    if not itens:
         return ""
+
+    def esc(s) -> str:
+        return (str(s if s is not None else "")
+                .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+
+    detalhado = any(isinstance(i, dict) and i.get("titulo") for i in itens)
+    n = len(itens)
     plural = "leitura pendente" if n == 1 else "leituras pendentes"
+    sinais = "um sinal que mudou" if n == 1 else f"{n} sinais que mudaram"
+
+    tem_alta = any(isinstance(i, dict) and i.get("severidade") == "alta" for i in itens)
+    cor = "var(--bear)" if tem_alta else "var(--warn)"
+    bg = "rgba(239,68,68,0.08)" if tem_alta else "rgba(245,158,11,0.08)"
+
+    data_html = (f'<span class="muted-small">fila de {esc(_data_curta(target.isoformat()))}</span>'
+                 if target else "")
+
+    lista_html = ""
+    if detalhado:
+        lis = ""
+        for it in itens:
+            if not (isinstance(it, dict) and it.get("titulo")):
+                continue
+            sev = it.get("severidade")
+            sev_cls = "bear" if sev == "alta" else "warn"
+            icon = _FILA_SEV_ICON.get(sev, "")
+            label = _FILA_TIPO_LABEL.get(it.get("tipo"), "Sinal")
+            lis += (f'<li class="{sev_cls}"><strong>{icon} {label}</strong> — {esc(it.get("titulo"))}'
+                    f'<br><span class="muted-small">↳ O que decidir: {esc(it.get("pergunta"))}</span></li>')
+        lista_html = f'<ul class="insights" style="margin:0 0 10px">{lis}</ul>'
+
     return f"""
-    <div class="card" style="border-left:3px solid var(--accent);background:rgba(59,130,246,0.10);margin-bottom:16px">
-      <strong>🔔 {n} {plural}</strong> — sinais que pedem interpretação.
-      <span class="muted-small">Abra o Claude no projeto e diga
-      <em>"lê a fila de julgamento e trata"</em> (ou rode <code>main.py queue</code> pra ver).
-      A leitura vira insight e atualiza os Drivers.</span>
+    <div class="card" style="border-left:3px solid {cor};background:{bg};margin-bottom:16px">
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+        <strong style="font-size:1.05em">🔔 {n} {plural}</strong>
+        {data_html}
+      </div>
+      <p class="muted-small" style="margin:0 0 8px">
+        O robô achou {sinais} e ainda não virou <strong>leitura de tese</strong>.
+        "Leitura" = transformar o fato em um viés (alta / baixa / spread) — é o que
+        alimenta os <strong>Drivers</strong> e a aba <strong>💡 Insights</strong>.
+        {"O que está na fila:" if detalhado else ""}
+      </p>
+      {lista_html}
+      <p class="muted-small" style="margin:0">
+        <strong>Quem resolve:</strong> a leitura automática (Claude na nuvem, 1×/dia)
+        já abre tratada — em geral você só confere. Pra tratar na hora, abra o Claude
+        no projeto e diga <em>"lê a fila de julgamento e trata"</em>.
+      </p>
     </div>"""
 
 
@@ -2152,7 +2226,10 @@ def _render_alertas(alertas: list[dict]) -> str:
             direcao = "abaixo do suporte" if a.get("tipo") == "quebra_suporte" else "acima da resistência"
             corpo = f"{label} fechou em <strong>{_fmt_num(a['valor_atual'], 2)}</strong> — {direcao} {_fmt_num(a['nivel'], 2)}"
         elif a.get("delta_pct") is not None:
-            corpo = f"{label} variou <strong>{a['delta_pct']:+.2f}%</strong> no dia"
+            # Rótulo da base: este % é fechamento-a-fechamento (alerts_technical),
+            # diferente do "+x% vs abert." do KPI do Snapshot — explicitar evita a
+            # confusão de dois "% do dia" da mesma commodity que não batem.
+            corpo = f"{label} variou <strong>{a['delta_pct']:+.2f}%</strong> no dia (vs fechamento anterior)"
         else:
             corpo = a.get("msg", "")
         lente_html = ""
@@ -3455,11 +3532,11 @@ def _linha_invalidacao(d: dict, conv: dict) -> str:
     if c["score"] > 0:  # viés de alta → vira se perder o suporte
         sup = cfg.get("suporte")
         if sup:
-            return f"<strong>Vira</strong> se {c['nome']} perder o suporte {_fmt_num(sup, 2)}."
+            return f"A leitura <strong>vira</strong> se o {c['nome']} perder o suporte {_fmt_num(sup, 2)}."
     else:  # viés de baixa → vira se romper a resistência
         res = cfg.get("resistencia")
         if res:
-            return f"<strong>Vira</strong> se {c['nome']} romper a resistência {_fmt_num(res, 2)}."
+            return f"A leitura <strong>vira</strong> se o {c['nome']} romper a resistência {_fmt_num(res, 2)}."
     return ""
 
 
@@ -3519,8 +3596,9 @@ def _render_mesa_do_dia(d: dict) -> str:
         <tbody>{"".join(linhas)}</tbody>
       </table>
       <p class="muted-small" style="margin:8px 0 0">
-        Viés = drivers de alta − de baixa (escala −3…+3), <strong>leitura de preço</strong>
-        long/short, não ordem de compra. {inval}
+        <strong>Como ler:</strong> o viés é o <strong>saldo de sinais</strong> do produto —
+        drivers de alta menos os de baixa, de −3 a +3. Mostra pra onde o preço tende e com
+        que firmeza (long/short), <strong>não</strong> é ordem de compra/venda. {inval}
       </p>
     </div>"""
 
@@ -3539,25 +3617,32 @@ def _trend5_pct(commodity: str) -> float | None:
     return None
 
 
-# (label, fonte, commodity, metrica, casas, sufixo, frase_sobe, frase_desce)
+# (label, fonte, commodity, metrica, casas, sufixo, frase_sobe, frase_desce, limiar_material)
+# limiar_material = Δ mínimo p/ narrar direção; abaixo dele = "estável" (não dar leitura
+# a ruído, ex. crush −0,01). O Ratio usa frase NEUTRA de movimento (sem "esticando/
+# comprimindo", que brigava com a zona do KPI) — a zona entra como contexto (R1).
 _MUDOU_SPECS = [
     ("Ratio Far/Soj", "indicators", "complexo_soja", "far_soj_ratio_pct", 1, "%",
-     "spread esticando (farelo ganha de soja)", "spread comprimindo (farelo cede vs soja)"),
+     "farelo ganhou de soja no dia", "farelo cedeu vs soja no dia", 0.3),
     ("Oil share", "indicators", "complexo_soja", "oil_share_pct", 1, "%",
-     "óleo ganha peso no crush", "óleo cede peso no crush"),
+     "óleo ganha peso no crush", "óleo cede peso no crush", 0.4),
     ("Crush margin", "indicators", "complexo_soja", "crush_margin_usd_bu", 2, " USD/bu",
-     "esmagamento mais rentável", "esmagamento menos rentável"),
+     "esmagamento mais rentável", "esmagamento menos rentável", 0.05),
     ("USD/BRL", "bcb", "usd_brl_ptax", "valor", 4, "",
-     "real mais fraco — sobe a paridade em R$", "real mais forte — pressiona a paridade em R$"),
+     "real mais fraco — sobe a paridade em R$", "real mais forte — pressiona a paridade em R$", 0.02),
 ]
 
 
-def _render_o_que_mudou(target: date) -> str:
-    """Tabela 'o que mudou desde ontem': indicadores-chave do complexo, D-1, leitura neutra."""
+def _render_o_que_mudou(d: dict) -> str:
+    """Tabela 'o que mudou desde ontem': indicadores-chave do complexo, D-1, leitura neutra.
+    R1/R2 (2026-06-24): situa o movimento do Ratio na ZONA atual e ignora ruído via
+    limiar de materialidade (não narra Δ insignificante)."""
+    target = d["target"]
+    fs = d.get("far_soj") or {}
     linhas = []
     with db.connect() as conn:
         datas_atual, datas_ant = set(), set()
-        for label, fonte, comm, metrica, casas, sufixo, sobe, desce in _MUDOU_SPECS:
+        for label, fonte, comm, metrica, casas, sufixo, sobe, desce, limiar in _MUDOU_SPECS:
             rows = conn.execute(
                 """SELECT valor, data_referencia FROM dados_publicos WHERE fonte=? AND commodity=? AND metrica=?
                    AND valor IS NOT NULL AND data_referencia<=?
@@ -3577,13 +3662,18 @@ def _render_o_que_mudou(target: date) -> str:
                 # Δ sobre os valores ARREDONDADOS p/ bater com as colunas exibidas
                 # (senão 79,8→80,0 mostraria Δ+0,1 e parece erro).
                 delta = round(hoje, casas) - round(ontem, casas)
-                eps = 10 ** (-casas) / 2
-                if delta > eps:
-                    leitura, cor = sobe, "var(--bull)"
-                elif delta < -eps:
-                    leitura, cor = desce, "var(--bear)"
-                else:
+                # R2: só narra direção se o movimento for MATERIAL (>= limiar);
+                # abaixo disso é ruído (ex. crush −0,01) → "estável", sem narrativa.
+                if abs(delta) < limiar:
                     leitura, cor = "estável", "var(--muted)"
+                elif delta > 0:
+                    leitura, cor = sobe, "var(--bull)"
+                else:
+                    leitura, cor = desce, "var(--bear)"
+                # R1: situa o Ratio na ZONA atual (evita o "esticando" do dia brigar
+                # com o "comprimido" do KPI/Mesa). Mostra a zona mesmo se estável.
+                if metrica == "far_soj_ratio_pct" and fs.get("zona"):
+                    leitura = f"{leitura} · segue {fs['zona']}"
                 sinal = "+" if delta >= 0 else ""
                 d_txt = f'<span style="color:{cor}">{sinal}{_fmt_num(delta, casas)}</span>'
             ontem_txt = (_fmt_num(ontem, casas) + sufixo) if ontem is not None else "—"
@@ -3630,32 +3720,32 @@ def _gerar_contradicoes(d: dict) -> list[dict]:
     if soja_sc > 0 and far_sc < 0:
         out.append({
             "titulo": "Soja com viés de alta × farelo de baixa",
-            "explicacao": "O óleo concentra o valor do crush; o farelo sai como sobra do esmagamento.",
-            "implicacao": "Spread far÷soj tende a seguir comprimido — convergência (long farelo/short soja) tem vento contra enquanto o óleo dominar.",
+            "explicacao": "A esmagadora compra soja e vende farelo + óleo. Com o óleo pagando quase todo o crush (a margem de esmagar), ela aceita soltar farelo barato só pra capturar o óleo — por isso a soja tem comprador (sustentada) e o farelo vira sobra (pressionado).",
+            "implicacao": "Apostar na volta do farelo contra a soja (comprar farelo / vender soja, esperando o spread normalizar) rema contra a maré enquanto o óleo mandar. A virada só vem quando o óleo perder força.",
         })
 
     t_far = _trend5_pct("farelo_cbot")
     if zona == "comprimido" and t_far is not None and t_far < -1:
         out.append({
             "titulo": "Farelo barato vs soja × ainda caindo no CBOT",
-            "explicacao": f"Spread comprimido (valor de mean-reversion), mas o farelo cai {t_far:+.1f}% em 5 pregões (faca caindo).",
-            "implicacao": "O valor existe, mas falta exaustão — esperar virada de momentum antes de apostar na convergência.",
+            "explicacao": f"O farelo está historicamente barato vs soja — distorção que costuma se corrigir com o tempo (o tal do mean-reversion, a volta à média). Mas ele AINDA cai no pregão ({t_far:+.1f}% em 5 dias): comprar agora é pegar faca caindo.",
+            "implicacao": "O preço de valor existe, mas entrar antes do farelo parar de cair é arriscado — espere o movimento estabilizar (virada de momentum) antes de apostar na convergência.",
         })
 
     p_oleo = pct_cot.get("oleo_cbot")
     if oil_share is not None and oil_share >= 50 and p_oleo is not None and p_oleo >= 85:
         out.append({
             "titulo": "Óleo dominando o crush × fundos comprados no extremo",
-            "explicacao": f"Oil share {oil_share:.1f}% (óleo manda) e managed money no percentil {p_oleo:.0f} de 5 anos.",
-            "implicacao": "A tendência pode durar, mas a assimetria piora: notícia ruim de RIN/diesel/palma vira realização rápida.",
+            "explicacao": f"O óleo concentra mais da metade do valor do crush (oil share {oil_share:.1f}%) — virou o motor do complexo. Só que os fundos especuladores (managed money) estão comprados no óleo como em poucos momentos dos últimos 5 anos (percentil {p_oleo:.0f} = mais comprados que {p_oleo:.0f}% da história recente). Quando quase todo mundo já está dentro, falta quem continue comprando.",
+            "implicacao": "A alta pode durar, mas o risco fica torto: uma notícia ruim (corte no mandato de biodiesel/RIN nos EUA, diesel fraco ou safra de palma cheia) faz os fundos correrem pra saída ao mesmo tempo — e a queda vem rápida.",
         })
 
     p_far = pct_cot.get("farelo_cbot")
     if zona == "comprimido" and p_far is not None and 15 < p_far < 85:
         out.append({
             "titulo": "Spread comprimido × posicionamento sem extremo",
-            "explicacao": f"Farelo barato vs soja, mas os fundos estão no percentil {p_far:.0f} (sem capitulação técnica).",
-            "implicacao": "A oportunidade de spread existe, mas pode faltar o empurrão de um extremo de posicionamento.",
+            "explicacao": f"O farelo está barato vs soja (oportunidade de valor), mas os fundos estão numa posição mediana (percentil {p_far:.0f} = meio da faixa de 5 anos) — ninguém jogou a toalha vendendo no desespero. Viradas costumam nascer de um extremo de posicionamento, e ele ainda não apareceu.",
+            "implicacao": "A chance de comprar farelo barato existe, mas pode faltar o empurrão de um extremo (capitulação dos vendidos) pra destravar a convergência — que, sem isso, pode demorar.",
         })
 
     return out
@@ -3733,6 +3823,41 @@ def _render_indices_sinteticos(target: date) -> str:
     if not cards:
         return ""
     return f'<div style="display:flex;gap:14px;flex-wrap:wrap">{"".join(cards)}</div>'
+
+
+def _resolver_resumo_executivo(d: dict) -> str:
+    """Resumo executivo do topo do Dashboard. Prioriza a LEITURA DIDÁTICA do Claude
+    diário (Fase 2) — texto executivo que EXPLICA o porquê; cai no resumo automático
+    (template determinístico) se não houver leitura fresca. Só apresentação."""
+    didatico = _resumo_didatico_da_leitura(d)
+    return didatico if didatico else _gerar_resumo_executivo(d)
+
+
+def _resumo_didatico_da_leitura(d: dict):
+    """Visão geral da leitura auto-claude mais recente (≤3 dias), apresentada como
+    resumo executivo DIDÁTICO e rotulada como leitura do Claude. None se não houver
+    leitura fresca/com visão geral → o caller cai no template determinístico."""
+    target = d.get("target")
+    for ins in (d.get("insights_estudo") or []):   # já vem ordenado por data DESC
+        tags = ins.get("tags") or []
+        if "auto-claude" not in tags and "complexo" not in tags:
+            continue
+        if (ins.get("status") or "").lower() not in ("ativa", "revisada"):
+            continue
+        vg = (ins.get("visao_geral_didatica") or ins.get("visao_geral") or "").strip()
+        if not vg:
+            return None
+        if isinstance(target, date) and ins.get("data"):
+            try:
+                if (target - date.fromisoformat(ins["data"])).days > 3:
+                    return None
+            except (ValueError, TypeError):
+                pass
+        vg_safe = vg.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        marca = (f'<span class="muted-small" style="display:block;margin-top:8px">'
+                 f'🧠 Leitura do dia · Claude autônomo · {_data_curta(ins.get("data", ""))}</span>')
+        return vg_safe + marca
+    return None
 
 
 def _gerar_resumo_executivo(d: dict) -> str:
