@@ -1,4 +1,4 @@
-# Briefing consolidado — 2026-06-27
+# Briefing consolidado — 2026-06-28
 
 _Base 100% publica (CBOT/BCB/CEPEA/NAG/USDA/COT/clima) + notas manuais do consultor._
 
@@ -258,6 +258,8 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## indicators
 
+- 2026-06-28 | complexo_soja | indice_sobra_farelo: 100.0 0-100 (forte pressão baixista no farelo (5/5 condições))
+- 2026-06-28 | complexo_soja | indice_suporte_oleo: 80.0 0-100 (óleo domina o crush (4/5 condições))
 - 2026-06-27 | complexo_soja | indice_sobra_farelo: 100.0 0-100 (forte pressão baixista no farelo (5/5 condições))
 - 2026-06-27 | complexo_soja | indice_suporte_oleo: 80.0 0-100 (óleo domina o crush (4/5 condições))
 - 2026-06-26 | biodiesel_us | custo_oleo_usd_galao: 5.2365 USD/galão (7.5 lb × óleo 69.82 cts/lb)
@@ -306,8 +308,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-06-22 | complexo_soja | crush_margin_usd_bu: 3.0244 USD/bushel (Board Crush: farelo 299.90 + oleo 69.56 − soja 1122.50)
 - 2026-06-22 | complexo_soja | far_soj_ratio_pct: 80.15 % (farelo 299.90/sht ÷ (soja 1122.50cts × 33.33) — <80 abundante, >=87 apertado)
 - 2026-06-22 | complexo_soja | indice_sobra_farelo: 100.0 0-100 (forte pressão baixista no farelo (5/5 condições))
-- 2026-06-22 | complexo_soja | indice_suporte_oleo: 80.0 0-100 (óleo domina o crush (4/5 condições))
-- 2026-06-22 | complexo_soja | oil_meal_spread_usd_bu: 1.0538 USD/bushel (Oleo - Farelo (positivo = oleo manda))
 
 ---
 
@@ -368,6 +368,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## mpob
 
+- 2026-06-28 | palma_malasia | page_fetched: 3428.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-06-27 | palma_malasia | page_fetched: 3428.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-06-26 | palma_malasia | page_fetched: 3428.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-06-25 | palma_malasia | page_fetched: 3428.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
@@ -441,6 +442,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## noaa_cpc
 
+- 2026-06-28 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-06-27 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-06-26 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-06-25 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
@@ -459,6 +461,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## nopa
 
+- 2026-06-28 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-06-27 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-06-26 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-06-25 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
@@ -477,7 +480,9 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## noticias_rss
 
+- 2026-06-28 | noticias | items_fetched: 160.0 items (160 items lidos, 4 mantidos (soja/farelo/oleo))
 - 2026-06-27 | noticias | items_fetched: 160.0 items (160 items lidos, 3 mantidos (soja/farelo/oleo))
+- 2026-06-27 | soja | headline: None  (Colheita de soja na Argentina chega a 98% e produção é mantida em 50,1 milhões de toneladas | https://www.canalrural.com.br/agricultura/projeto-soja-brasil/colheita-de-soja-na-argentina-alcanca-98-e-de-milho-atinge-512/)
 - 2026-06-26 | noticias | items_fetched: 160.0 items (160 items lidos, 4 mantidos (soja/farelo/oleo))
 - 2026-06-26 | soja | headline: None  (Soybean planting date has season-long effects | https://www.farmprogress.com/soybean/soybean-planting-date-has-season-long-effects)
 - 2026-06-25 | noticias | items_fetched: 160.0 items (160 items lidos, 3 mantidos (soja/farelo/oleo))
@@ -526,6 +531,12 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 
 | Geracao | Horizonte | Alvo | Commodity | Spot ref | Baixo | Central | Alto | Vies |
 |---|---|---|---|---|---|---|---|---|
+| 2026-06-28 | 7d | 2026-07-05 | farelo_cbot | 304.20 | 282.34 | 295.72 | 309.10 | baixista |
+| 2026-06-28 | 7d | 2026-07-05 | oleo_cbot | 69.82 | 62.60 | 66.59 | 70.59 | baixista |
+| 2026-06-28 | 7d | 2026-07-05 | soja_cbot | 1136.50 | 1070.11 | 1120.71 | 1171.32 | baixista |
+| 2026-06-28 | 30d | 2026-07-28 | farelo_cbot | 304.20 | 239.06 | 266.76 | 294.45 | baixista |
+| 2026-06-28 | 30d | 2026-07-28 | oleo_cbot | 69.82 | 46.94 | 55.21 | 63.48 | baixista |
+| 2026-06-28 | 30d | 2026-07-28 | soja_cbot | 1136.50 | 964.16 | 1068.93 | 1173.69 | baixista |
 | 2026-06-27 | 7d | 2026-07-04 | farelo_cbot | 304.20 | 282.23 | 295.72 | 309.21 | baixista |
 | 2026-06-27 | 7d | 2026-07-04 | oleo_cbot | 69.82 | 62.47 | 66.59 | 70.72 | baixista |
 | 2026-06-27 | 7d | 2026-07-04 | soja_cbot | 1136.50 | 1070.36 | 1120.71 | 1171.07 | baixista |
@@ -544,19 +555,13 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 | 2026-06-25 | 30d | 2026-07-25 | farelo_cbot | 306.00 | 231.57 | 259.09 | 286.62 | baixista |
 | 2026-06-25 | 30d | 2026-07-25 | oleo_cbot | 69.54 | 45.72 | 53.96 | 62.20 | baixista |
 | 2026-06-25 | 30d | 2026-07-25 | soja_cbot | 1137.00 | 930.05 | 1029.05 | 1128.04 | baixista |
-| 2026-06-24 | 7d | 2026-07-01 | farelo_cbot | 302.00 | 279.95 | 293.42 | 306.90 | baixista |
-| 2026-06-24 | 7d | 2026-07-01 | oleo_cbot | 68.25 | 62.21 | 66.27 | 70.32 | baixista |
-| 2026-06-24 | 7d | 2026-07-01 | soja_cbot | 1116.75 | 1055.12 | 1103.71 | 1152.30 | baixista |
-| 2026-06-24 | 30d | 2026-07-24 | farelo_cbot | 302.00 | 227.46 | 255.35 | 283.24 | baixista |
-| 2026-06-24 | 30d | 2026-07-24 | oleo_cbot | 68.25 | 48.28 | 56.67 | 65.07 | baixista |
-| 2026-06-24 | 30d | 2026-07-24 | soja_cbot | 1116.75 | 925.89 | 1026.49 | 1127.09 | baixista |
 
 ---
 
 
 ---
 
-# Fila de julgamento — 2026-06-27
+# Fila de julgamento — 2026-06-28
 
 **3 item(ns).** Frase-gatilho: "lê a fila de julgamento e trata"
 
@@ -572,9 +577,9 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 - refs: farelo,ratio-far-soj,spread
 - leitura: A tese se confirmou? Atualizar status/insight.
 
-## 🟡 [release] NOPA novo (2026-06-27)
-- id: `release-nopa-2026-06-27`
-- fato: fonte nopa com data 2026-06-27 — coletado, ainda nao interpretado
+## 🟡 [release] NOPA novo (2026-06-28)
+- id: `release-nopa-2026-06-28`
+- fato: fonte nopa com data 2026-06-28 — coletado, ainda nao interpretado
 - refs: complexo_soja
 - leitura: O numero muda o balanco/tese? Algo relevante pro farelo?
 
