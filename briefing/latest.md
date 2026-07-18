@@ -194,40 +194,40 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 ## cme_cbot
 
 - 2026-07-17 | farelo_cbot | abertura: 322.8999938964844 USD/short_ton (ticker=ZMQ26.CBT)
-- 2026-07-17 | farelo_cbot | fechamento: 321.0 USD/short_ton (ticker=ZMQ26.CBT)
-- 2026-07-17 | farelo_cbot | fechamento_F27: 320.79998779296875 USD/short_ton (ticker=ZMF27.CBT venc=jan/27)
-- 2026-07-17 | farelo_cbot | fechamento_Q26: 321.0 USD/short_ton (ticker=ZMQ26.CBT venc=ago/26)
-- 2026-07-17 | farelo_cbot | fechamento_U26: 317.79998779296875 USD/short_ton (ticker=ZMU26.CBT venc=set/26)
-- 2026-07-17 | farelo_cbot | fechamento_V26: 315.5 USD/short_ton (ticker=ZMV26.CBT venc=out/26)
-- 2026-07-17 | farelo_cbot | fechamento_Z26: 319.20001220703125 USD/short_ton (ticker=ZMZ26.CBT venc=dez/26)
+- 2026-07-17 | farelo_cbot | fechamento: 320.20001220703125 USD/short_ton (ticker=ZMQ26.CBT)
+- 2026-07-17 | farelo_cbot | fechamento_F27: 320.29998779296875 USD/short_ton (ticker=ZMF27.CBT venc=jan/27)
+- 2026-07-17 | farelo_cbot | fechamento_Q26: 320.20001220703125 USD/short_ton (ticker=ZMQ26.CBT venc=ago/26)
+- 2026-07-17 | farelo_cbot | fechamento_U26: 317.1000061035156 USD/short_ton (ticker=ZMU26.CBT venc=set/26)
+- 2026-07-17 | farelo_cbot | fechamento_V26: 314.8999938964844 USD/short_ton (ticker=ZMV26.CBT venc=out/26)
+- 2026-07-17 | farelo_cbot | fechamento_Z26: 318.5 USD/short_ton (ticker=ZMZ26.CBT venc=dez/26)
 - 2026-07-17 | farelo_cbot | maxima: 322.8999938964844 USD/short_ton (ticker=ZMQ26.CBT)
 - 2026-07-17 | farelo_cbot | minima: 318.5 USD/short_ton (ticker=ZMQ26.CBT)
-- 2026-07-17 | farelo_cbot | volume: 29444.0 contratos (ticker=ZMQ26.CBT)
-- 2026-07-17 | heating_oil_cbot | abertura: 3.9563000202178955 USD/galão (ticker=HO=F)
-- 2026-07-17 | heating_oil_cbot | fechamento: 3.949399948120117 USD/galão (ticker=HO=F)
-- 2026-07-17 | heating_oil_cbot | maxima: 3.99180006980896 USD/galão (ticker=HO=F)
-- 2026-07-17 | heating_oil_cbot | minima: 3.9047999382019043 USD/galão (ticker=HO=F)
-- 2026-07-17 | heating_oil_cbot | volume: 34082.0 contratos (ticker=HO=F)
+- 2026-07-17 | farelo_cbot | volume: 39616.0 contratos (ticker=ZMQ26.CBT)
+- 2026-07-17 | heating_oil_cbot | abertura: 4.083799839019775 USD/galão (ticker=HO=F)
+- 2026-07-17 | heating_oil_cbot | fechamento: 4.064599990844727 USD/galão (ticker=HO=F)
+- 2026-07-17 | heating_oil_cbot | maxima: 4.1280999183654785 USD/galão (ticker=HO=F)
+- 2026-07-17 | heating_oil_cbot | minima: 4.024799823760986 USD/galão (ticker=HO=F)
+- 2026-07-17 | heating_oil_cbot | volume: 32681.0 contratos (ticker=HO=F)
 - 2026-07-17 | oleo_cbot | abertura: 72.62000274658203 USD_cts/lb (ticker=ZLQ26.CBT)
-- 2026-07-17 | oleo_cbot | fechamento: 74.81999969482422 USD_cts/lb (ticker=ZLQ26.CBT)
-- 2026-07-17 | oleo_cbot | fechamento_F27: 72.05000305175781 USD_cts/lb (ticker=ZLF27.CBT venc=jan/27)
-- 2026-07-17 | oleo_cbot | fechamento_Q26: 74.81999969482422 USD_cts/lb (ticker=ZLQ26.CBT venc=ago/26)
-- 2026-07-17 | oleo_cbot | fechamento_U26: 73.94000244140625 USD_cts/lb (ticker=ZLU26.CBT venc=set/26)
-- 2026-07-17 | oleo_cbot | fechamento_V26: 73.02999877929688 USD_cts/lb (ticker=ZLV26.CBT venc=out/26)
-- 2026-07-17 | oleo_cbot | fechamento_Z26: 72.44000244140625 USD_cts/lb (ticker=ZLZ26.CBT venc=dez/26)
+- 2026-07-17 | oleo_cbot | fechamento: 74.80999755859375 USD_cts/lb (ticker=ZLQ26.CBT)
+- 2026-07-17 | oleo_cbot | fechamento_F27: 72.06999969482422 USD_cts/lb (ticker=ZLF27.CBT venc=jan/27)
+- 2026-07-17 | oleo_cbot | fechamento_Q26: 74.80999755859375 USD_cts/lb (ticker=ZLQ26.CBT venc=ago/26)
+- 2026-07-17 | oleo_cbot | fechamento_U26: 73.93000030517578 USD_cts/lb (ticker=ZLU26.CBT venc=set/26)
+- 2026-07-17 | oleo_cbot | fechamento_V26: 73.0199966430664 USD_cts/lb (ticker=ZLV26.CBT venc=out/26)
+- 2026-07-17 | oleo_cbot | fechamento_Z26: 72.43000030517578 USD_cts/lb (ticker=ZLZ26.CBT venc=dez/26)
 - 2026-07-17 | oleo_cbot | maxima: 75.44000244140625 USD_cts/lb (ticker=ZLQ26.CBT)
 - 2026-07-17 | oleo_cbot | minima: 72.43000030517578 USD_cts/lb (ticker=ZLQ26.CBT)
-- 2026-07-17 | oleo_cbot | volume: 40029.0 contratos (ticker=ZLQ26.CBT)
+- 2026-07-17 | oleo_cbot | volume: 32629.0 contratos (ticker=ZLQ26.CBT)
 - 2026-07-17 | soja_cbot | abertura: 1195.0 USD/bushel (ticker=ZSQ26.CBT)
-- 2026-07-17 | soja_cbot | fechamento: 1204.0 USD/bushel (ticker=ZSQ26.CBT)
-- 2026-07-17 | soja_cbot | fechamento_F27: 1216.5 USD/bushel (ticker=ZSF27.CBT venc=jan/27)
-- 2026-07-17 | soja_cbot | fechamento_H27: 1219.5 USD/bushel (ticker=ZSH27.CBT venc=mar/27)
-- 2026-07-17 | soja_cbot | fechamento_Q26: 1204.0 USD/bushel (ticker=ZSQ26.CBT venc=ago/26)
-- 2026-07-17 | soja_cbot | fechamento_U26: 1193.0 USD/bushel (ticker=ZSU26.CBT venc=set/26)
-- 2026-07-17 | soja_cbot | fechamento_X26: 1202.5 USD/bushel (ticker=ZSX26.CBT venc=nov/26)
+- 2026-07-17 | soja_cbot | fechamento: 1204.5 USD/bushel (ticker=ZSQ26.CBT)
+- 2026-07-17 | soja_cbot | fechamento_F27: 1216.75 USD/bushel (ticker=ZSF27.CBT venc=jan/27)
+- 2026-07-17 | soja_cbot | fechamento_H27: 1220.0 USD/bushel (ticker=ZSH27.CBT venc=mar/27)
+- 2026-07-17 | soja_cbot | fechamento_Q26: 1204.5 USD/bushel (ticker=ZSQ26.CBT venc=ago/26)
+- 2026-07-17 | soja_cbot | fechamento_U26: 1193.5 USD/bushel (ticker=ZSU26.CBT venc=set/26)
+- 2026-07-17 | soja_cbot | fechamento_X26: 1203.0 USD/bushel (ticker=ZSX26.CBT venc=nov/26)
 - 2026-07-17 | soja_cbot | maxima: 1205.25 USD/bushel (ticker=ZSQ26.CBT)
 - 2026-07-17 | soja_cbot | minima: 1186.75 USD/bushel (ticker=ZSQ26.CBT)
-- 2026-07-17 | soja_cbot | volume: 27197.0 contratos (ticker=ZSQ26.CBT)
+- 2026-07-17 | soja_cbot | volume: 36978.0 contratos (ticker=ZSQ26.CBT)
 - 2026-07-16 | farelo_cbot | abertura: 318.8999938964844 USD/short_ton (ticker=ZMQ26.CBT)
 - 2026-07-16 | farelo_cbot | fechamento: 322.8999938964844 USD/short_ton (ticker=ZMQ26.CBT)
 - 2026-07-16 | farelo_cbot | fechamento_F27: 324.20001220703125 USD/short_ton (ticker=ZMF27.CBT venc=jan/27)
@@ -237,12 +237,12 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-07-16 | farelo_cbot | fechamento_Z26: 322.3999938964844 USD/short_ton (ticker=ZMZ26.CBT venc=dez/26)
 - 2026-07-16 | farelo_cbot | maxima: 324.70001220703125 USD/short_ton (ticker=ZMQ26.CBT)
 - 2026-07-16 | farelo_cbot | minima: 318.0 USD/short_ton (ticker=ZMQ26.CBT)
-- 2026-07-16 | farelo_cbot | volume: 43934.0 contratos (ticker=ZMQ26.CBT)
+- 2026-07-16 | farelo_cbot | volume: 39616.0 contratos (ticker=ZMQ26.CBT)
 - 2026-07-16 | heating_oil_cbot | abertura: 3.9825000762939453 USD/galão (ticker=HO=F)
 - 2026-07-16 | heating_oil_cbot | fechamento: 4.030700206756592 USD/galão (ticker=HO=F)
 - 2026-07-16 | heating_oil_cbot | maxima: 4.0833001136779785 USD/galão (ticker=HO=F)
 - 2026-07-16 | heating_oil_cbot | minima: 3.9309000968933105 USD/galão (ticker=HO=F)
-- 2026-07-16 | heating_oil_cbot | volume: 43513.0 contratos (ticker=HO=F)
+- 2026-07-16 | heating_oil_cbot | volume: 32681.0 contratos (ticker=HO=F)
 
 ---
 
@@ -250,16 +250,16 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 - 2026-07-18 | complexo_soja | indice_sobra_farelo: 80.0 0-100 (forte pressão baixista no farelo (4/5 condições))
 - 2026-07-18 | complexo_soja | indice_suporte_oleo: 100.0 0-100 (óleo domina o crush (5/5 condições))
-- 2026-07-17 | biodiesel_us | custo_oleo_usd_galao: 5.6115 USD/galão (7.5 lb × óleo 74.82 cts/lb)
-- 2026-07-17 | biodiesel_us | margem_usd_galao: 0.7029 USD/galão (receita 7.11 (HO 3.95 + 1.5×RIN 2.11) − custo 6.41 (óleo 5.61 + ind 0.80))
-- 2026-07-17 | biodiesel_us | receita_usd_galao: 7.1144 USD/galão (HO 3.95 + 1.5×RIN 2.11)
-- 2026-07-17 | complexo_soja | crush_margin_usd_bu: 3.2522 USD/bushel (Board Crush: farelo 321.00 + oleo 74.82 − soja 1204.00)
-- 2026-07-17 | complexo_soja | far_soj_ratio_pct: 79.98 % (farelo 321.00/sht ÷ (soja 1204.00cts × 33.33) — <80 abundante, >=87 apertado)
+- 2026-07-17 | biodiesel_us | custo_oleo_usd_galao: 5.6107 USD/galão (7.5 lb × óleo 74.81 cts/lb)
+- 2026-07-17 | biodiesel_us | margem_usd_galao: 0.8189 USD/galão (receita 7.23 (HO 4.06 + 1.5×RIN 2.11) − custo 6.41 (óleo 5.61 + ind 0.80))
+- 2026-07-17 | biodiesel_us | receita_usd_galao: 7.2296 USD/galão (HO 4.06 + 1.5×RIN 2.11)
+- 2026-07-17 | complexo_soja | crush_margin_usd_bu: 3.2285 USD/bushel (Board Crush: farelo 320.20 + oleo 74.81 − soja 1204.50)
+- 2026-07-17 | complexo_soja | far_soj_ratio_pct: 79.75 % (farelo 320.20/sht ÷ (soja 1204.50cts × 33.33) — <80 abundante, >=87 apertado)
 - 2026-07-17 | complexo_soja | indice_sobra_farelo: 80.0 0-100 (forte pressão baixista no farelo (4/5 condições))
 - 2026-07-17 | complexo_soja | indice_suporte_oleo: 100.0 0-100 (óleo domina o crush (5/5 condições))
-- 2026-07-17 | complexo_soja | oil_meal_spread_usd_bu: 1.1682 USD/bushel (Oleo - Farelo (positivo = oleo manda))
-- 2026-07-17 | complexo_soja | oil_share_pct: 53.82 % (valor oleo 8.23 / total 15.29)
-- 2026-07-17 | soja_paridade_br | brl_saca_paridade: 135.84 BRL/saca60kg (CBOT 1204.00 cts × USD/BRL 5.1176 (sem basis))
+- 2026-07-17 | complexo_soja | oil_meal_spread_usd_bu: 1.1847 USD/bushel (Oleo - Farelo (positivo = oleo manda))
+- 2026-07-17 | complexo_soja | oil_share_pct: 53.88 % (valor oleo 8.23 / total 15.27)
+- 2026-07-17 | soja_paridade_br | brl_saca_paridade: 135.89 BRL/saca60kg (CBOT 1204.50 cts × USD/BRL 5.1176 (sem basis))
 - 2026-07-16 | biodiesel_us | custo_oleo_usd_galao: 5.4323 USD/galão (7.5 lb × óleo 72.43 cts/lb)
 - 2026-07-16 | biodiesel_us | margem_usd_galao: 0.9635 USD/galão (receita 7.20 (HO 4.03 + 1.5×RIN 2.11) − custo 6.23 (óleo 5.43 + ind 0.80))
 - 2026-07-16 | biodiesel_us | receita_usd_galao: 7.1957 USD/galão (HO 4.03 + 1.5×RIN 2.11)
@@ -303,56 +303,56 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## inmet
 
+- 2026-07-19 | cascavel_pr | temp_max_manha: 29.0 C (Cascavel/PR — Poucas nuvens)
+- 2026-07-19 | cascavel_pr | temp_max_noite: 29.0 C (Cascavel/PR — Muitas nuvens)
+- 2026-07-19 | cascavel_pr | temp_max_tarde: 29.0 C (Cascavel/PR — Poucas nuvens)
+- 2026-07-19 | cascavel_pr | temp_min_manha: 16.0 C (Cascavel/PR — Poucas nuvens)
+- 2026-07-19 | cascavel_pr | temp_min_noite: 16.0 C (Cascavel/PR — Muitas nuvens)
+- 2026-07-19 | cascavel_pr | temp_min_tarde: 16.0 C (Cascavel/PR — Poucas nuvens)
+- 2026-07-19 | cuiaba_mt | temp_max_manha: 35.0 C (Cuiaba/MT — Poucas nuvens)
+- 2026-07-19 | cuiaba_mt | temp_max_noite: 35.0 C (Cuiaba/MT — Claro)
+- 2026-07-19 | cuiaba_mt | temp_max_tarde: 35.0 C (Cuiaba/MT — Claro)
+- 2026-07-19 | cuiaba_mt | temp_min_manha: 19.0 C (Cuiaba/MT — Poucas nuvens)
+- 2026-07-19 | cuiaba_mt | temp_min_noite: 19.0 C (Cuiaba/MT — Claro)
+- 2026-07-19 | cuiaba_mt | temp_min_tarde: 19.0 C (Cuiaba/MT — Claro)
+- 2026-07-19 | lucas_rio_verde_mt | temp_max_manha: 35.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
+- 2026-07-19 | lucas_rio_verde_mt | temp_max_noite: 35.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
+- 2026-07-19 | lucas_rio_verde_mt | temp_max_tarde: 35.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
+- 2026-07-19 | lucas_rio_verde_mt | temp_min_manha: 20.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
+- 2026-07-19 | lucas_rio_verde_mt | temp_min_noite: 20.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
+- 2026-07-19 | lucas_rio_verde_mt | temp_min_tarde: 20.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
+- 2026-07-19 | maringa_pr | temp_max_manha: 30.0 C (Maringa/PR — Poucas nuvens)
+- 2026-07-19 | maringa_pr | temp_max_noite: 30.0 C (Maringa/PR — Poucas nuvens)
+- 2026-07-19 | maringa_pr | temp_max_tarde: 30.0 C (Maringa/PR — Claro)
+- 2026-07-19 | maringa_pr | temp_min_manha: 18.0 C (Maringa/PR — Poucas nuvens)
+- 2026-07-19 | maringa_pr | temp_min_noite: 18.0 C (Maringa/PR — Poucas nuvens)
+- 2026-07-19 | maringa_pr | temp_min_tarde: 18.0 C (Maringa/PR — Claro)
+- 2026-07-19 | passo_fundo_rs | temp_max_manha: 27.0 C (Passo Fundo/RS — Muitas nuvens com chuva isolada)
+- 2026-07-19 | passo_fundo_rs | temp_max_noite: 27.0 C (Passo Fundo/RS — Muitas nuvens com pancadas de chuva)
+- 2026-07-19 | passo_fundo_rs | temp_max_tarde: 27.0 C (Passo Fundo/RS — Muitas nuvens com chuva isolada)
+- 2026-07-19 | passo_fundo_rs | temp_min_manha: 16.0 C (Passo Fundo/RS — Muitas nuvens com chuva isolada)
+- 2026-07-19 | passo_fundo_rs | temp_min_noite: 16.0 C (Passo Fundo/RS — Muitas nuvens com pancadas de chuva)
+- 2026-07-19 | passo_fundo_rs | temp_min_tarde: 16.0 C (Passo Fundo/RS — Muitas nuvens com chuva isolada)
+- 2026-07-19 | rio_verde_go | temp_max_manha: 29.0 C (Rio Verde/GO — Poucas nuvens)
+- 2026-07-19 | rio_verde_go | temp_max_noite: 29.0 C (Rio Verde/GO — Claro)
+- 2026-07-19 | rio_verde_go | temp_max_tarde: 29.0 C (Rio Verde/GO — Claro)
+- 2026-07-19 | rio_verde_go | temp_min_manha: 14.0 C (Rio Verde/GO — Poucas nuvens)
+- 2026-07-19 | rio_verde_go | temp_min_noite: 14.0 C (Rio Verde/GO — Claro)
+- 2026-07-19 | rio_verde_go | temp_min_tarde: 14.0 C (Rio Verde/GO — Claro)
+- 2026-07-19 | sinop_mt | temp_max_manha: 36.0 C (Sinop/MT — Poucas nuvens)
+- 2026-07-19 | sinop_mt | temp_max_noite: 36.0 C (Sinop/MT — Muitas nuvens)
+- 2026-07-19 | sinop_mt | temp_max_tarde: 36.0 C (Sinop/MT — Poucas nuvens)
+- 2026-07-19 | sinop_mt | temp_min_manha: 20.0 C (Sinop/MT — Poucas nuvens)
+- 2026-07-19 | sinop_mt | temp_min_noite: 20.0 C (Sinop/MT — Muitas nuvens)
+- 2026-07-19 | sinop_mt | temp_min_tarde: 20.0 C (Sinop/MT — Poucas nuvens)
+- 2026-07-19 | sorriso_mt | temp_max_manha: 35.0 C (Sorriso/MT — Poucas nuvens)
+- 2026-07-19 | sorriso_mt | temp_max_noite: 35.0 C (Sorriso/MT — Muitas nuvens)
+- 2026-07-19 | sorriso_mt | temp_max_tarde: 35.0 C (Sorriso/MT — Poucas nuvens)
+- 2026-07-19 | sorriso_mt | temp_min_manha: 20.0 C (Sorriso/MT — Poucas nuvens)
+- 2026-07-19 | sorriso_mt | temp_min_noite: 20.0 C (Sorriso/MT — Muitas nuvens)
+- 2026-07-19 | sorriso_mt | temp_min_tarde: 20.0 C (Sorriso/MT — Poucas nuvens)
 - 2026-07-18 | cascavel_pr | temp_max_manha: 29.0 C (Cascavel/PR — Poucas nuvens)
 - 2026-07-18 | cascavel_pr | temp_max_noite: 29.0 C (Cascavel/PR — Poucas nuvens)
-- 2026-07-18 | cascavel_pr | temp_max_tarde: 29.0 C (Cascavel/PR — Poucas nuvens)
-- 2026-07-18 | cascavel_pr | temp_min_manha: 17.0 C (Cascavel/PR — Poucas nuvens)
-- 2026-07-18 | cascavel_pr | temp_min_noite: 17.0 C (Cascavel/PR — Poucas nuvens)
-- 2026-07-18 | cascavel_pr | temp_min_tarde: 17.0 C (Cascavel/PR — Poucas nuvens)
-- 2026-07-18 | cuiaba_mt | temp_max_manha: 36.0 C (Cuiaba/MT — Claro)
-- 2026-07-18 | cuiaba_mt | temp_max_noite: 36.0 C (Cuiaba/MT — Poucas nuvens)
-- 2026-07-18 | cuiaba_mt | temp_max_tarde: 36.0 C (Cuiaba/MT — Poucas nuvens)
-- 2026-07-18 | cuiaba_mt | temp_min_manha: 25.0 C (Cuiaba/MT — Claro)
-- 2026-07-18 | cuiaba_mt | temp_min_noite: 25.0 C (Cuiaba/MT — Poucas nuvens)
-- 2026-07-18 | cuiaba_mt | temp_min_tarde: 25.0 C (Cuiaba/MT — Poucas nuvens)
-- 2026-07-18 | lucas_rio_verde_mt | temp_max_manha: 35.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
-- 2026-07-18 | lucas_rio_verde_mt | temp_max_noite: 35.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
-- 2026-07-18 | lucas_rio_verde_mt | temp_max_tarde: 35.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
-- 2026-07-18 | lucas_rio_verde_mt | temp_min_manha: 20.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
-- 2026-07-18 | lucas_rio_verde_mt | temp_min_noite: 20.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
-- 2026-07-18 | lucas_rio_verde_mt | temp_min_tarde: 20.0 C (Lucas do Rio Verde/MT — Poucas nuvens)
-- 2026-07-18 | maringa_pr | temp_max_manha: 29.0 C (Maringa/PR — Claro)
-- 2026-07-18 | maringa_pr | temp_max_noite: 29.0 C (Maringa/PR — Poucas nuvens)
-- 2026-07-18 | maringa_pr | temp_max_tarde: 29.0 C (Maringa/PR — Poucas nuvens)
-- 2026-07-18 | maringa_pr | temp_min_manha: 19.0 C (Maringa/PR — Claro)
-- 2026-07-18 | maringa_pr | temp_min_noite: 19.0 C (Maringa/PR — Poucas nuvens)
-- 2026-07-18 | maringa_pr | temp_min_tarde: 19.0 C (Maringa/PR — Poucas nuvens)
-- 2026-07-18 | passo_fundo_rs | temp_max_manha: 28.0 C (Passo Fundo/RS — Muitas nuvens)
-- 2026-07-18 | passo_fundo_rs | temp_max_noite: 28.0 C (Passo Fundo/RS — Muitas nuvens com pancadas de chuva e trovoadas isoladas)
-- 2026-07-18 | passo_fundo_rs | temp_max_tarde: 28.0 C (Passo Fundo/RS — Muitas nuvens)
-- 2026-07-18 | passo_fundo_rs | temp_min_manha: 14.0 C (Passo Fundo/RS — Muitas nuvens)
-- 2026-07-18 | passo_fundo_rs | temp_min_noite: 14.0 C (Passo Fundo/RS — Muitas nuvens com pancadas de chuva e trovoadas isoladas)
-- 2026-07-18 | passo_fundo_rs | temp_min_tarde: 14.0 C (Passo Fundo/RS — Muitas nuvens)
-- 2026-07-18 | rio_verde_go | temp_max_manha: 30.0 C (Rio Verde/GO — Claro)
-- 2026-07-18 | rio_verde_go | temp_max_noite: 30.0 C (Rio Verde/GO — Claro)
-- 2026-07-18 | rio_verde_go | temp_max_tarde: 30.0 C (Rio Verde/GO — Claro)
-- 2026-07-18 | rio_verde_go | temp_min_manha: 14.0 C (Rio Verde/GO — Claro)
-- 2026-07-18 | rio_verde_go | temp_min_noite: 14.0 C (Rio Verde/GO — Claro)
-- 2026-07-18 | rio_verde_go | temp_min_tarde: 14.0 C (Rio Verde/GO — Claro)
-- 2026-07-18 | sinop_mt | temp_max_manha: 35.0 C (Sinop/MT — Poucas nuvens)
-- 2026-07-18 | sinop_mt | temp_max_noite: 35.0 C (Sinop/MT — Poucas nuvens)
-- 2026-07-18 | sinop_mt | temp_max_tarde: 35.0 C (Sinop/MT — Poucas nuvens)
-- 2026-07-18 | sinop_mt | temp_min_manha: 19.0 C (Sinop/MT — Poucas nuvens)
-- 2026-07-18 | sinop_mt | temp_min_noite: 19.0 C (Sinop/MT — Poucas nuvens)
-- 2026-07-18 | sinop_mt | temp_min_tarde: 19.0 C (Sinop/MT — Poucas nuvens)
-- 2026-07-18 | sorriso_mt | temp_max_manha: 35.0 C (Sorriso/MT — Poucas nuvens)
-- 2026-07-18 | sorriso_mt | temp_max_noite: 35.0 C (Sorriso/MT — Poucas nuvens)
-- 2026-07-18 | sorriso_mt | temp_max_tarde: 35.0 C (Sorriso/MT — Poucas nuvens)
-- 2026-07-18 | sorriso_mt | temp_min_manha: 20.0 C (Sorriso/MT — Poucas nuvens)
-- 2026-07-18 | sorriso_mt | temp_min_noite: 20.0 C (Sorriso/MT — Poucas nuvens)
-- 2026-07-18 | sorriso_mt | temp_min_tarde: 20.0 C (Sorriso/MT — Poucas nuvens)
-- 2026-07-17 | cascavel_pr | temp_max_manha: 28.0 C (Cascavel/PR — Poucas nuvens)
-- 2026-07-17 | cascavel_pr | temp_max_noite: 28.0 C (Cascavel/PR — Poucas nuvens)
 
 ---
 
@@ -474,6 +474,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 ## noticias_rss
 
 - 2026-07-18 | noticias | items_fetched: 160.0 items (160 items lidos, 6 mantidos (soja/farelo/oleo))
+- 2026-07-18 | soja | headline: None  (Você viu? Produtor gaúcho diz precisar de 54 sacas de soja por ano só para pagar dívidas | https://www.canalrural.com.br/agricultura/voce-viu-produtor-gaucho-diz-precisar-de-54-sacas-de-soja-por-ano-so-para-pagar-dividas/)
 - 2026-07-17 | noticias | items_fetched: 160.0 items (160 items lidos, 6 mantidos (soja/farelo/oleo))
 - 2026-07-17 | soja | headline: None  (USDA exports – 3 large soybean sales announced, July 17, 2026 | https://www.farmprogress.com/marketing/flash-sales)
 - 2026-07-16 | noticias | items_fetched: 160.0 items (160 items lidos, 8 mantidos (soja/farelo/oleo))
@@ -575,18 +576,18 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 
 | Geracao | Horizonte | Alvo | Commodity | Spot ref | Baixo | Central | Alto | Vies |
 |---|---|---|---|---|---|---|---|---|
-| 2026-07-18 | 7d | 2026-07-25 | farelo_cbot | 321.00 | 315.12 | 327.93 | 340.74 | altista |
-| 2026-07-18 | 7d | 2026-07-25 | oleo_cbot | 74.82 | 71.02 | 75.83 | 80.64 | altista |
-| 2026-07-18 | 7d | 2026-07-25 | soja_cbot | 1204.00 | 1181.82 | 1233.07 | 1284.33 | altista |
-| 2026-07-18 | 30d | 2026-08-17 | farelo_cbot | 321.00 | 326.81 | 353.33 | 379.84 | altista |
-| 2026-07-18 | 30d | 2026-08-17 | oleo_cbot | 74.82 | 70.43 | 80.38 | 90.33 | altista |
-| 2026-07-18 | 30d | 2026-08-17 | soja_cbot | 1204.00 | 1233.38 | 1339.49 | 1445.60 | altista |
-| 2026-07-17 | 7d | 2026-07-24 | farelo_cbot | 321.00 | 315.23 | 327.93 | 340.63 | altista |
-| 2026-07-17 | 7d | 2026-07-24 | oleo_cbot | 74.82 | 71.08 | 75.83 | 80.58 | altista |
-| 2026-07-17 | 7d | 2026-07-24 | soja_cbot | 1204.00 | 1182.42 | 1233.07 | 1283.73 | altista |
-| 2026-07-17 | 30d | 2026-08-16 | farelo_cbot | 321.00 | 327.04 | 353.33 | 379.62 | altista |
-| 2026-07-17 | 30d | 2026-08-16 | oleo_cbot | 74.82 | 70.55 | 80.38 | 90.21 | altista |
-| 2026-07-17 | 30d | 2026-08-16 | soja_cbot | 1204.00 | 1234.63 | 1339.49 | 1444.35 | altista |
+| 2026-07-18 | 7d | 2026-07-25 | farelo_cbot | 320.20 | 314.36 | 327.18 | 340.01 | altista |
+| 2026-07-18 | 7d | 2026-07-25 | oleo_cbot | 74.81 | 71.01 | 75.82 | 80.62 | altista |
+| 2026-07-18 | 7d | 2026-07-25 | soja_cbot | 1204.50 | 1182.23 | 1233.54 | 1284.86 | altista |
+| 2026-07-18 | 30d | 2026-08-17 | farelo_cbot | 320.20 | 326.01 | 352.56 | 379.12 | altista |
+| 2026-07-18 | 30d | 2026-08-17 | oleo_cbot | 74.81 | 70.42 | 80.37 | 90.32 | altista |
+| 2026-07-18 | 30d | 2026-08-17 | soja_cbot | 1204.50 | 1233.73 | 1339.97 | 1446.20 | altista |
+| 2026-07-17 | 7d | 2026-07-24 | farelo_cbot | 320.20 | 315.23 | 327.93 | 340.63 | altista |
+| 2026-07-17 | 7d | 2026-07-24 | oleo_cbot | 74.81 | 71.08 | 75.83 | 80.58 | altista |
+| 2026-07-17 | 7d | 2026-07-24 | soja_cbot | 1204.50 | 1182.42 | 1233.07 | 1283.73 | altista |
+| 2026-07-17 | 30d | 2026-08-16 | farelo_cbot | 320.20 | 327.04 | 353.33 | 379.62 | altista |
+| 2026-07-17 | 30d | 2026-08-16 | oleo_cbot | 74.81 | 70.55 | 80.38 | 90.21 | altista |
+| 2026-07-17 | 30d | 2026-08-16 | soja_cbot | 1204.50 | 1234.63 | 1339.49 | 1444.35 | altista |
 | 2026-07-16 | 7d | 2026-07-23 | farelo_cbot | 322.90 | 312.67 | 325.11 | 337.56 | altista |
 | 2026-07-16 | 7d | 2026-07-23 | oleo_cbot | 72.43 | 69.03 | 73.43 | 77.84 | altista |
 | 2026-07-16 | 7d | 2026-07-23 | soja_cbot | 1195.00 | 1176.23 | 1226.82 | 1277.42 | altista |
@@ -609,21 +610,21 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 
 **5 item(ns).** Frase-gatilho: "lê a fila de julgamento e trata"
 
-## 🔴 [ratio_zona] Ratio Far/Soj entrou na zona 'comprimido' (80.0%, era 'neutro' 81.1%)
+## 🔴 [ratio_zona] Ratio Far/Soj entrou na zona 'comprimido' (79.8%, era 'neutro' 81.1%)
 - id: `ratio-zona-2026-07-17`
-- fato: far_soj_ratio_pct 81.1% -> 80.0% em 2026-07-17 (indicators/DB)
+- fato: far_soj_ratio_pct 81.1% -> 79.8% em 2026-07-17 (indicators/DB)
 - refs: farelo
 - leitura: Muda a leitura do spread Far/Soj (mean-reversion, os dois lados)?
 
-## 🔴 [nivel_tese] soja_cbot fechou em 1204.00 — acima da resistencia 1180.00
+## 🔴 [nivel_tese] soja_cbot fechou em 1204.50 — acima da resistencia 1180.00
 - id: `alerta-quebra_resistencia-soja_cbot-2026-07-17`
-- fato: soja_cbot = 1204.00 vs nivel 1180.00 (2026-07-17)
+- fato: soja_cbot = 1204.50 vs nivel 1180.00 (2026-07-17)
 - refs: soja_cbot
 - leitura: Confirma ou muda a tese? O que voce faria diferente sabendo disso?
 
-## 🔴 [nivel_tese] oleo_cbot variou +3.30% no dia (de 72.43 para 74.82)
+## 🔴 [nivel_tese] oleo_cbot variou +3.29% no dia (de 72.43 para 74.81)
 - id: `alerta-movimento_forte-oleo_cbot-2026-07-17`
-- fato: oleo_cbot = 74.82 vs nivel 72.43 (2026-07-17)
+- fato: oleo_cbot = 74.81 vs nivel 72.43 (2026-07-17)
 - refs: oleo_cbot
 - leitura: Confirma ou muda a tese? O que voce faria diferente sabendo disso?
 
