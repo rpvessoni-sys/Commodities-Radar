@@ -1,4 +1,4 @@
-# Briefing consolidado — 2026-07-25
+# Briefing consolidado — 2026-07-26
 
 _Base 100% publica (CBOT/BCB/CEPEA/NAG/USDA/COT/clima) + notas manuais do consultor._
 
@@ -118,7 +118,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-07-14 | argentina | page_fetched: 1.0 bool (BCBA acessivel via scraper mas sem links de relatorio detectados.)
 - 2026-07-13 | argentina | page_fetched: 1.0 bool (BCBA acessivel via scraper mas sem links de relatorio detectados.)
 - 2026-07-12 | argentina | page_fetched: 1.0 bool (BCBA acessivel via scraper mas sem links de relatorio detectados.)
-- 2026-07-11 | argentina | page_fetched: 1.0 bool (BCBA acessivel via scraper mas sem links de relatorio detectados.)
 
 ---
 
@@ -247,6 +246,8 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## indicators
 
+- 2026-07-26 | complexo_soja | indice_sobra_farelo: 80.0 0-100 (forte pressão baixista no farelo (4/5 condições))
+- 2026-07-26 | complexo_soja | indice_suporte_oleo: 100.0 0-100 (óleo domina o crush (5/5 condições))
 - 2026-07-25 | complexo_soja | indice_sobra_farelo: 80.0 0-100 (forte pressão baixista no farelo (4/5 condições))
 - 2026-07-25 | complexo_soja | indice_suporte_oleo: 100.0 0-100 (óleo domina o crush (5/5 condições))
 - 2026-07-24 | biodiesel_us | custo_oleo_usd_galao: 5.5103 USD/galão (7.5 lb × óleo 73.47 cts/lb)
@@ -295,8 +296,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-07-20 | complexo_soja | crush_margin_usd_bu: 3.0316 USD/bushel (Board Crush: farelo 321.20 + oleo 73.82 − soja 1215.50)
 - 2026-07-20 | complexo_soja | far_soj_ratio_pct: 79.28 % (farelo 321.20/sht ÷ (soja 1215.50cts × 33.33) — <80 abundante, >=87 apertado)
 - 2026-07-20 | complexo_soja | indice_sobra_farelo: 80.0 0-100 (forte pressão baixista no farelo (4/5 condições))
-- 2026-07-20 | complexo_soja | indice_suporte_oleo: 100.0 0-100 (óleo domina o crush (5/5 condições))
-- 2026-07-20 | complexo_soja | oil_meal_spread_usd_bu: 1.0538 USD/bushel (Oleo - Farelo (positivo = oleo manda))
 
 ---
 
@@ -357,6 +356,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## mpob
 
+- 2026-07-26 | palma_malasia | page_fetched: 3439.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-07-25 | palma_malasia | page_fetched: 3439.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-07-24 | palma_malasia | page_fetched: 3439.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-07-23 | palma_malasia | page_fetched: 3439.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
@@ -371,7 +371,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-07-14 | palma_malasia | page_fetched: 3439.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-07-13 | palma_malasia | page_fetched: 3439.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-07-12 | palma_malasia | page_fetched: 3439.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
-- 2026-07-11 | palma_malasia | page_fetched: 3439.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 
 ---
 
@@ -432,6 +431,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## noaa_cpc
 
+- 2026-07-26 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-07-25 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-07-24 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-07-23 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
@@ -446,12 +446,12 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-07-14 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-07-13 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-07-12 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
-- 2026-07-11 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 
 ---
 
 ## nopa
 
+- 2026-07-26 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-07-25 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-07-24 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-07-23 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
@@ -466,12 +466,12 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-07-14 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-07-13 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-07-12 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
-- 2026-07-11 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 
 ---
 
 ## noticias_rss
 
+- 2026-07-26 | noticias | items_fetched: 160.0 items (160 items lidos, 6 mantidos (soja/farelo/oleo))
 - 2026-07-25 | noticias | items_fetched: 160.0 items (160 items lidos, 6 mantidos (soja/farelo/oleo))
 - 2026-07-25 | soja | headline: None  (Cepea: Soja, milho e boi gordo encerram semana com novas altas | https://www.canalrural.com.br/agricultura/agronegocio/cepea-soja-milho-e-boi-gordo-encerram-semana-com-novas-altas/)
 - 2026-07-24 | noticias | items_fetched: 160.0 items (160 items lidos, 6 mantidos (soja/farelo/oleo))
@@ -500,7 +500,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-07-13 | soja | headline: None  (Soybean prices need poor weather, exports to China | https://www.farmprogress.com/soybean/soybean-prices-need-poor-weather-exports-to-china)
 - 2026-07-12 | noticias | items_fetched: 160.0 items (160 items lidos, 3 mantidos (soja/farelo/oleo))
 - 2026-07-12 | soja | headline: None  (Soja avança no mercado brasileiro com alta em Chicago e retomada chinesa; confira o resumo da semana | https://www.canalrural.com.br/agricultura/projeto-soja-brasil/soja-avanca-no-mercado-brasileiro-com-alta-em-chicago-e-retomada-chinesa-confira-o-resumo-da-semana/)
-- 2026-07-11 | noticias | items_fetched: 160.0 items (160 items lidos, 4 mantidos (soja/farelo/oleo))
 
 ---
 
@@ -521,6 +520,12 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 
 | Geracao | Horizonte | Alvo | Commodity | Spot ref | Baixo | Central | Alto | Vies |
 |---|---|---|---|---|---|---|---|---|
+| 2026-07-26 | 7d | 2026-08-02 | farelo_cbot | 330.80 | 324.32 | 337.95 | 351.57 | altista |
+| 2026-07-26 | 7d | 2026-08-02 | oleo_cbot | 73.47 | 71.22 | 75.89 | 80.56 | altista |
+| 2026-07-26 | 7d | 2026-08-02 | soja_cbot | 1240.25 | 1215.73 | 1269.06 | 1322.38 | altista |
+| 2026-07-26 | 30d | 2026-08-25 | farelo_cbot | 330.80 | 337.07 | 365.27 | 393.47 | altista |
+| 2026-07-26 | 30d | 2026-08-25 | oleo_cbot | 73.47 | 74.85 | 84.51 | 94.18 | altista |
+| 2026-07-26 | 30d | 2026-08-25 | soja_cbot | 1240.25 | 1268.22 | 1378.61 | 1489.00 | altista |
 | 2026-07-25 | 7d | 2026-08-01 | farelo_cbot | 330.80 | 324.49 | 337.95 | 351.40 | altista |
 | 2026-07-25 | 7d | 2026-08-01 | oleo_cbot | 73.47 | 71.24 | 75.89 | 80.54 | altista |
 | 2026-07-25 | 7d | 2026-08-01 | soja_cbot | 1240.25 | 1216.40 | 1269.06 | 1321.71 | altista |
@@ -539,19 +544,13 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 | 2026-07-23 | 30d | 2026-08-22 | farelo_cbot | 328.80 | 332.11 | 360.03 | 387.95 | altista |
 | 2026-07-23 | 30d | 2026-08-22 | oleo_cbot | 74.69 | 74.41 | 84.17 | 93.92 | altista |
 | 2026-07-23 | 30d | 2026-08-22 | soja_cbot | 1231.00 | 1250.12 | 1358.78 | 1467.44 | altista |
-| 2026-07-22 | 7d | 2026-07-29 | farelo_cbot | 329.60 | 321.66 | 335.35 | 349.04 | altista |
-| 2026-07-22 | 7d | 2026-07-29 | oleo_cbot | 74.53 | 71.41 | 76.16 | 80.91 | altista |
-| 2026-07-22 | 7d | 2026-07-29 | soja_cbot | 1226.00 | 1199.62 | 1252.68 | 1305.74 | altista |
-| 2026-07-22 | 30d | 2026-08-21 | farelo_cbot | 329.60 | 330.10 | 358.44 | 386.78 | altista |
-| 2026-07-22 | 30d | 2026-08-21 | oleo_cbot | 74.53 | 73.16 | 82.99 | 92.83 | altista |
-| 2026-07-22 | 30d | 2026-08-21 | soja_cbot | 1226.00 | 1245.32 | 1355.16 | 1465.00 | altista |
 
 ---
 
 
 ---
 
-# Fila de julgamento — 2026-07-25
+# Fila de julgamento — 2026-07-26
 
 **5 item(ns).** Frase-gatilho: "lê a fila de julgamento e trata"
 
@@ -573,15 +572,15 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 - refs: farelo,ratio-far-soj,spread
 - leitura: A tese se confirmou? Atualizar status/insight.
 
-## 🟡 [tributario] [6d] Isenção PIS/Cofins do biodiesel na mistura
+## 🟡 [tributario] [5d] Isenção PIS/Cofins do biodiesel na mistura
 - id: `trib-PISCOFINS-BIODIESEL-ISENCAO-2026-07-31`
 - fato: proximo marco 2026-07-31: Nova prorrogação ou expiração em 31/jul (direcao neutro, status vigente)
 - refs: oleo_soja
 - leitura: Vira ou atualiza insight com vies?
 
-## 🟡 [release] NOPA novo (2026-07-25)
-- id: `release-nopa-2026-07-25`
-- fato: fonte nopa com data 2026-07-25 — coletado, ainda nao interpretado
+## 🟡 [release] NOPA novo (2026-07-26)
+- id: `release-nopa-2026-07-26`
+- fato: fonte nopa com data 2026-07-26 — coletado, ainda nao interpretado
 - refs: complexo_soja
 - leitura: O numero muda o balanco/tese? Algo relevante pro farelo?
 
