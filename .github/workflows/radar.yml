@@ -19,9 +19,11 @@ on:
         options: [intraday, daily]
         default: daily
 
-concurrency:
-  group: radar-pipeline
-  cancel-in-progress: false        # runs enfileiram (nunca corta no meio de gravar o DB)
+# SEM concorrencia no nivel do WORKFLOW (licao do apagao 06/08->26/08/2026): o grupo
+# unico fazia o job `deploy` preso em "waiting" (environment github-pages) segurar o
+# run inteiro, e todo run seguinte morria cancelado na fila. Agora cada job tem o seu:
+# coletar (serializado, nunca corta no meio de gravar o DB) e publicar (o mais novo
+# vence — publicar e idempotente). Um Pages travado nao para mais a coleta.
 
 defaults:
   run:
@@ -31,6 +33,9 @@ jobs:
   radar:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    concurrency:
+      group: radar-coleta          # so a COLETA e serializada (grava o radar.db)
+      cancel-in-progress: false
     permissions:
       contents: write              # commit-back do briefing (Fase 2) no modo daily
     outputs:
@@ -120,9 +125,11 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
+    timeout-minutes: 10
     concurrency:
       group: pages
-      cancel-in-progress: false
+      cancel-in-progress: true     # publicar e idempotente: o run mais novo vence e
+                                   # mata um deploy travado em vez de herdar a fila
     steps:
       - name: Publicar no GitHub Pages
         id: deploy

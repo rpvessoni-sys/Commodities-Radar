@@ -1,0 +1,39 @@
+name: Heartbeat do radar (dead-man switch)
+
+# Vigia o PIPELINE (nao as fontes — isso e o checkup.yml). Roda em workflow
+# SEPARADO, com concorrencia propria e SEM environment/Pages, justamente pra
+# sobreviver a falha que matou o radar em 06/08/2026: um job preso em "waiting"
+# no environment github-pages segurou o grupo de concorrencia e todos os runs
+# seguintes foram cancelados na fila por 20 dias, em silencio.
+#
+# O que ele faz: (1) pergunta a API quando foi o ultimo run OK do radar.yml;
+# (2) CANCELA run preso ha mais de 45 min — e isso que destrava o grupo sozinho;
+# (3) grita no Telegram se o radar esta parado ha mais de 3h.
+
+on:
+  schedule:
+    - cron: "17 * * * *"     # de hora em hora (minuto 17 pra nao brigar com o radar)
+  workflow_dispatch:
+
+permissions:
+  actions: write             # precisa pra CANCELAR run preso
+  contents: read
+
+concurrency:
+  group: heartbeat
+  cancel-in-progress: true   # o vigia nunca pode ficar na fila atras dele mesmo
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Vigiar o pipeline
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          HEARTBEAT_MAX_HORAS: ${{ vars.HEARTBEAT_MAX_HORAS || '3' }}
+          HEARTBEAT_STUCK_MIN: ${{ vars.HEARTBEAT_STUCK_MIN || '45' }}
+        run: python system/heartbeat.py

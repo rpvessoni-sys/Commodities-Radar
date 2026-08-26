@@ -51,9 +51,39 @@ jobs:
             echo "tem_fila=false" >> "$GITHUB_OUTPUT"
             echo "Fila vazia — pulando (gate de custo)."
           else
+            # GATE DE FRESCOR (licao do apagao 06/08->26/08/2026): com o pipeline morto,
+            # o briefing congelou em 06/08 e a leitura rodou 19 dias seguidos em cima da
+            # MESMA sessao — queimando token e transformando o alarme em rodape de texto.
+            # Briefing velho = fail-closed: nao chama o Claude, GRITA no Telegram.
+            BRIEF=$(grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' briefing/latest.md | head -1)
+            IDADE=$(( ( $(date -u +%s) - $(date -u -d "${BRIEF:-1970-01-01}" +%s) ) / 86400 ))
+            echo "briefing de $BRIEF (${IDADE}d)"
+            if [ "$IDADE" -gt "${MAX_IDADE_BRIEFING:-2}" ]; then
+              echo "brief_velho=$IDADE" >> "$GITHUB_OUTPUT"
+              echo "tem_fila=false" >> "$GITHUB_OUTPUT"
+              echo "::warning::Briefing parado ha ${IDADE}d — leitura SUSPENSA (o pipeline caiu?)."
+              exit 0
+            fi
             echo "tem_fila=true" >> "$GITHUB_OUTPUT"
             echo "Fila com item(ns) — chamando o Claude."
           fi
+
+      - name: Avisar que a leitura foi suspensa (briefing velho)
+        if: steps.fila.outputs.brief_velho != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DIAS: ${{ steps.fila.outputs.brief_velho }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ]; then echo "sem Telegram — só log"; exit 0; fi
+          MSG=$(printf '%s\n%s\n%s' \
+            "🔴 LEITURA SUSPENSA — o briefing está parado há ${DIAS} dias." \
+            "O pipeline de coleta não está publicando; não gerei leitura hoje (seria em cima de dado velho)." \
+            "Confira: Actions → Commodities Radar (nuvem).")
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${MSG}" -o /dev/null \
+            || echo "envio falhou (não derruba o run)"
 
       - name: Claude le a fila e abre PR
         if: steps.fila.outputs.tem_fila == 'true'
