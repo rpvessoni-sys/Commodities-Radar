@@ -1,4 +1,4 @@
-# Briefing consolidado — 2026-09-11
+# Briefing consolidado — 2026-09-12
 
 _Base 100% publica (CBOT/BCB/CEPEA/NAG/USDA/COT/clima) + notas manuais do consultor._
 
@@ -95,9 +95,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-08-31 | eur_brl_ptax | valor: 6.0189 BRL/EUR (sgs=21619)
 - 2026-08-31 | selic_diaria | valor: 0.05166 % a.a. (sgs=11)
 - 2026-08-31 | usd_brl_ptax | valor: 5.1816 BRL/USD (sgs=1)
-- 2026-08-28 | eur_brl_ptax | valor: 6.0315 BRL/EUR (sgs=21619)
-- 2026-08-28 | selic_diaria | valor: 0.05166 % a.a. (sgs=11)
-- 2026-08-28 | usd_brl_ptax | valor: 5.2005 BRL/USD (sgs=1)
 
 ---
 
@@ -124,7 +121,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-09-02 | soja_paranagua | preco_suporte_brl_sc: 160.99 BRL/saca (CEPEA/ESALQ Soja Paranagua via NAG (var -0.09%))
 - 2026-09-01 | soja_paranagua | preco_suporte_brl_sc: 161.14 BRL/saca (CEPEA/ESALQ Soja Paranagua via NAG (var 1.07%))
 - 2026-08-31 | soja_paranagua | preco_suporte_brl_sc: 159.44 BRL/saca (CEPEA/ESALQ Soja Paranagua via NAG (var -0.2%))
-- 2026-08-28 | soja_paranagua | preco_suporte_brl_sc: 159.76 BRL/saca (CEPEA/ESALQ Soja Paranagua via NAG (var 3.04%))
 
 ---
 
@@ -137,7 +133,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-09-05 | cepea | release_items: 107.0 items (CEPEA RSS feed — 107 itens parseados)
 - 2026-09-04 | cepea | release_items: 110.0 items (CEPEA RSS feed — 110 itens parseados)
 - 2026-09-04 | soja | headline: None  (SOJA/CEPEA: Alta dos preços ganha força no início de setembro | https://www.cepea.org.br/br/diarias-de-mercado/soja-cepea-alta-dos-precos-ganha-forca-no-inicio-de-setembro.aspx)
-- 2026-08-28 | soja | headline: None  (Parceria Cepea/Abiove apresenta novos estudos sobre a cadeia da soja em congresso internacional | https://www.cepea.org.br/br/diarias-de-mercado/parceria-cepea-abiove-apresenta-novos-estudos-sobre-a-cadeia-da-soja-em-congresso-internacional.aspx)
 
 ---
 
@@ -251,6 +246,8 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## indicators
 
+- 2026-09-12 | complexo_soja | indice_sobra_farelo: 60.0 0-100 (sobra relevante (3/5 condições))
+- 2026-09-12 | complexo_soja | indice_suporte_oleo: 80.0 0-100 (óleo domina o crush (4/5 condições))
 - 2026-09-11 | biodiesel_us | custo_oleo_usd_galao: 5.1833 USD/galão (7.5 lb × óleo 69.11 cts/lb)
 - 2026-09-11 | biodiesel_us | margem_usd_galao: 1.961 USD/galão (receita 7.94 (HO 4.78 + 1.5×RIN 2.11) − custo 5.98 (óleo 5.18 + ind 0.80))
 - 2026-09-11 | biodiesel_us | receita_usd_galao: 7.9442 USD/galão (HO 4.78 + 1.5×RIN 2.11)
@@ -299,8 +296,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-09-05 | complexo_soja | indice_suporte_oleo: 80.0 0-100 (óleo domina o crush (4/5 condições))
 - 2026-09-04 | biodiesel_us | custo_oleo_usd_galao: 5.1667 USD/galão (7.5 lb × óleo 68.89 cts/lb)
 - 2026-09-04 | biodiesel_us | margem_usd_galao: 1.7385 USD/galão (receita 7.71 (HO 4.54 + 1.5×RIN 2.11) − custo 5.97 (óleo 5.17 + ind 0.80))
-- 2026-09-04 | biodiesel_us | receita_usd_galao: 7.7052 USD/galão (HO 4.54 + 1.5×RIN 2.11)
-- 2026-09-04 | complexo_soja | crush_margin_usd_bu: 2.1408 USD/bushel (Board Crush: farelo 348.20 + oleo 68.89 − soja 1309.75)
 
 ---
 
@@ -361,6 +356,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## mpob
 
+- 2026-09-12 | palma_malasia | page_fetched: 3457.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-09-11 | palma_malasia | page_fetched: 3457.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-09-10 | palma_malasia | page_fetched: 3457.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-09-09 | palma_malasia | page_fetched: 3456.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
@@ -375,7 +371,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-08-31 | palma_malasia | page_fetched: 3456.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-08-30 | palma_malasia | page_fetched: 3456.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-08-29 | palma_malasia | page_fetched: 3456.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
-- 2026-08-28 | palma_malasia | page_fetched: 3456.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 
 ---
 
@@ -423,17 +418,12 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-08-31 | farelo_paranagua | premio_usd_sht: 0.12 USD/short_ton (Premio farelo Paranagua (NAG) — mes Agosto/26)
 - 2026-08-31 | oleo_paranagua | premio_cts_lb: 0.1 cts/lb (Premio oleo Paranagua (NAG) — mes Agosto/26)
 - 2026-08-31 | soja_parana_interior | preco_brl_sc: 151.31 BRL/saca (CEPEA/ESALQ Soja Parana interior via NAG (var -0.01%))
-- 2026-08-28 | farelo_fisico_br | preco_brl_ton_mt_imea: 1795.68 BRL/ton (Mato Grosso (IMEA) via NAG (var 4.03%))
-- 2026-08-28 | farelo_fisico_br | preco_brl_ton_rondonopolis_mt: 1870.0 BRL/ton (Rondonópolis/MT (BCSP) via NAG (var 0.0%))
-- 2026-08-28 | farelo_fisico_br | preco_brl_ton_rs_media: 1860.0 BRL/ton (Média Rio Grande do Sul (Clicmercado) via NAG (var 0.0%))
-- 2026-08-28 | farelo_paranagua | premio_usd_sht: 0.12 USD/short_ton (Premio farelo Paranagua (NAG) — mes Agosto/26)
-- 2026-08-28 | oleo_paranagua | premio_cts_lb: 0.1 cts/lb (Premio oleo Paranagua (NAG) — mes Agosto/26)
-- 2026-08-28 | soja_parana_interior | preco_brl_sc: 151.32 BRL/saca (CEPEA/ESALQ Soja Parana interior via NAG (var 1.41%))
 
 ---
 
 ## noaa_cpc
 
+- 2026-09-12 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-09-11 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-09-10 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-09-09 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
@@ -448,12 +438,12 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-08-31 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-08-30 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-08-29 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
-- 2026-08-28 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 
 ---
 
 ## nopa
 
+- 2026-09-12 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-09-11 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-09-10 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-09-09 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
@@ -468,12 +458,12 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-08-31 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-08-30 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-08-29 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
-- 2026-08-28 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 
 ---
 
 ## noticias_rss
 
+- 2026-09-12 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 - 2026-09-11 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 - 2026-09-10 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 - 2026-09-09 | noticias | items_fetched: 160.0 items (160 items lidos, 4 mantidos (soja/farelo/oleo))
@@ -499,8 +489,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-08-30 | soja | headline: None  (Falta pouco! Saiba como se inscrever para a Abertura Nacional do Plantio da Soja 2026/27 | https://www.canalrural.com.br/agricultura/projeto-soja-brasil/falta-pouco-saiba-como-se-inscrever-para-a-abertura-nacional-do-plantio-da-soja-2026-27/)
 - 2026-08-29 | noticias | items_fetched: 160.0 items (160 items lidos, 2 mantidos (soja/farelo/oleo))
 - 2026-08-29 | soja | headline: None  (Soja sobe no Brasil e em Chicago; mercado apresenta ritmo na semana | https://www.canalrural.com.br/agricultura/projeto-soja-brasil/soja-sobe-no-brasil-e-em-chicago-mercado-ganha-ritmo-nesta-semana/)
-- 2026-08-28 | noticias | items_fetched: 160.0 items (160 items lidos, 1 mantidos (soja/farelo/oleo))
-- 2026-08-28 | soja | headline: None  (Novo episódio do Soja Brasil aborda decisão do STF, clima e desafios para a nova safra | https://www.canalrural.com.br/agricultura/projeto-soja-brasil/novo-episodio-do-soja-brasil-aborda-decisao-do-stf-clima-e-desafios-para-a-nova-safra/)
 
 ---
 
@@ -576,6 +564,12 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 
 | Geracao | Horizonte | Alvo | Commodity | Spot ref | Baixo | Central | Alto | Vies |
 |---|---|---|---|---|---|---|---|---|
+| 2026-09-12 | 7d | 2026-09-19 | farelo_cbot | 347.80 | 343.80 | 360.57 | 377.33 | altista |
+| 2026-09-12 | 7d | 2026-09-19 | oleo_cbot | 69.11 | 64.48 | 69.47 | 74.46 | altista |
+| 2026-09-12 | 7d | 2026-09-19 | soja_cbot | 1299.00 | 1276.79 | 1341.49 | 1406.20 | altista |
+| 2026-09-12 | 30d | 2026-10-12 | farelo_cbot | 347.80 | 371.42 | 406.12 | 440.83 | altista |
+| 2026-09-12 | 30d | 2026-10-12 | oleo_cbot | 69.11 | 60.15 | 70.49 | 80.82 | altista |
+| 2026-09-12 | 30d | 2026-10-12 | soja_cbot | 1299.00 | 1354.15 | 1488.10 | 1622.06 | altista |
 | 2026-09-11 | 7d | 2026-09-18 | farelo_cbot | 347.80 | 344.01 | 360.57 | 377.12 | altista |
 | 2026-09-11 | 7d | 2026-09-18 | oleo_cbot | 69.11 | 64.53 | 69.47 | 74.41 | altista |
 | 2026-09-11 | 7d | 2026-09-18 | soja_cbot | 1299.00 | 1277.43 | 1341.49 | 1405.56 | altista |
@@ -594,21 +588,15 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 | 2026-09-09 | 30d | 2026-10-09 | farelo_cbot | 345.10 | 372.15 | 406.14 | 440.13 | altista |
 | 2026-09-09 | 30d | 2026-10-09 | oleo_cbot | 70.08 | 61.23 | 71.26 | 81.30 | altista |
 | 2026-09-09 | 30d | 2026-10-09 | soja_cbot | 1309.50 | 1388.44 | 1514.23 | 1640.01 | altista |
-| 2026-09-08 | 7d | 2026-09-15 | farelo_cbot | 343.30 | 340.95 | 357.47 | 374.00 | altista |
-| 2026-09-08 | 7d | 2026-09-15 | oleo_cbot | 70.22 | 65.47 | 70.54 | 75.61 | lateral |
-| 2026-09-08 | 7d | 2026-09-15 | soja_cbot | 1316.25 | 1301.68 | 1362.41 | 1423.14 | altista |
-| 2026-09-08 | 30d | 2026-10-08 | farelo_cbot | 343.30 | 372.85 | 407.07 | 441.28 | altista |
-| 2026-09-08 | 30d | 2026-10-08 | oleo_cbot | 70.22 | 61.20 | 71.70 | 82.19 | altista |
-| 2026-09-08 | 30d | 2026-10-08 | soja_cbot | 1316.25 | 1403.21 | 1528.94 | 1654.66 | altista |
 
 ---
 
 
 ---
 
-# Fila de julgamento — 2026-09-11
+# Fila de julgamento — 2026-09-12
 
-**11 item(ns).** Frase-gatilho: "lê a fila de julgamento e trata"
+**10 item(ns).** Frase-gatilho: "lê a fila de julgamento e trata"
 
 ## 🔴 [nivel_tese] soja_cbot fechou em 1299.00 — acima da resistencia 1180.00
 - id: `alerta-quebra_resistencia-soja_cbot-2026-09-11`
@@ -664,15 +652,9 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 - refs: complexo_soja
 - leitura: O numero muda o balanco/tese? Algo relevante pro farelo?
 
-## 🟡 [release] NOPA novo (2026-09-11)
-- id: `release-nopa-2026-09-11`
-- fato: fonte nopa com data 2026-09-11 — coletado, ainda nao interpretado
-- refs: complexo_soja
-- leitura: O numero muda o balanco/tese? Algo relevante pro farelo?
-
-## 🟡 [release] COT novo (2026-09-08)
-- id: `release-cftc_cot-2026-09-08`
-- fato: fonte cftc_cot com data 2026-09-08 — coletado, ainda nao interpretado
+## 🟡 [release] NOPA novo (2026-09-12)
+- id: `release-nopa-2026-09-12`
+- fato: fonte nopa com data 2026-09-12 — coletado, ainda nao interpretado
 - refs: complexo_soja
 - leitura: O numero muda o balanco/tese? Algo relevante pro farelo?
 
