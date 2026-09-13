@@ -1,4 +1,4 @@
-# Briefing consolidado — 2026-09-12
+# Briefing consolidado — 2026-09-13
 
 _Base 100% publica (CBOT/BCB/CEPEA/NAG/USDA/COT/clima) + notas manuais do consultor._
 
@@ -246,6 +246,8 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## indicators
 
+- 2026-09-13 | complexo_soja | indice_sobra_farelo: 60.0 0-100 (sobra relevante (3/5 condições))
+- 2026-09-13 | complexo_soja | indice_suporte_oleo: 80.0 0-100 (óleo domina o crush (4/5 condições))
 - 2026-09-12 | complexo_soja | indice_sobra_farelo: 60.0 0-100 (sobra relevante (3/5 condições))
 - 2026-09-12 | complexo_soja | indice_suporte_oleo: 80.0 0-100 (óleo domina o crush (4/5 condições))
 - 2026-09-11 | biodiesel_us | custo_oleo_usd_galao: 5.1893 USD/galão (7.5 lb × óleo 69.19 cts/lb)
@@ -294,8 +296,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-09-06 | complexo_soja | indice_suporte_oleo: 80.0 0-100 (óleo domina o crush (4/5 condições))
 - 2026-09-05 | complexo_soja | indice_sobra_farelo: 60.0 0-100 (sobra relevante (3/5 condições))
 - 2026-09-05 | complexo_soja | indice_suporte_oleo: 80.0 0-100 (óleo domina o crush (4/5 condições))
-- 2026-09-04 | biodiesel_us | custo_oleo_usd_galao: 5.1667 USD/galão (7.5 lb × óleo 68.89 cts/lb)
-- 2026-09-04 | biodiesel_us | margem_usd_galao: 1.7385 USD/galão (receita 7.71 (HO 4.54 + 1.5×RIN 2.11) − custo 5.97 (óleo 5.17 + ind 0.80))
 
 ---
 
@@ -356,6 +356,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## mpob
 
+- 2026-09-13 | palma_malasia | page_fetched: 3457.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-09-12 | palma_malasia | page_fetched: 3457.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-09-11 | palma_malasia | page_fetched: 3457.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-09-10 | palma_malasia | page_fetched: 3457.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
@@ -370,7 +371,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-09-01 | palma_malasia | page_fetched: 3456.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-08-31 | palma_malasia | page_fetched: 3456.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-08-30 | palma_malasia | page_fetched: 3456.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
-- 2026-08-29 | palma_malasia | page_fetched: 3456.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 
 ---
 
@@ -423,6 +423,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## noaa_cpc
 
+- 2026-09-13 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-09-12 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-09-11 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-09-10 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
@@ -437,12 +438,12 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-09-01 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-08-31 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-08-30 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
-- 2026-08-29 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 
 ---
 
 ## nopa
 
+- 2026-09-13 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-09-12 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-09-11 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-09-10 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
@@ -457,12 +458,12 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-09-01 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-08-31 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-08-30 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
-- 2026-08-29 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 
 ---
 
 ## noticias_rss
 
+- 2026-09-13 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 - 2026-09-12 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 - 2026-09-11 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 - 2026-09-10 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
@@ -487,8 +488,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-08-31 | soja | headline: None  (Crop progress: Soybean ratings tilt lower | https://www.farmprogress.com/marketing/crop-progress-soybean-ratings-tilt-lower)
 - 2026-08-30 | noticias | items_fetched: 160.0 items (160 items lidos, 2 mantidos (soja/farelo/oleo))
 - 2026-08-30 | soja | headline: None  (Falta pouco! Saiba como se inscrever para a Abertura Nacional do Plantio da Soja 2026/27 | https://www.canalrural.com.br/agricultura/projeto-soja-brasil/falta-pouco-saiba-como-se-inscrever-para-a-abertura-nacional-do-plantio-da-soja-2026-27/)
-- 2026-08-29 | noticias | items_fetched: 160.0 items (160 items lidos, 2 mantidos (soja/farelo/oleo))
-- 2026-08-29 | soja | headline: None  (Soja sobe no Brasil e em Chicago; mercado apresenta ritmo na semana | https://www.canalrural.com.br/agricultura/projeto-soja-brasil/soja-sobe-no-brasil-e-em-chicago-mercado-ganha-ritmo-nesta-semana/)
 
 ---
 
@@ -564,6 +563,12 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 
 | Geracao | Horizonte | Alvo | Commodity | Spot ref | Baixo | Central | Alto | Vies |
 |---|---|---|---|---|---|---|---|---|
+| 2026-09-13 | 7d | 2026-09-20 | farelo_cbot | 346.80 | 342.65 | 359.64 | 376.62 | altista |
+| 2026-09-13 | 7d | 2026-09-20 | oleo_cbot | 69.19 | 64.51 | 69.54 | 74.58 | altista |
+| 2026-09-13 | 7d | 2026-09-20 | soja_cbot | 1296.50 | 1273.41 | 1339.16 | 1404.91 | altista |
+| 2026-09-13 | 30d | 2026-10-13 | farelo_cbot | 346.80 | 370.01 | 405.17 | 440.33 | altista |
+| 2026-09-13 | 30d | 2026-10-13 | oleo_cbot | 69.19 | 60.14 | 70.56 | 80.99 | altista |
+| 2026-09-13 | 30d | 2026-10-13 | soja_cbot | 1296.50 | 1349.60 | 1485.72 | 1621.83 | altista |
 | 2026-09-12 | 7d | 2026-09-19 | farelo_cbot | 346.80 | 342.82 | 359.64 | 376.45 | altista |
 | 2026-09-12 | 7d | 2026-09-19 | oleo_cbot | 69.19 | 64.56 | 69.54 | 74.53 | altista |
 | 2026-09-12 | 7d | 2026-09-19 | soja_cbot | 1296.50 | 1274.00 | 1339.16 | 1404.32 | altista |
@@ -582,19 +587,13 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 | 2026-09-10 | 30d | 2026-10-10 | farelo_cbot | 350.60 | 375.23 | 409.80 | 444.38 | altista |
 | 2026-09-10 | 30d | 2026-10-10 | oleo_cbot | 71.41 | 62.22 | 72.50 | 82.77 | altista |
 | 2026-09-10 | 30d | 2026-10-10 | soja_cbot | 1332.25 | 1397.54 | 1526.17 | 1654.80 | altista |
-| 2026-09-09 | 7d | 2026-09-16 | farelo_cbot | 345.10 | 341.94 | 358.36 | 374.78 | altista |
-| 2026-09-09 | 7d | 2026-09-16 | oleo_cbot | 70.08 | 65.45 | 70.30 | 75.15 | lateral |
-| 2026-09-09 | 7d | 2026-09-16 | soja_cbot | 1309.50 | 1292.96 | 1353.72 | 1414.48 | altista |
-| 2026-09-09 | 30d | 2026-10-09 | farelo_cbot | 345.10 | 372.15 | 406.14 | 440.13 | altista |
-| 2026-09-09 | 30d | 2026-10-09 | oleo_cbot | 70.08 | 61.23 | 71.26 | 81.30 | altista |
-| 2026-09-09 | 30d | 2026-10-09 | soja_cbot | 1309.50 | 1388.44 | 1514.23 | 1640.01 | altista |
 
 ---
 
 
 ---
 
-# Fila de julgamento — 2026-09-12
+# Fila de julgamento — 2026-09-13
 
 **11 item(ns).** Frase-gatilho: "lê a fila de julgamento e trata"
 
@@ -658,9 +657,9 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 - refs: complexo_soja
 - leitura: O numero muda o balanco/tese? Algo relevante pro farelo?
 
-## 🟡 [release] NOPA novo (2026-09-12)
-- id: `release-nopa-2026-09-12`
-- fato: fonte nopa com data 2026-09-12 — coletado, ainda nao interpretado
+## 🟡 [release] NOPA novo (2026-09-13)
+- id: `release-nopa-2026-09-13`
+- fato: fonte nopa com data 2026-09-13 — coletado, ainda nao interpretado
 - refs: complexo_soja
 - leitura: O numero muda o balanco/tese? Algo relevante pro farelo?
 
