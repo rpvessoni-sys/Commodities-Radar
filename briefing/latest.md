@@ -140,41 +140,41 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 ## cme_cbot
 
 - 2026-10-14 | farelo_cbot | abertura: 363.0 USD/short_ton (ticker=ZMZ26.CBT)
-- 2026-10-14 | farelo_cbot | fechamento: 362.79998779296875 USD/short_ton (ticker=ZMZ26.CBT)
-- 2026-10-14 | farelo_cbot | fechamento_F27: 360.79998779296875 USD/short_ton (ticker=ZMF27.CBT venc=jan/27)
-- 2026-10-14 | farelo_cbot | fechamento_H27: 359.1000061035156 USD/short_ton (ticker=ZMH27.CBT venc=mar/27)
-- 2026-10-14 | farelo_cbot | fechamento_K27: 359.5 USD/short_ton (ticker=ZMK27.CBT venc=mai/27)
+- 2026-10-14 | farelo_cbot | fechamento: 363.1000061035156 USD/short_ton (ticker=ZMZ26.CBT)
+- 2026-10-14 | farelo_cbot | fechamento_F27: 361.20001220703125 USD/short_ton (ticker=ZMF27.CBT venc=jan/27)
+- 2026-10-14 | farelo_cbot | fechamento_H27: 359.29998779296875 USD/short_ton (ticker=ZMH27.CBT venc=mar/27)
+- 2026-10-14 | farelo_cbot | fechamento_K27: 359.20001220703125 USD/short_ton (ticker=ZMK27.CBT venc=mai/27)
 - 2026-10-14 | farelo_cbot | fechamento_N27: 361.70001220703125 USD/short_ton (ticker=ZMN27.CBT venc=jul/27)
-- 2026-10-14 | farelo_cbot | fechamento_Z26: 362.79998779296875 USD/short_ton (ticker=ZMZ26.CBT venc=dez/26)
+- 2026-10-14 | farelo_cbot | fechamento_Z26: 363.1000061035156 USD/short_ton (ticker=ZMZ26.CBT venc=dez/26)
 - 2026-10-14 | farelo_cbot | maxima: 363.70001220703125 USD/short_ton (ticker=ZMZ26.CBT)
 - 2026-10-14 | farelo_cbot | minima: 361.20001220703125 USD/short_ton (ticker=ZMZ26.CBT)
-- 2026-10-14 | farelo_cbot | volume: 1668.0 contratos (ticker=ZMZ26.CBT)
+- 2026-10-14 | farelo_cbot | volume: 1857.0 contratos (ticker=ZMZ26.CBT)
 - 2026-10-14 | heating_oil_cbot | abertura: 4.9756999015808105 USD/galão (ticker=HO=F)
-- 2026-10-14 | heating_oil_cbot | fechamento: 4.97160005569458 USD/galão (ticker=HO=F)
+- 2026-10-14 | heating_oil_cbot | fechamento: 4.96999979019165 USD/galão (ticker=HO=F)
 - 2026-10-14 | heating_oil_cbot | maxima: 4.978799819946289 USD/galão (ticker=HO=F)
 - 2026-10-14 | heating_oil_cbot | minima: 4.953100204467773 USD/galão (ticker=HO=F)
-- 2026-10-14 | heating_oil_cbot | volume: 711.0 contratos (ticker=HO=F)
+- 2026-10-14 | heating_oil_cbot | volume: 736.0 contratos (ticker=HO=F)
 - 2026-10-14 | oleo_cbot | abertura: 68.16000366210938 USD_cts/lb (ticker=ZLZ26.CBT)
-- 2026-10-14 | oleo_cbot | fechamento: 68.01000213623047 USD_cts/lb (ticker=ZLZ26.CBT)
-- 2026-10-14 | oleo_cbot | fechamento_F27: 68.26000213623047 USD_cts/lb (ticker=ZLF27.CBT venc=jan/27)
+- 2026-10-14 | oleo_cbot | fechamento: 68.05000305175781 USD_cts/lb (ticker=ZLZ26.CBT)
+- 2026-10-14 | oleo_cbot | fechamento_F27: 68.29000091552734 USD_cts/lb (ticker=ZLF27.CBT venc=jan/27)
 - 2026-10-14 | oleo_cbot | fechamento_H27: 68.5199966430664 USD_cts/lb (ticker=ZLH27.CBT venc=mar/27)
 - 2026-10-14 | oleo_cbot | fechamento_K27: 68.69000244140625 USD_cts/lb (ticker=ZLK27.CBT venc=mai/27)
 - 2026-10-14 | oleo_cbot | fechamento_N27: 68.69000244140625 USD_cts/lb (ticker=ZLN27.CBT venc=jul/27)
-- 2026-10-14 | oleo_cbot | fechamento_Z26: 68.01000213623047 USD_cts/lb (ticker=ZLZ26.CBT venc=dez/26)
+- 2026-10-14 | oleo_cbot | fechamento_Z26: 68.05000305175781 USD_cts/lb (ticker=ZLZ26.CBT venc=dez/26)
 - 2026-10-14 | oleo_cbot | maxima: 68.25 USD_cts/lb (ticker=ZLZ26.CBT)
 - 2026-10-14 | oleo_cbot | minima: 67.94999694824219 USD_cts/lb (ticker=ZLZ26.CBT)
-- 2026-10-14 | oleo_cbot | volume: 2004.0 contratos (ticker=ZLZ26.CBT)
+- 2026-10-14 | oleo_cbot | volume: 2102.0 contratos (ticker=ZLZ26.CBT)
 - 2026-10-14 | soja_cbot | abertura: 1282.75 USD/bushel (ticker=ZSX26.CBT)
-- 2026-10-14 | soja_cbot | fechamento: 1284.0 USD/bushel (ticker=ZSX26.CBT)
-- 2026-10-14 | soja_cbot | fechamento_F27: 1300.25 USD/bushel (ticker=ZSF27.CBT venc=jan/27)
-- 2026-10-14 | soja_cbot | fechamento_H27: 1309.0 USD/bushel (ticker=ZSH27.CBT venc=mar/27)
-- 2026-10-14 | soja_cbot | fechamento_K27: 1318.75 USD/bushel (ticker=ZSK27.CBT venc=mai/27)
+- 2026-10-14 | soja_cbot | fechamento: 1285.0 USD/bushel (ticker=ZSX26.CBT)
+- 2026-10-14 | soja_cbot | fechamento_F27: 1300.5 USD/bushel (ticker=ZSF27.CBT venc=jan/27)
+- 2026-10-14 | soja_cbot | fechamento_H27: 1309.25 USD/bushel (ticker=ZSH27.CBT venc=mar/27)
+- 2026-10-14 | soja_cbot | fechamento_K27: 1318.0 USD/bushel (ticker=ZSK27.CBT venc=mai/27)
 - 2026-10-14 | soja_cbot | fechamento_N27: 1324.5 USD/bushel (ticker=ZSN27.CBT venc=jul/27)
 - 2026-10-14 | soja_cbot | fechamento_Q27: 1306.0 USD/bushel (ticker=ZSQ27.CBT venc=ago/27)
-- 2026-10-14 | soja_cbot | fechamento_X26: 1284.0 USD/bushel (ticker=ZSX26.CBT venc=nov/26)
+- 2026-10-14 | soja_cbot | fechamento_X26: 1285.0 USD/bushel (ticker=ZSX26.CBT venc=nov/26)
 - 2026-10-14 | soja_cbot | maxima: 1285.5 USD/bushel (ticker=ZSX26.CBT)
 - 2026-10-14 | soja_cbot | minima: 1281.5 USD/bushel (ticker=ZSX26.CBT)
-- 2026-10-14 | soja_cbot | volume: 2707.0 contratos (ticker=ZSX26.CBT)
+- 2026-10-14 | soja_cbot | volume: 4009.0 contratos (ticker=ZSX26.CBT)
 - 2026-10-13 | farelo_cbot | abertura: 363.0 USD/short_ton (ticker=ZMZ26.CBT)
 - 2026-10-13 | farelo_cbot | fechamento: 362.8999938964844 USD/short_ton (ticker=ZMZ26.CBT)
 - 2026-10-13 | farelo_cbot | fechamento_F27: 360.5 USD/short_ton (ticker=ZMF27.CBT venc=jan/27)
@@ -185,7 +185,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-10-13 | farelo_cbot | fechamento_Z26: 362.8999938964844 USD/short_ton (ticker=ZMZ26.CBT venc=dez/26)
 - 2026-10-13 | farelo_cbot | maxima: 363.70001220703125 USD/short_ton (ticker=ZMZ26.CBT)
 - 2026-10-13 | farelo_cbot | minima: 361.20001220703125 USD/short_ton (ticker=ZMZ26.CBT)
-- 2026-10-13 | farelo_cbot | volume: 1668.0 contratos (ticker=ZMZ26.CBT)
+- 2026-10-13 | farelo_cbot | volume: 1857.0 contratos (ticker=ZMZ26.CBT)
 - 2026-10-13 | heating_oil_cbot | abertura: 4.9756999015808105 USD/galão (ticker=HO=F)
 - 2026-10-13 | heating_oil_cbot | fechamento: 4.977700233459473 USD/galão (ticker=HO=F)
 - 2026-10-13 | heating_oil_cbot | maxima: 4.978799819946289 USD/galão (ticker=HO=F)
@@ -194,16 +194,16 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## indicators
 
-- 2026-10-14 | biodiesel_us | custo_oleo_usd_galao: 5.1008 USD/galão (7.5 lb × óleo 68.01 cts/lb)
-- 2026-10-14 | biodiesel_us | margem_usd_galao: 2.2358 USD/galão (receita 8.14 (HO 4.97 + 1.5×RIN 2.11) − custo 5.90 (óleo 5.10 + ind 0.80))
-- 2026-10-14 | biodiesel_us | receita_usd_galao: 8.1366 USD/galão (HO 4.97 + 1.5×RIN 2.11)
-- 2026-10-14 | complexo_soja | crush_margin_usd_bu: 2.6227 USD/bushel (Board Crush: farelo 362.80 + oleo 68.01 − soja 1284.00)
-- 2026-10-14 | complexo_soja | far_soj_ratio_pct: 84.77 % (farelo 362.80/sht ÷ (soja 1284.00cts × 33.33) — <80 abundante, >=87 apertado)
+- 2026-10-14 | biodiesel_us | custo_oleo_usd_galao: 5.1038 USD/galão (7.5 lb × óleo 68.05 cts/lb)
+- 2026-10-14 | biodiesel_us | margem_usd_galao: 2.2312 USD/galão (receita 8.13 (HO 4.97 + 1.5×RIN 2.11) − custo 5.90 (óleo 5.10 + ind 0.80))
+- 2026-10-14 | biodiesel_us | receita_usd_galao: 8.135 USD/galão (HO 4.97 + 1.5×RIN 2.11)
+- 2026-10-14 | complexo_soja | crush_margin_usd_bu: 2.6237 USD/bushel (Board Crush: farelo 363.10 + oleo 68.05 − soja 1285.00)
+- 2026-10-14 | complexo_soja | far_soj_ratio_pct: 84.77 % (farelo 363.10/sht ÷ (soja 1285.00cts × 33.33) — <80 abundante, >=87 apertado)
 - 2026-10-14 | complexo_soja | indice_sobra_farelo: 80.0 0-100 (forte pressão baixista no farelo (4/5 condições))
 - 2026-10-14 | complexo_soja | indice_suporte_oleo: 60.0 0-100 (suporte relevante (3/5 condições))
-- 2026-10-14 | complexo_soja | oil_meal_spread_usd_bu: -0.5005 USD/bushel (Oleo - Farelo (positivo = oleo manda))
-- 2026-10-14 | complexo_soja | oil_share_pct: 48.38 % (valor oleo 7.48 / total 15.46)
-- 2026-10-14 | soja_paridade_br | brl_saca_paridade: 141.81 BRL/saca60kg (CBOT 1284.00 cts × USD/BRL 5.0096 (sem basis))
+- 2026-10-14 | complexo_soja | oil_meal_spread_usd_bu: -0.5027 USD/bushel (Oleo - Farelo (positivo = oleo manda))
+- 2026-10-14 | complexo_soja | oil_share_pct: 48.38 % (valor oleo 7.49 / total 15.47)
+- 2026-10-14 | soja_paridade_br | brl_saca_paridade: 141.92 BRL/saca60kg (CBOT 1285.00 cts × USD/BRL 5.0096 (sem basis))
 - 2026-10-13 | biodiesel_us | custo_oleo_usd_galao: 5.0985 USD/galão (7.5 lb × óleo 67.98 cts/lb)
 - 2026-10-13 | biodiesel_us | margem_usd_galao: 2.2442 USD/galão (receita 8.14 (HO 4.98 + 1.5×RIN 2.11) − custo 5.90 (óleo 5.10 + ind 0.80))
 - 2026-10-13 | biodiesel_us | receita_usd_galao: 8.1427 USD/galão (HO 4.98 + 1.5×RIN 2.11)
@@ -475,12 +475,12 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 
 | Geracao | Horizonte | Alvo | Commodity | Spot ref | Baixo | Central | Alto | Vies |
 |---|---|---|---|---|---|---|---|---|
-| 2026-10-14 | 7d | 2026-10-21 | farelo_cbot | 362.80 | 336.40 | 359.72 | 383.04 | baixista |
-| 2026-10-14 | 7d | 2026-10-21 | oleo_cbot | 68.01 | 63.76 | 68.04 | 72.32 | lateral |
-| 2026-10-14 | 7d | 2026-10-21 | soja_cbot | 1284.00 | 1216.48 | 1271.94 | 1327.40 | baixista |
-| 2026-10-14 | 30d | 2026-11-13 | farelo_cbot | 362.80 | 301.47 | 349.75 | 398.03 | baixista |
-| 2026-10-14 | 30d | 2026-11-13 | oleo_cbot | 68.01 | 59.22 | 68.08 | 76.94 | lateral |
-| 2026-10-14 | 30d | 2026-11-13 | soja_cbot | 1284.00 | 1113.64 | 1228.45 | 1343.26 | baixista |
+| 2026-10-14 | 7d | 2026-10-21 | farelo_cbot | 363.10 | 336.67 | 360.00 | 383.34 | baixista |
+| 2026-10-14 | 7d | 2026-10-21 | oleo_cbot | 68.05 | 63.79 | 68.08 | 72.36 | lateral |
+| 2026-10-14 | 7d | 2026-10-21 | soja_cbot | 1285.00 | 1217.37 | 1272.87 | 1328.37 | baixista |
+| 2026-10-14 | 30d | 2026-11-13 | farelo_cbot | 363.10 | 301.73 | 350.04 | 398.34 | baixista |
+| 2026-10-14 | 30d | 2026-11-13 | oleo_cbot | 68.05 | 59.25 | 68.11 | 76.98 | lateral |
+| 2026-10-14 | 30d | 2026-11-13 | soja_cbot | 1285.00 | 1114.50 | 1229.40 | 1344.31 | baixista |
 | 2026-10-13 | 7d | 2026-10-20 | farelo_cbot | 362.90 | 337.08 | 360.36 | 383.64 | baixista |
 | 2026-10-13 | 7d | 2026-10-20 | oleo_cbot | 67.98 | 63.73 | 68.20 | 72.66 | lateral |
 | 2026-10-13 | 7d | 2026-10-20 | soja_cbot | 1282.75 | 1208.05 | 1265.44 | 1322.84 | baixista |
@@ -509,21 +509,21 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 
 **7 item(ns).** Frase-gatilho: "lê a fila de julgamento e trata"
 
-## 🔴 [nivel_tese] soja_cbot fechou em 1284.00 — acima da resistencia 1180.00
+## 🔴 [nivel_tese] soja_cbot fechou em 1285.00 — acima da resistencia 1180.00
 - id: `alerta-quebra_resistencia-soja_cbot-2026-10-14`
-- fato: soja_cbot = 1284.00 vs nivel 1180.00 (2026-10-14)
+- fato: soja_cbot = 1285.00 vs nivel 1180.00 (2026-10-14)
 - refs: soja_cbot
 - leitura: Confirma ou muda a tese? O que voce faria diferente sabendo disso?
 
-## 🔴 [nivel_tese] oleo_cbot fechou em 68.01 — abaixo do suporte 72.00
+## 🔴 [nivel_tese] oleo_cbot fechou em 68.05 — abaixo do suporte 72.00
 - id: `alerta-quebra_suporte-oleo_cbot-2026-10-14`
-- fato: oleo_cbot = 68.01 vs nivel 72.00 (2026-10-14)
+- fato: oleo_cbot = 68.05 vs nivel 72.00 (2026-10-14)
 - refs: oleo_cbot
 - leitura: Confirma ou muda a tese? O que voce faria diferente sabendo disso?
 
-## 🔴 [nivel_tese] farelo_cbot fechou em 362.80 — acima da resistencia 325.00
+## 🔴 [nivel_tese] farelo_cbot fechou em 363.10 — acima da resistencia 325.00
 - id: `alerta-quebra_resistencia-farelo_cbot-2026-10-14`
-- fato: farelo_cbot = 362.80 vs nivel 325.00 (2026-10-14)
+- fato: farelo_cbot = 363.10 vs nivel 325.00 (2026-10-14)
 - refs: farelo_cbot
 - leitura: Confirma ou muda a tese? O que voce faria diferente sabendo disso?
 
