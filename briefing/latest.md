@@ -133,10 +133,10 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 ## cme_cbot
 
 - 2026-11-02 | heating_oil_cbot | abertura: 4.674600124359131 USD/galão (ticker=HO=F)
-- 2026-11-02 | heating_oil_cbot | fechamento: 4.617800235748291 USD/galão (ticker=HO=F)
+- 2026-11-02 | heating_oil_cbot | fechamento: 4.611700057983398 USD/galão (ticker=HO=F)
 - 2026-11-02 | heating_oil_cbot | maxima: 4.674600124359131 USD/galão (ticker=HO=F)
 - 2026-11-02 | heating_oil_cbot | minima: 4.609300136566162 USD/galão (ticker=HO=F)
-- 2026-11-02 | heating_oil_cbot | volume: 504.0 contratos (ticker=HO=F)
+- 2026-11-02 | heating_oil_cbot | volume: 517.0 contratos (ticker=HO=F)
 - 2026-11-01 | heating_oil_cbot | abertura: 4.674600124359131 USD/galão (ticker=HO=F)
 - 2026-11-01 | heating_oil_cbot | fechamento: 4.610599994659424 USD/galão (ticker=HO=F)
 - 2026-11-01 | heating_oil_cbot | maxima: 4.674699783325195 USD/galão (ticker=HO=F)
