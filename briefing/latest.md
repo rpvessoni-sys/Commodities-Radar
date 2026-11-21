@@ -173,7 +173,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-11-19 | farelo_cbot | fechamento_Z26: 332.29998779296875 USD/short_ton (ticker=ZMZ26.CBT venc=dez/26)
 - 2026-11-19 | farelo_cbot | maxima: 334.8999938964844 USD/short_ton (ticker=ZMF27.CBT)
 - 2026-11-19 | farelo_cbot | minima: 329.29998779296875 USD/short_ton (ticker=ZMF27.CBT)
-- 2026-11-19 | farelo_cbot | volume: 80481.0 contratos (ticker=ZMF27.CBT)
+- 2026-11-19 | farelo_cbot | volume: 78856.0 contratos (ticker=ZMF27.CBT)
 - 2026-11-19 | heating_oil_cbot | abertura: 3.946700096130371 USD/galão (ticker=HO=F)
 - 2026-11-19 | heating_oil_cbot | fechamento: 3.9514000415802 USD/galão (ticker=HO=F)
 
