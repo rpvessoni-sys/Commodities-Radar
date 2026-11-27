@@ -1,4 +1,4 @@
-# Briefing consolidado — 2026-11-26
+# Briefing consolidado — 2026-11-27
 
 _Base 100% publica (CBOT/BCB/CEPEA/NAG/USDA/COT/clima) + notas manuais do consultor._
 
@@ -32,6 +32,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## anec
 
+- 2026-11-27 | anec | links_relatorios: 0.0 count (Nenhum link de relatorio encontrado na pagina /estatisticas/. Estrutura pode ter mudado.)
 - 2026-11-26 | anec | links_relatorios: 0.0 count (Nenhum link de relatorio encontrado na pagina /estatisticas/. Estrutura pode ter mudado.)
 - 2026-11-25 | anec | links_relatorios: 0.0 count (Nenhum link de relatorio encontrado na pagina /estatisticas/. Estrutura pode ter mudado.)
 - 2026-11-24 | anec | links_relatorios: 0.0 count (Nenhum link de relatorio encontrado na pagina /estatisticas/. Estrutura pode ter mudado.)
@@ -46,6 +47,9 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## bcb
 
+- 2026-11-26 | eur_brl_ptax | valor: 6.3041 BRL/EUR (sgs=21619)
+- 2026-11-26 | selic_diaria | valor: 0.050788 % a.a. (sgs=11)
+- 2026-11-26 | usd_brl_ptax | valor: 5.7446 BRL/USD (sgs=1)
 - 2026-11-25 | eur_brl_ptax | valor: 6.4413 BRL/EUR (sgs=21619)
 - 2026-11-25 | selic_diaria | valor: 0.050788 % a.a. (sgs=11)
 - 2026-11-25 | usd_brl_ptax | valor: 5.8825 BRL/USD (sgs=1)
@@ -70,9 +74,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-11-13 | eur_brl_ptax | valor: 6.2334 BRL/EUR (sgs=21619)
 - 2026-11-13 | selic_diaria | valor: 0.050788 % a.a. (sgs=11)
 - 2026-11-13 | usd_brl_ptax | valor: 5.6518 BRL/USD (sgs=1)
-- 2026-11-12 | eur_brl_ptax | valor: 6.2133 BRL/EUR (sgs=21619)
-- 2026-11-12 | selic_diaria | valor: 0.050788 % a.a. (sgs=11)
-- 2026-11-12 | usd_brl_ptax | valor: 5.6143 BRL/USD (sgs=1)
 
 ---
 
@@ -107,73 +108,75 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 
 ## cme_cbot
 
+- 2026-11-27 | heating_oil_cbot | abertura: 3.65310001373291 USD/galão (ticker=HO=F)
+- 2026-11-27 | heating_oil_cbot | fechamento: 3.70740008354187 USD/galão (ticker=HO=F)
+- 2026-11-27 | heating_oil_cbot | maxima: 3.709199905395508 USD/galão (ticker=HO=F)
+- 2026-11-27 | heating_oil_cbot | minima: 3.622499942779541 USD/galão (ticker=HO=F)
+- 2026-11-27 | heating_oil_cbot | volume: 7876.0 contratos (ticker=HO=F)
 - 2026-11-26 | heating_oil_cbot | abertura: 3.65310001373291 USD/galão (ticker=HO=F)
-- 2026-11-26 | heating_oil_cbot | fechamento: 3.669800043106079 USD/galão (ticker=HO=F)
-- 2026-11-26 | heating_oil_cbot | maxima: 3.6733999252319336 USD/galão (ticker=HO=F)
-- 2026-11-26 | heating_oil_cbot | minima: 3.643399953842163 USD/galão (ticker=HO=F)
-- 2026-11-26 | heating_oil_cbot | volume: 534.0 contratos (ticker=HO=F)
+- 2026-11-26 | heating_oil_cbot | fechamento: 3.6991000175476074 USD/galão (ticker=HO=F)
+- 2026-11-26 | heating_oil_cbot | maxima: 3.709199905395508 USD/galão (ticker=HO=F)
+- 2026-11-26 | heating_oil_cbot | minima: 3.622499942779541 USD/galão (ticker=HO=F)
+- 2026-11-26 | heating_oil_cbot | volume: 7832.0 contratos (ticker=HO=F)
 - 2026-11-25 | farelo_cbot | abertura: 351.0 USD/short_ton (ticker=ZMF27.CBT)
 - 2026-11-25 | farelo_cbot | fechamento: 358.1000061035156 USD/short_ton (ticker=ZMF27.CBT)
 - 2026-11-25 | farelo_cbot | fechamento_F27: 358.1000061035156 USD/short_ton (ticker=ZMF27.CBT venc=jan/27)
-- 2026-11-25 | farelo_cbot | fechamento_H27: 356.79998779296875 USD/short_ton (ticker=ZMH27.CBT venc=mar/27)
-- 2026-11-25 | farelo_cbot | fechamento_K27: 356.6000061035156 USD/short_ton (ticker=ZMK27.CBT venc=mai/27)
-- 2026-11-25 | farelo_cbot | fechamento_N27: 357.8999938964844 USD/short_ton (ticker=ZMN27.CBT venc=jul/27)
-- 2026-11-25 | farelo_cbot | fechamento_Q27: 354.29998779296875 USD/short_ton (ticker=ZMQ27.CBT venc=ago/27)
-- 2026-11-25 | farelo_cbot | fechamento_Z26: 361.70001220703125 USD/short_ton (ticker=ZMZ26.CBT venc=dez/26)
+- 2026-11-25 | farelo_cbot | fechamento_H27: 357.0 USD/short_ton (ticker=ZMH27.CBT venc=mar/27)
+- 2026-11-25 | farelo_cbot | fechamento_K27: 357.0 USD/short_ton (ticker=ZMK27.CBT venc=mai/27)
+- 2026-11-25 | farelo_cbot | fechamento_N27: 358.1000061035156 USD/short_ton (ticker=ZMN27.CBT venc=jul/27)
+- 2026-11-25 | farelo_cbot | fechamento_Q27: 354.70001220703125 USD/short_ton (ticker=ZMQ27.CBT venc=ago/27)
+- 2026-11-25 | farelo_cbot | fechamento_Z26: 361.6000061035156 USD/short_ton (ticker=ZMZ26.CBT venc=dez/26)
 - 2026-11-25 | farelo_cbot | maxima: 358.5 USD/short_ton (ticker=ZMF27.CBT)
 - 2026-11-25 | farelo_cbot | minima: 347.79998779296875 USD/short_ton (ticker=ZMF27.CBT)
-- 2026-11-25 | farelo_cbot | volume: 114045.0 contratos (ticker=ZMF27.CBT)
+- 2026-11-25 | farelo_cbot | volume: 116408.0 contratos (ticker=ZMF27.CBT)
 - 2026-11-25 | heating_oil_cbot | abertura: 3.7032999992370605 USD/galão (ticker=HO=F)
 - 2026-11-25 | heating_oil_cbot | fechamento: 3.702500104904175 USD/galão (ticker=HO=F)
 - 2026-11-25 | heating_oil_cbot | maxima: 3.744499921798706 USD/galão (ticker=HO=F)
 - 2026-11-25 | heating_oil_cbot | minima: 3.616300106048584 USD/galão (ticker=HO=F)
 - 2026-11-25 | heating_oil_cbot | volume: 21070.0 contratos (ticker=HO=F)
 - 2026-11-25 | oleo_cbot | abertura: 58.150001525878906 USD_cts/lb (ticker=ZLF27.CBT)
-- 2026-11-25 | oleo_cbot | fechamento: 58.2599983215332 USD_cts/lb (ticker=ZLF27.CBT)
-- 2026-11-25 | oleo_cbot | fechamento_F27: 58.2599983215332 USD_cts/lb (ticker=ZLF27.CBT venc=jan/27)
-- 2026-11-25 | oleo_cbot | fechamento_H27: 58.75 USD_cts/lb (ticker=ZLH27.CBT venc=mar/27)
-- 2026-11-25 | oleo_cbot | fechamento_K27: 59.2599983215332 USD_cts/lb (ticker=ZLK27.CBT venc=mai/27)
-- 2026-11-25 | oleo_cbot | fechamento_N27: 59.59000015258789 USD_cts/lb (ticker=ZLN27.CBT venc=jul/27)
-- 2026-11-25 | oleo_cbot | fechamento_Q27: 59.47999954223633 USD_cts/lb (ticker=ZLQ27.CBT venc=ago/27)
-- 2026-11-25 | oleo_cbot | fechamento_Z26: 58.0099983215332 USD_cts/lb (ticker=ZLZ26.CBT venc=dez/26)
+- 2026-11-25 | oleo_cbot | fechamento: 58.369998931884766 USD_cts/lb (ticker=ZLF27.CBT)
+- 2026-11-25 | oleo_cbot | fechamento_F27: 58.369998931884766 USD_cts/lb (ticker=ZLF27.CBT venc=jan/27)
+- 2026-11-25 | oleo_cbot | fechamento_H27: 58.849998474121094 USD_cts/lb (ticker=ZLH27.CBT venc=mar/27)
+- 2026-11-25 | oleo_cbot | fechamento_K27: 59.349998474121094 USD_cts/lb (ticker=ZLK27.CBT venc=mai/27)
+- 2026-11-25 | oleo_cbot | fechamento_N27: 59.68000030517578 USD_cts/lb (ticker=ZLN27.CBT venc=jul/27)
+- 2026-11-25 | oleo_cbot | fechamento_Q27: 59.56999969482422 USD_cts/lb (ticker=ZLQ27.CBT venc=ago/27)
+- 2026-11-25 | oleo_cbot | fechamento_Z26: 58.08000183105469 USD_cts/lb (ticker=ZLZ26.CBT venc=dez/26)
 - 2026-11-25 | oleo_cbot | maxima: 58.7400016784668 USD_cts/lb (ticker=ZLF27.CBT)
 - 2026-11-25 | oleo_cbot | minima: 57.560001373291016 USD_cts/lb (ticker=ZLF27.CBT)
-- 2026-11-25 | oleo_cbot | volume: 94669.0 contratos (ticker=ZLF27.CBT)
+- 2026-11-25 | oleo_cbot | volume: 132142.0 contratos (ticker=ZLF27.CBT)
 - 2026-11-25 | soja_cbot | abertura: 1233.75 USD/bushel (ticker=ZSF27.CBT)
-- 2026-11-25 | soja_cbot | fechamento: 1243.25 USD/bushel (ticker=ZSF27.CBT)
-- 2026-11-25 | soja_cbot | fechamento_F27: 1243.25 USD/bushel (ticker=ZSF27.CBT venc=jan/27)
-- 2026-11-25 | soja_cbot | fechamento_H27: 1244.25 USD/bushel (ticker=ZSH27.CBT venc=mar/27)
-- 2026-11-25 | soja_cbot | fechamento_K27: 1248.5 USD/bushel (ticker=ZSK27.CBT venc=mai/27)
-- 2026-11-25 | soja_cbot | fechamento_N27: 1251.5 USD/bushel (ticker=ZSN27.CBT venc=jul/27)
-- 2026-11-25 | soja_cbot | fechamento_Q27: 1231.75 USD/bushel (ticker=ZSQ27.CBT venc=ago/27)
+- 2026-11-25 | soja_cbot | fechamento: 1244.0 USD/bushel (ticker=ZSF27.CBT)
+- 2026-11-25 | soja_cbot | fechamento_F27: 1244.0 USD/bushel (ticker=ZSF27.CBT venc=jan/27)
+- 2026-11-25 | soja_cbot | fechamento_H27: 1245.0 USD/bushel (ticker=ZSH27.CBT venc=mar/27)
+- 2026-11-25 | soja_cbot | fechamento_K27: 1249.25 USD/bushel (ticker=ZSK27.CBT venc=mai/27)
+- 2026-11-25 | soja_cbot | fechamento_N27: 1252.75 USD/bushel (ticker=ZSN27.CBT venc=jul/27)
+- 2026-11-25 | soja_cbot | fechamento_Q27: 1233.25 USD/bushel (ticker=ZSQ27.CBT venc=ago/27)
 - 2026-11-25 | soja_cbot | maxima: 1247.25 USD/bushel (ticker=ZSF27.CBT)
 - 2026-11-25 | soja_cbot | minima: 1220.5 USD/bushel (ticker=ZSF27.CBT)
-- 2026-11-25 | soja_cbot | volume: 122801.0 contratos (ticker=ZSF27.CBT)
+- 2026-11-25 | soja_cbot | volume: 145735.0 contratos (ticker=ZSF27.CBT)
 - 2026-11-24 | farelo_cbot | abertura: 344.1000061035156 USD/short_ton (ticker=ZMF27.CBT)
 - 2026-11-24 | farelo_cbot | fechamento: 351.1000061035156 USD/short_ton (ticker=ZMF27.CBT)
 - 2026-11-24 | farelo_cbot | fechamento_F27: 351.1000061035156 USD/short_ton (ticker=ZMF27.CBT venc=jan/27)
-- 2026-11-24 | farelo_cbot | fechamento_H27: 351.3999938964844 USD/short_ton (ticker=ZMH27.CBT venc=mar/27)
-- 2026-11-24 | farelo_cbot | fechamento_K27: 352.29998779296875 USD/short_ton (ticker=ZMK27.CBT venc=mai/27)
-- 2026-11-24 | farelo_cbot | fechamento_N27: 354.20001220703125 USD/short_ton (ticker=ZMN27.CBT venc=jul/27)
-- 2026-11-24 | farelo_cbot | fechamento_Q27: 351.8999938964844 USD/short_ton (ticker=ZMQ27.CBT venc=ago/27)
-- 2026-11-24 | farelo_cbot | fechamento_Z26: 353.0 USD/short_ton (ticker=ZMZ26.CBT venc=dez/26)
 
 ---
 
 ## indicators
 
+- 2026-11-27 | complexo_soja | indice_sobra_farelo: 25.0 0-100 (sem sobra relevante (1/4 condições))
+- 2026-11-27 | complexo_soja | indice_suporte_oleo: 60.0 0-100 (suporte relevante (3/5 condições))
 - 2026-11-26 | complexo_soja | indice_sobra_farelo: 25.0 0-100 (sem sobra relevante (1/4 condições))
 - 2026-11-26 | complexo_soja | indice_suporte_oleo: 60.0 0-100 (suporte relevante (3/5 condições))
-- 2026-11-25 | biodiesel_us | custo_oleo_usd_galao: 4.3695 USD/galão (7.5 lb × óleo 58.26 cts/lb)
-- 2026-11-25 | biodiesel_us | margem_usd_galao: 1.698 USD/galão (receita 6.87 (HO 3.70 + 1.5×RIN 2.11) − custo 5.17 (óleo 4.37 + ind 0.80))
+- 2026-11-25 | biodiesel_us | custo_oleo_usd_galao: 4.3777 USD/galão (7.5 lb × óleo 58.37 cts/lb)
+- 2026-11-25 | biodiesel_us | margem_usd_galao: 1.6898 USD/galão (receita 6.87 (HO 3.70 + 1.5×RIN 2.11) − custo 5.18 (óleo 4.38 + ind 0.80))
 - 2026-11-25 | biodiesel_us | receita_usd_galao: 6.8675 USD/galão (HO 3.70 + 1.5×RIN 2.11)
-- 2026-11-25 | complexo_soja | crush_margin_usd_bu: 1.8543 USD/bushel (Board Crush: farelo 358.10 + oleo 58.26 − soja 1243.25)
-- 2026-11-25 | complexo_soja | far_soj_ratio_pct: 86.41 % (farelo 358.10/sht ÷ (soja 1243.25cts × 33.33) — <80 abundante, >=87 apertado)
+- 2026-11-25 | complexo_soja | crush_margin_usd_bu: 1.8589 USD/bushel (Board Crush: farelo 358.10 + oleo 58.37 − soja 1244.00)
+- 2026-11-25 | complexo_soja | far_soj_ratio_pct: 86.36 % (farelo 358.10/sht ÷ (soja 1244.00cts × 33.33) — <80 abundante, >=87 apertado)
 - 2026-11-25 | complexo_soja | indice_sobra_farelo: 25.0 0-100 (sem sobra relevante (1/4 condições))
 - 2026-11-25 | complexo_soja | indice_suporte_oleo: 60.0 0-100 (suporte relevante (3/5 condições))
-- 2026-11-25 | complexo_soja | oil_meal_spread_usd_bu: -1.4696 USD/bushel (Oleo - Farelo (positivo = oleo manda))
-- 2026-11-25 | complexo_soja | oil_share_pct: 44.86 % (valor oleo 6.41 / total 14.29)
-- 2026-11-25 | soja_paridade_br | brl_saca_paridade: 161.23 BRL/saca60kg (CBOT 1243.25 cts × USD/BRL 5.8825 (sem basis))
+- 2026-11-25 | complexo_soja | oil_meal_spread_usd_bu: -1.4575 USD/bushel (Oleo - Farelo (positivo = oleo manda))
+- 2026-11-25 | complexo_soja | oil_share_pct: 44.9 % (valor oleo 6.42 / total 14.30)
+- 2026-11-25 | soja_paridade_br | brl_saca_paridade: 161.33 BRL/saca60kg (CBOT 1244.00 cts × USD/BRL 5.8825 (sem basis))
 - 2026-11-24 | biodiesel_us | custo_oleo_usd_galao: 4.374 USD/galão (7.5 lb × óleo 58.32 cts/lb)
 - 2026-11-24 | biodiesel_us | margem_usd_galao: 1.694 USD/galão (receita 6.87 (HO 3.70 + 1.5×RIN 2.11) − custo 5.17 (óleo 4.37 + ind 0.80))
 - 2026-11-24 | biodiesel_us | receita_usd_galao: 6.868 USD/galão (HO 3.70 + 1.5×RIN 2.11)
@@ -210,68 +213,67 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-11-20 | soja_paridade_br | brl_saca_paridade: 158.49 BRL/saca60kg (CBOT 1220.75 cts × USD/BRL 5.8889 (sem basis))
 - 2026-11-19 | biodiesel_us | custo_oleo_usd_galao: 4.5225 USD/galão (7.5 lb × óleo 60.30 cts/lb)
 - 2026-11-19 | biodiesel_us | margem_usd_galao: 1.7939 USD/galão (receita 7.12 (HO 3.95 + 1.5×RIN 2.11) − custo 5.32 (óleo 4.52 + ind 0.80))
-- 2026-11-19 | biodiesel_us | receita_usd_galao: 7.1164 USD/galão (HO 3.95 + 1.5×RIN 2.11)
-- 2026-11-19 | complexo_soja | crush_margin_usd_bu: 1.8378 USD/bushel (Board Crush: farelo 330.90 + oleo 60.30 − soja 1207.50)
 
 ---
 
 ## inmet
 
-- 2026-11-27 | cascavel_pr | temp_max_manha: 20.0 C (Cascavel/PR — Encoberto com pancadas de chuva isoladas)
-- 2026-11-27 | cascavel_pr | temp_max_noite: 20.0 C (Cascavel/PR — Encoberto com chuvisco)
-- 2026-11-27 | cascavel_pr | temp_max_tarde: 20.0 C (Cascavel/PR — Encoberto com chuvisco)
-- 2026-11-27 | cascavel_pr | temp_min_manha: 17.0 C (Cascavel/PR — Encoberto com pancadas de chuva isoladas)
-- 2026-11-27 | cascavel_pr | temp_min_noite: 17.0 C (Cascavel/PR — Encoberto com chuvisco)
-- 2026-11-27 | cascavel_pr | temp_min_tarde: 17.0 C (Cascavel/PR — Encoberto com chuvisco)
-- 2026-11-27 | cuiaba_mt | temp_max_manha: 31.0 C (Cuiaba/MT — Encoberto com pancadas de chuva isoladas)
-- 2026-11-27 | cuiaba_mt | temp_max_noite: 31.0 C (Cuiaba/MT — Encoberto com chuvisco)
-- 2026-11-27 | cuiaba_mt | temp_max_tarde: 31.0 C (Cuiaba/MT — Encoberto)
-- 2026-11-27 | cuiaba_mt | temp_min_manha: 26.0 C (Cuiaba/MT — Encoberto com pancadas de chuva isoladas)
-- 2026-11-27 | cuiaba_mt | temp_min_noite: 26.0 C (Cuiaba/MT — Encoberto com chuvisco)
-- 2026-11-27 | cuiaba_mt | temp_min_tarde: 26.0 C (Cuiaba/MT — Encoberto)
-- 2026-11-27 | lucas_rio_verde_mt | temp_max_manha: 33.0 C (Lucas do Rio Verde/MT — Encoberto com chuvisco)
-- 2026-11-27 | lucas_rio_verde_mt | temp_max_noite: 33.0 C (Lucas do Rio Verde/MT — Encoberto)
-- 2026-11-27 | lucas_rio_verde_mt | temp_max_tarde: 33.0 C (Lucas do Rio Verde/MT — Encoberto)
-- 2026-11-27 | lucas_rio_verde_mt | temp_min_manha: 24.0 C (Lucas do Rio Verde/MT — Encoberto com chuvisco)
-- 2026-11-27 | lucas_rio_verde_mt | temp_min_noite: 24.0 C (Lucas do Rio Verde/MT — Encoberto)
-- 2026-11-27 | lucas_rio_verde_mt | temp_min_tarde: 24.0 C (Lucas do Rio Verde/MT — Encoberto)
-- 2026-11-27 | maringa_pr | temp_max_manha: 24.0 C (Maringa/PR — Encoberto com chuvisco)
-- 2026-11-27 | maringa_pr | temp_max_noite: 24.0 C (Maringa/PR — Encoberto com chuvisco)
-- 2026-11-27 | maringa_pr | temp_max_tarde: 24.0 C (Maringa/PR — Encoberto)
-- 2026-11-27 | maringa_pr | temp_min_manha: 19.0 C (Maringa/PR — Encoberto com chuvisco)
-- 2026-11-27 | maringa_pr | temp_min_noite: 19.0 C (Maringa/PR — Encoberto com chuvisco)
-- 2026-11-27 | maringa_pr | temp_min_tarde: 19.0 C (Maringa/PR — Encoberto)
-- 2026-11-27 | passo_fundo_rs | temp_max_manha: 23.0 C (Passo Fundo/RS — Encoberto com chuvisco)
-- 2026-11-27 | passo_fundo_rs | temp_max_noite: 23.0 C (Passo Fundo/RS — Encoberto)
-- 2026-11-27 | passo_fundo_rs | temp_max_tarde: 23.0 C (Passo Fundo/RS — Encoberto com chuvisco)
-- 2026-11-27 | passo_fundo_rs | temp_min_manha: 14.0 C (Passo Fundo/RS — Encoberto com chuvisco)
-- 2026-11-27 | passo_fundo_rs | temp_min_noite: 14.0 C (Passo Fundo/RS — Encoberto)
-- 2026-11-27 | passo_fundo_rs | temp_min_tarde: 14.0 C (Passo Fundo/RS — Encoberto com chuvisco)
-- 2026-11-27 | rio_verde_go | temp_max_manha: 28.0 C (Rio Verde/GO — Encoberto com pancadas de chuva isoladas)
-- 2026-11-27 | rio_verde_go | temp_max_noite: 28.0 C (Rio Verde/GO — Encoberto com pancadas de chuva isoladas)
-- 2026-11-27 | rio_verde_go | temp_max_tarde: 28.0 C (Rio Verde/GO — Encoberto com pancadas de chuva e trovoadas isoladas)
-- 2026-11-27 | rio_verde_go | temp_min_manha: 23.0 C (Rio Verde/GO — Encoberto com pancadas de chuva isoladas)
-- 2026-11-27 | rio_verde_go | temp_min_noite: 23.0 C (Rio Verde/GO — Encoberto com pancadas de chuva isoladas)
-- 2026-11-27 | rio_verde_go | temp_min_tarde: 23.0 C (Rio Verde/GO — Encoberto com pancadas de chuva e trovoadas isoladas)
-- 2026-11-27 | sinop_mt | temp_max_manha: 34.0 C (Sinop/MT — Encoberto com chuvisco)
-- 2026-11-27 | sinop_mt | temp_max_noite: 34.0 C (Sinop/MT — Encoberto)
-- 2026-11-27 | sinop_mt | temp_max_tarde: 34.0 C (Sinop/MT — Encoberto)
-- 2026-11-27 | sinop_mt | temp_min_manha: 24.0 C (Sinop/MT — Encoberto com chuvisco)
-- 2026-11-27 | sinop_mt | temp_min_noite: 24.0 C (Sinop/MT — Encoberto)
-- 2026-11-27 | sinop_mt | temp_min_tarde: 24.0 C (Sinop/MT — Encoberto)
-- 2026-11-27 | sorriso_mt | temp_max_manha: 33.0 C (Sorriso/MT — Encoberto com chuvisco)
-- 2026-11-27 | sorriso_mt | temp_max_noite: 33.0 C (Sorriso/MT — Encoberto)
-- 2026-11-27 | sorriso_mt | temp_max_tarde: 33.0 C (Sorriso/MT — Encoberto)
-- 2026-11-27 | sorriso_mt | temp_min_manha: 24.0 C (Sorriso/MT — Encoberto com chuvisco)
-- 2026-11-27 | sorriso_mt | temp_min_noite: 24.0 C (Sorriso/MT — Encoberto)
-- 2026-11-27 | sorriso_mt | temp_min_tarde: 24.0 C (Sorriso/MT — Encoberto)
+- 2026-11-27 | cascavel_pr | temp_max_manha: 22.0 C (Cascavel/PR — Muitas nuvens com pancadas de chuva)
+- 2026-11-27 | cascavel_pr | temp_max_noite: 22.0 C (Cascavel/PR — Muitas nuvens com pancadas de chuva e trovoadas isoladas)
+- 2026-11-27 | cascavel_pr | temp_max_tarde: 22.0 C (Cascavel/PR — Muitas nuvens com pancadas de chuva e trovoadas)
+- 2026-11-27 | cascavel_pr | temp_min_manha: 16.0 C (Cascavel/PR — Muitas nuvens com pancadas de chuva)
+- 2026-11-27 | cascavel_pr | temp_min_noite: 16.0 C (Cascavel/PR — Muitas nuvens com pancadas de chuva e trovoadas isoladas)
+- 2026-11-27 | cascavel_pr | temp_min_tarde: 16.0 C (Cascavel/PR — Muitas nuvens com pancadas de chuva e trovoadas)
+- 2026-11-27 | cuiaba_mt | temp_max_manha: 33.0 C (Cuiaba/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | cuiaba_mt | temp_max_noite: 33.0 C (Cuiaba/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | cuiaba_mt | temp_max_tarde: 33.0 C (Cuiaba/MT — Muitas nuvens com pancadas de chuva)
+- 2026-11-27 | cuiaba_mt | temp_min_manha: 25.0 C (Cuiaba/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | cuiaba_mt | temp_min_noite: 25.0 C (Cuiaba/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | cuiaba_mt | temp_min_tarde: 25.0 C (Cuiaba/MT — Muitas nuvens com pancadas de chuva)
+- 2026-11-27 | lucas_rio_verde_mt | temp_max_manha: 34.0 C (Lucas do Rio Verde/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | lucas_rio_verde_mt | temp_max_noite: 34.0 C (Lucas do Rio Verde/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | lucas_rio_verde_mt | temp_max_tarde: 34.0 C (Lucas do Rio Verde/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | lucas_rio_verde_mt | temp_min_manha: 24.0 C (Lucas do Rio Verde/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | lucas_rio_verde_mt | temp_min_noite: 24.0 C (Lucas do Rio Verde/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | lucas_rio_verde_mt | temp_min_tarde: 24.0 C (Lucas do Rio Verde/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | maringa_pr | temp_max_manha: 24.0 C (Maringa/PR — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | maringa_pr | temp_max_noite: 24.0 C (Maringa/PR — Muitas nuvens com possibilidade de chuva isolada)
+- 2026-11-27 | maringa_pr | temp_max_tarde: 24.0 C (Maringa/PR — Muitas nuvens com pancadas de chuva e trovoadas isoladas)
+- 2026-11-27 | maringa_pr | temp_min_manha: 19.0 C (Maringa/PR — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | maringa_pr | temp_min_noite: 19.0 C (Maringa/PR — Muitas nuvens com possibilidade de chuva isolada)
+- 2026-11-27 | maringa_pr | temp_min_tarde: 19.0 C (Maringa/PR — Muitas nuvens com pancadas de chuva e trovoadas isoladas)
+- 2026-11-27 | passo_fundo_rs | temp_max_manha: 22.0 C (Passo Fundo/RS — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | passo_fundo_rs | temp_max_noite: 22.0 C (Passo Fundo/RS — Muitas nuvens com pancadas de chuva e trovoadas isoladas)
+- 2026-11-27 | passo_fundo_rs | temp_max_tarde: 22.0 C (Passo Fundo/RS — Muitas nuvens com pancadas de chuva e trovoadas isoladas)
+- 2026-11-27 | passo_fundo_rs | temp_min_manha: 14.0 C (Passo Fundo/RS — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | passo_fundo_rs | temp_min_noite: 14.0 C (Passo Fundo/RS — Muitas nuvens com pancadas de chuva e trovoadas isoladas)
+- 2026-11-27 | passo_fundo_rs | temp_min_tarde: 14.0 C (Passo Fundo/RS — Muitas nuvens com pancadas de chuva e trovoadas isoladas)
+- 2026-11-27 | rio_verde_go | temp_max_manha: 28.0 C (Rio Verde/GO — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | rio_verde_go | temp_max_noite: 28.0 C (Rio Verde/GO — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | rio_verde_go | temp_max_tarde: 28.0 C (Rio Verde/GO — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | rio_verde_go | temp_min_manha: 21.0 C (Rio Verde/GO — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | rio_verde_go | temp_min_noite: 21.0 C (Rio Verde/GO — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | rio_verde_go | temp_min_tarde: 21.0 C (Rio Verde/GO — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sinop_mt | temp_max_manha: 32.0 C (Sinop/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sinop_mt | temp_max_noite: 32.0 C (Sinop/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sinop_mt | temp_max_tarde: 32.0 C (Sinop/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sinop_mt | temp_min_manha: 24.0 C (Sinop/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sinop_mt | temp_min_noite: 24.0 C (Sinop/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sinop_mt | temp_min_tarde: 24.0 C (Sinop/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sorriso_mt | temp_max_manha: 32.0 C (Sorriso/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sorriso_mt | temp_max_noite: 32.0 C (Sorriso/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sorriso_mt | temp_max_tarde: 32.0 C (Sorriso/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sorriso_mt | temp_min_manha: 24.0 C (Sorriso/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sorriso_mt | temp_min_noite: 24.0 C (Sorriso/MT — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-27 | sorriso_mt | temp_min_tarde: 24.0 C (Sorriso/MT — Muitas nuvens com pancadas de chuva isoladas)
 - 2026-11-26 | cascavel_pr | temp_max_manha: 26.0 C (Cascavel/PR — Muitas nuvens com possibilidade de chuva isolada)
-- 2026-11-26 | cascavel_pr | temp_max_noite: 26.0 C (Cascavel/PR — Muitas nuvens com pancadas de chuva isoladas)
+- 2026-11-26 | cascavel_pr | temp_max_noite: 26.0 C (Cascavel/PR — Muitas nuvens com pancadas de chuva e trovoadas isoladas)
 
 ---
 
 ## mpob
 
+- 2026-11-27 | palma_malasia | page_fetched: 3209.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-11-26 | palma_malasia | page_fetched: 3209.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-11-25 | palma_malasia | page_fetched: 3209.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-11-24 | palma_malasia | page_fetched: 3209.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
@@ -286,12 +288,12 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-11-15 | palma_malasia | page_fetched: 3209.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-11-14 | palma_malasia | page_fetched: 3209.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 - 2026-11-13 | palma_malasia | page_fetched: 3209.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
-- 2026-11-12 | palma_malasia | page_fetched: 3209.0 chars (MPOB acessivel mas parser nao extraiu numeros — verificar estrutura.)
 
 ---
 
 ## noaa_cpc
 
+- 2026-11-27 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-11-26 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-11-25 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-11-24 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
@@ -306,12 +308,12 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-11-15 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-11-14 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 - 2026-11-13 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
-- 2026-11-12 | enso | status: 0.0 categorico (ENSO Alert: El Niño Advisory)
 
 ---
 
 ## nopa
 
+- 2026-11-27 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-11-26 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-11-25 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-11-24 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
@@ -326,12 +328,12 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-11-15 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-11-14 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 - 2026-11-13 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
-- 2026-11-12 | nopa | monthly_status: 0.0 bool (NOPA Monthly Crush Reports requerem membership pagante. Dado mensal disponivel via StoneX 'Semanal de Oleos Vegetais' (que cita NOPA mensal nas analises).)
 
 ---
 
 ## noticias_rss
 
+- 2026-11-27 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 - 2026-11-26 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 - 2026-11-25 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 - 2026-11-24 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
@@ -346,7 +348,6 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-11-15 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 - 2026-11-14 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 - 2026-11-13 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
-- 2026-11-12 | noticias | items_fetched: 0.0 items (0 items lidos, 0 mantidos (soja/farelo/oleo))
 
 ---
 
@@ -362,49 +363,49 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 
 | Geracao | Horizonte | Alvo | Commodity | Spot ref | Baixo | Central | Alto | Vies |
 |---|---|---|---|---|---|---|---|---|
+| 2026-11-27 | 7d | 2026-12-04 | farelo_cbot | 358.10 | 345.97 | 364.20 | 382.42 | altista |
+| 2026-11-27 | 7d | 2026-12-04 | oleo_cbot | 58.37 | 53.85 | 56.59 | 59.34 | baixista |
+| 2026-11-27 | 7d | 2026-12-04 | soja_cbot | 1244.00 | 1202.00 | 1245.89 | 1289.79 | lateral |
+| 2026-11-27 | 30d | 2026-12-27 | farelo_cbot | 358.10 | 353.56 | 391.29 | 429.01 | altista |
+| 2026-11-27 | 30d | 2026-12-27 | oleo_cbot | 58.37 | 44.06 | 49.74 | 55.42 | baixista |
+| 2026-11-27 | 30d | 2026-12-27 | soja_cbot | 1244.00 | 1167.39 | 1258.27 | 1349.15 | altista |
 | 2026-11-26 | 7d | 2026-12-03 | farelo_cbot | 358.10 | 345.97 | 364.20 | 382.42 | altista |
-| 2026-11-26 | 7d | 2026-12-03 | oleo_cbot | 58.26 | 53.76 | 56.49 | 59.23 | baixista |
-| 2026-11-26 | 7d | 2026-12-03 | soja_cbot | 1243.25 | 1201.41 | 1245.19 | 1288.97 | lateral |
+| 2026-11-26 | 7d | 2026-12-03 | oleo_cbot | 58.37 | 53.76 | 56.49 | 59.23 | baixista |
+| 2026-11-26 | 7d | 2026-12-03 | soja_cbot | 1244.00 | 1201.41 | 1245.19 | 1288.97 | lateral |
 | 2026-11-26 | 30d | 2026-12-26 | farelo_cbot | 358.10 | 353.56 | 391.29 | 429.01 | altista |
-| 2026-11-26 | 30d | 2026-12-26 | oleo_cbot | 58.26 | 43.97 | 49.63 | 55.30 | baixista |
-| 2026-11-26 | 30d | 2026-12-26 | soja_cbot | 1243.25 | 1166.92 | 1257.56 | 1348.19 | altista |
+| 2026-11-26 | 30d | 2026-12-26 | oleo_cbot | 58.37 | 43.97 | 49.63 | 55.30 | baixista |
+| 2026-11-26 | 30d | 2026-12-26 | soja_cbot | 1244.00 | 1166.92 | 1257.56 | 1348.19 | altista |
 | 2026-11-25 | 7d | 2026-12-02 | farelo_cbot | 358.10 | 339.66 | 356.82 | 373.98 | altista |
-| 2026-11-25 | 7d | 2026-12-02 | oleo_cbot | 58.26 | 53.33 | 56.04 | 58.76 | baixista |
-| 2026-11-25 | 7d | 2026-12-02 | soja_cbot | 1243.25 | 1185.68 | 1228.39 | 1271.09 | lateral |
+| 2026-11-25 | 7d | 2026-12-02 | oleo_cbot | 58.37 | 53.33 | 56.04 | 58.76 | baixista |
+| 2026-11-25 | 7d | 2026-12-02 | soja_cbot | 1244.00 | 1185.68 | 1228.39 | 1271.09 | lateral |
 | 2026-11-25 | 30d | 2026-12-25 | farelo_cbot | 358.10 | 348.23 | 383.75 | 419.28 | altista |
-| 2026-11-25 | 30d | 2026-12-25 | oleo_cbot | 58.26 | 43.56 | 49.18 | 54.80 | baixista |
-| 2026-11-25 | 30d | 2026-12-25 | soja_cbot | 1243.25 | 1151.98 | 1240.39 | 1328.80 | altista |
+| 2026-11-25 | 30d | 2026-12-25 | oleo_cbot | 58.37 | 43.56 | 49.18 | 54.80 | baixista |
+| 2026-11-25 | 30d | 2026-12-25 | soja_cbot | 1244.00 | 1151.98 | 1240.39 | 1328.80 | altista |
 | 2026-11-24 | 7d | 2026-12-01 | farelo_cbot | 351.10 | 333.19 | 349.76 | 366.34 | altista |
 | 2026-11-24 | 7d | 2026-12-01 | oleo_cbot | 58.32 | 54.73 | 57.46 | 60.20 | baixista |
 | 2026-11-24 | 7d | 2026-12-01 | soja_cbot | 1234.00 | 1184.93 | 1227.87 | 1270.82 | lateral |
 | 2026-11-24 | 30d | 2026-12-24 | farelo_cbot | 351.10 | 332.19 | 366.50 | 400.81 | altista |
 | 2026-11-24 | 30d | 2026-12-24 | oleo_cbot | 58.32 | 45.56 | 51.22 | 56.87 | baixista |
 | 2026-11-24 | 30d | 2026-12-24 | soja_cbot | 1234.00 | 1139.33 | 1228.24 | 1317.15 | lateral |
-| 2026-11-23 | 7d | 2026-11-30 | farelo_cbot | 344.50 | 326.55 | 342.80 | 359.05 | lateral |
-| 2026-11-23 | 7d | 2026-11-30 | oleo_cbot | 59.55 | 55.76 | 58.60 | 61.44 | baixista |
-| 2026-11-23 | 7d | 2026-11-30 | soja_cbot | 1228.75 | 1179.92 | 1223.32 | 1266.72 | lateral |
-| 2026-11-23 | 30d | 2026-12-23 | farelo_cbot | 344.50 | 317.78 | 351.42 | 385.06 | altista |
-| 2026-11-23 | 30d | 2026-12-23 | oleo_cbot | 59.55 | 46.55 | 52.43 | 58.32 | baixista |
-| 2026-11-23 | 30d | 2026-12-23 | soja_cbot | 1228.75 | 1122.50 | 1212.34 | 1302.19 | baixista |
 
 ---
 
 
 ---
 
-# Fila de julgamento — 2026-11-26
+# Fila de julgamento — 2026-11-27
 
-**8 item(ns).** Frase-gatilho: "lê a fila de julgamento e trata"
+**9 item(ns).** Frase-gatilho: "lê a fila de julgamento e trata"
 
-## 🔴 [nivel_tese] soja_cbot fechou em 1243.25 — acima da resistencia 1180.00
+## 🔴 [nivel_tese] soja_cbot fechou em 1244.00 — acima da resistencia 1180.00
 - id: `alerta-quebra_resistencia-soja_cbot-2026-11-25`
-- fato: soja_cbot = 1243.25 vs nivel 1180.00 (2026-11-25)
+- fato: soja_cbot = 1244.00 vs nivel 1180.00 (2026-11-25)
 - refs: soja_cbot
 - leitura: Confirma ou muda a tese? O que voce faria diferente sabendo disso?
 
-## 🔴 [nivel_tese] oleo_cbot fechou em 58.26 — abaixo do suporte 72.00
+## 🔴 [nivel_tese] oleo_cbot fechou em 58.37 — abaixo do suporte 72.00
 - id: `alerta-quebra_suporte-oleo_cbot-2026-11-25`
-- fato: oleo_cbot = 58.26 vs nivel 72.00 (2026-11-25)
+- fato: oleo_cbot = 58.37 vs nivel 72.00 (2026-11-25)
 - refs: oleo_cbot
 - leitura: Confirma ou muda a tese? O que voce faria diferente sabendo disso?
 
@@ -414,15 +415,21 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 - refs: farelo_cbot
 - leitura: Confirma ou muda a tese? O que voce faria diferente sabendo disso?
 
-## 🔴 [nivel_tese] usd_brl_ptax fechou em 5.88 — acima da resistencia 5.30
-- id: `alerta-quebra_resistencia-usd_brl_ptax-2026-11-25`
-- fato: usd_brl_ptax = 5.88 vs nivel 5.30 (2026-11-25)
+## 🔴 [nivel_tese] usd_brl_ptax fechou em 5.74 — acima da resistencia 5.30
+- id: `alerta-quebra_resistencia-usd_brl_ptax-2026-11-26`
+- fato: usd_brl_ptax = 5.74 vs nivel 5.30 (2026-11-26)
 - refs: usd_brl_ptax
 - leitura: Confirma ou muda a tese? O que voce faria diferente sabendo disso?
 
-## 🔴 [nivel_tese] complexo_soja fechou em 1.85 — abaixo do suporte 2.50
+## 🔴 [nivel_tese] usd_brl_ptax variou -2.34% no dia (de 5.88 para 5.74)
+- id: `alerta-movimento_forte-usd_brl_ptax-2026-11-26`
+- fato: usd_brl_ptax = 5.74 vs nivel 5.88 (2026-11-26)
+- refs: usd_brl_ptax
+- leitura: Confirma ou muda a tese? O que voce faria diferente sabendo disso?
+
+## 🔴 [nivel_tese] complexo_soja fechou em 1.86 — abaixo do suporte 2.50
 - id: `alerta-quebra_suporte-complexo_soja-2026-11-25`
-- fato: complexo_soja = 1.85 vs nivel 2.50 (2026-11-25)
+- fato: complexo_soja = 1.86 vs nivel 2.50 (2026-11-25)
 - refs: complexo_soja
 - leitura: Confirma ou muda a tese? O que voce faria diferente sabendo disso?
 
@@ -438,9 +445,9 @@ Bandas calculadas via MA20+volatilidade+slope curto. Claude Code DEVE refinar co
 - refs: farelo,ratio-far-soj,spread
 - leitura: A tese se confirmou? Atualizar status/insight.
 
-## 🟡 [release] NOPA novo (2026-11-26)
-- id: `release-nopa-2026-11-26`
-- fato: fonte nopa com data 2026-11-26 — coletado, ainda nao interpretado
+## 🟡 [release] NOPA novo (2026-11-27)
+- id: `release-nopa-2026-11-27`
+- fato: fonte nopa com data 2026-11-27 — coletado, ainda nao interpretado
 - refs: complexo_soja
 - leitura: O numero muda o balanco/tese? Algo relevante pro farelo?
 
