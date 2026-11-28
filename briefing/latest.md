@@ -143,7 +143,7 @@ Notas manuais disponiveis: 0 do consultor · 0 de call.
 - 2026-11-27 | soja_cbot | fechamento_K27: 1272.5 USD/bushel (ticker=ZSK27.CBT venc=mai/27)
 - 2026-11-27 | soja_cbot | fechamento_N27: 1275.75 USD/bushel (ticker=ZSN27.CBT venc=jul/27)
 - 2026-11-27 | soja_cbot | fechamento_Q27: 1255.25 USD/bushel (ticker=ZSQ27.CBT venc=ago/27)
-- 2026-11-27 | soja_cbot | maxima: 1273.5 USD/bushel (ticker=ZSF27.CBT)
+- 2026-11-27 | soja_cbot | maxima: 1273.25 USD/bushel (ticker=ZSF27.CBT)
 - 2026-11-27 | soja_cbot | minima: 1254.5 USD/bushel (ticker=ZSF27.CBT)
 - 2026-11-27 | soja_cbot | volume: 118969.0 contratos (ticker=ZSF27.CBT)
 - 2026-11-26 | heating_oil_cbot | abertura: 3.65310001373291 USD/galão (ticker=HO=F)
